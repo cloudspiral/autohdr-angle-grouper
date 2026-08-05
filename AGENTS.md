@@ -33,9 +33,12 @@ OpenAI Symphony runs.
 - Run `.venv/bin/ruff check .` and `.venv/bin/python -m pytest` as the minimum
   pre-commit gate.
 - Run the most focused relevant test while iterating.
-- Run `docker build --platform linux/amd64 -t autohdr-angle-grouper:test .` when
-  dependencies, the Dockerfile, or runtime entrypoint behavior changes and Docker
-  is available. If Docker is unavailable, record that limitation accurately.
+- Unattended Symphony workers must not invoke the local Docker daemon because it
+  requires a host approval that the worker cannot answer. When dependencies, the
+  Dockerfile, or runtime behavior change, use the required GitHub Actions
+  `container` job as the `linux/amd64` build proof and record its result. Human-run
+  local sessions may additionally run
+  `docker build --platform linux/amd64 -t autohdr-angle-grouper:test .`.
 - Review `git diff`, `git diff --check`, and `git status` before handoff.
 
 ## Git and handoff
