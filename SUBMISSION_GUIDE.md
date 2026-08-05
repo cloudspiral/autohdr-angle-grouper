@@ -105,8 +105,8 @@ Upload `submission.zip` on the Codabench competition page under "My Submissions"
 
 | Type | vCPU | RAM | Timeout | Best For |
 |------|------|-----|---------|----------|
-| `cpu-large` | 8 | 16 GB | 30 min | Most solutions |
-| `cpu-xlarge` | 16 | 32 GB | 45 min | Heavy compute |
+| `cpu-large` | 8 | 16 GB | 60 min | Most solutions |
+| `cpu-xlarge` | 16 | 32 GB | 60 min | Heavy compute |
 
 ### Container Contract
 

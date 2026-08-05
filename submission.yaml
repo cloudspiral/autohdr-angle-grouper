@@ -6,8 +6,8 @@
 # Then upload submission.zip on the Codabench competition page.
 #
 # Machine types:
-#   cpu-large  — 8 vCPU, 16 GB RAM, 30 min timeout
-#   cpu-xlarge — 16 vCPU, 32 GB RAM, 45 min timeout
+#   cpu-large  — 8 vCPU, 16 GB RAM, 60 min timeout
+#   cpu-xlarge — 16 vCPU, 32 GB RAM, 60 min timeout
 
 docker_image: your-dockerhub-username/your-solution:v1
 machine_type: cpu-xlarge
