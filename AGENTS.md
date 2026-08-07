@@ -43,8 +43,9 @@ OpenAI Symphony runs.
 - Stage only files that belong to the issue.
 - Write comprehensive commit messages describing all material changes, rationale,
   and validation. Longer messages are preferred when they make the record clearer.
-- Symphony must commit through
-  `/Users/matt/bin/autohdr-angle-grouper-git-handoff commit "<message>"` and push
-  through `/Users/matt/bin/autohdr-angle-grouper-git-handoff push`.
+- Symphony must commit through `gakucho git-handoff commit "<message>"` and push
+  through `gakucho git-handoff push`.
+- Reopened issues with merged or closed prior pull requests must use the next
+  `symphony/gh-<number>-attempt-<n>` branch rather than updating a closed branch.
 - Open a pull request against `main` with `Closes #<issue-number>` in its body.
 - Leave the issue and pull request in `human-review`; never merge your own work.

@@ -34,9 +34,6 @@ codex:
   turn_sandbox_policy:
     type: workspaceWrite
     networkAccess: true
-server:
-  host: 127.0.0.1
-  port: 4001
 ---
 
 You are the unattended implementation agent for GitHub issue
@@ -92,16 +89,29 @@ Maintain exactly one issue comment whose first line is `## Symphony Workpad`.
 4. Implement the smallest complete solution and focused regression coverage.
 5. Run the focused tests and all gates required by `AGENTS.md`; record exact results.
 6. Review `git diff`, `git diff --check`, and `git status`, then stage only in-scope files.
-7. Commit with `/Users/matt/bin/autohdr-angle-grouper-git-handoff commit "<message>"`.
+7. Commit with `gakucho git-handoff commit "<message>"`.
    The single message argument must comprehensively describe the changes, rationale,
    and validation. Do not call `git commit` directly.
-8. Push with `/Users/matt/bin/autohdr-angle-grouper-git-handoff push`. Do not call
+8. Push with `gakucho git-handoff push`. Do not call
    `git push` directly.
 9. Open or update a pull request against `main` using the GitHub API. Include a
    summary, exact validation, limitations, and `Closes #{{ issue.native_ref.number }}`.
 10. Inspect GitHub Actions until required checks complete. Fix in-scope failures and
     recheck within the turn budget.
 11. Put the pull-request URL and final check state in the workpad.
+
+## Branch and pull-request recovery
+
+Before editing, inspect the current branch and query pull requests for this
+issue's existing Symphony branches.
+
+- If an open pull request exists, reuse its branch, workspace, workpad, and PR.
+- If the prior pull request was merged or closed, fetch `origin/main`, create
+  `symphony/gh-{{ issue.native_ref.number }}-attempt-<n>` where `<n>` is the next
+  integer at least 2, and open a new PR. Never add commits to a merged or closed
+  branch.
+- If the acceptance criteria are already satisfied, record current evidence,
+  add `human-review`, and remove `symphony-ready` without manufacturing a change.
 
 ## Handoff states
 
@@ -111,6 +121,9 @@ tracker mutation. Do not merge or close the issue.
 
 If a true external blocker prevents a reviewable pull request, record it, add
 `symphony-blocked`, and remove `symphony-ready` as the final tracker mutation.
+
+If `symphony-ready` is later re-added, reuse an open branch and PR, or create the
+fresh numbered attempt branch above when the previous PR was merged or closed.
 
 Your final response must contain only the completed outcome, validation,
 pull-request URL, and any true blocker.
