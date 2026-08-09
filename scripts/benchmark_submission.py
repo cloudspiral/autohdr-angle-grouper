@@ -13,6 +13,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+import cv2
+
 from autohdr_eval.config import canonical_json_bytes, load_config
 from autohdr_eval.contracts import validate_groups
 from solution import SUBMISSION_CONFIG_PATH, group_images_with_resources
@@ -75,10 +77,15 @@ def benchmark(
     dataset_root: Path,
     manifest_path: Path,
     split_path: Path,
+    opencv_threads: int | None = None,
 ) -> dict[str, Any]:
     image_paths = _split_paths(dataset_root, manifest_path, split_path)
     git_commit, dirty_tree = _git_state(repo_root)
     config = load_config(SUBMISSION_CONFIG_PATH)
+    if opencv_threads is not None:
+        if opencv_threads < 1:
+            raise ValueError("opencv_threads must be positive")
+        cv2.setNumThreads(opencv_threads)
     started_wall = time.perf_counter()
     started_cpu = time.process_time()
     outcome = group_images_with_resources(image_paths)
@@ -98,6 +105,7 @@ def benchmark(
             "platform": platform.platform(),
             "processor": platform.processor(),
             "python": platform.python_version(),
+            "opencv_threads": cv2.getNumThreads(),
         },
         "peak_rss_bytes": _peak_rss_bytes(),
         "prediction_sha256": prediction_hash,
@@ -120,6 +128,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--split", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--opencv-threads", type=int)
     return parser.parse_args()
 
 
@@ -130,6 +139,7 @@ def main() -> int:
         dataset_root=args.dataset_root,
         manifest_path=args.manifest,
         split_path=args.split,
+        opencv_threads=args.opencv_threads,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(canonical_json_bytes(result))
