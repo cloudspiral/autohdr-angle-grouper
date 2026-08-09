@@ -41,8 +41,15 @@
     "The reserved Phase 1 slice remains untouched by Phase 2 selection and will be evaluated once after this record and config are committed."
   ],
   "reserved_evaluation": {
+    "exact_groups": 22,
+    "merge_damaged_groups": 0,
+    "non_singleton_exact_groups": 21,
+    "prediction_sha256": "94a25cd5e053cbc775ba61592c2de14a1f4957d70c930f550fd7546352c6ecec",
+    "run_id": "20260809T040908Z-b2-phase2-selected-64e4032389",
     "split_path": "splits/medium-exclusive-100-v1.json",
-    "status": "pending"
+    "split_reference_groups": 2,
+    "status": "passed_once",
+    "total_groups": 24
   },
   "schema_version": 1,
   "selected": {

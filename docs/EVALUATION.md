@@ -158,6 +158,21 @@ zero-merge candidates regardless of mean score. The Phase 1 exclusive slice is
 not part of sweep definitions and is evaluated only after selecting the Phase 2
 candidate.
 
+Phase 2 runs the committed definitions in numeric order from
+`sweep-01-feature.json` through `sweep-05-stability.json`. Their corresponding
+`results-*.json` files are immutable reports; `selection.json` records why the
+balanced config is retained when cached sub-second timing tie-breaks are not
+material. The frozen config is `configs/phase2/b2-selected.json`, hash
+`855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5`.
+
+After freezing at commit `6a2069354b3a1b128b6b481057dadea078f444ec`, the
+selected config was run once on `medium-exclusive-100-v1`. It scored 22/24 with
+zero merge damage and produced the same prediction SHA-256 as Phase 1 B2,
+`94a25cd5e053cbc775ba61592c2de14a1f4957d70c930f550fd7546352c6ecec`.
+The committed `experiments/phase2/reserved-comparison.json` is the comparison
+record. Do not rerun that slice for Phase 2 selection; it is reserved
+generalization evidence, not a protected holdout.
+
 ## Split and holdout safety
 
 The sample package is smoke evidence only. It is not a protected holdout and is
