@@ -173,6 +173,45 @@ The committed `experiments/phase2/reserved-comparison.json` is the comparison
 record. Do not rerun that slice for Phase 2 selection; it is reserved
 generalization evidence, not a protected holdout.
 
+## Phase 3 researcher loop
+
+Phase 3 uses `medium-phase3-dev-a/b/c-v1`, three new 100-image folds containing
+86 reference groups. Their split audit proves that they exclude all 169 unique
+groups previously used by the sample smoke batch, Phase 1 reserved slice, and
+Phase 2 development folds. The source manifest still lacks photoshoot/property
+metadata, so this is content-exclusive at the reference-group level only.
+
+The frozen Phase 2 config first runs unchanged as the baseline. Each researcher
+cycle then commits its hypothesis and acceptance gates before implementation and
+scoring. Cycle 1 adds percentile stretching before CLAHE; it passes the fresh
+gate but is rejected as a standalone champion after regressing one Phase 2
+development group. Cycle 2 evaluates both preprocessing views completely and
+fuses their classified pair states: a negative in either view vetoes the pair;
+otherwise the stronger of strong-positive, positive, and unknown is retained.
+All match, transform, state, and grouping thresholds remain unchanged.
+
+Run the final Cycle 2 fresh definition with a dedicated empty artifact root:
+
+```bash
+.venv/bin/python -m autohdr_eval sweep \
+  --repo-root . \
+  --definition experiments/phase3/sweep-03-dual-fresh.json \
+  --dataset-root data/medium \
+  --manifest data/medium/public_manifest.csv \
+  --audit artifacts/datasets/autohdr-medium-5000-audit.json \
+  --artifact-root artifacts/phase3-cycle2-fresh/runs \
+  --registry artifacts/phase3-cycle2-fresh/registry.sqlite3 \
+  --output experiments/phase3/results-03-dual-fresh.json
+```
+
+The fresh report records 85/86 exact groups, zero merge damage, a 0.9615
+worst-fold score, and 128.69 seconds cold runtime. The separately predeclared
+prior-development regression scores 76/76 with zero merge damage. See
+`experiments/phase3/cycle-02-decision.json` and `selection.json` for the gate
+outcome and limitations. The selected config remains evaluation-only until the
+Phase 4 entrypoint, scale, and container work is complete. Do not rerun the
+Phase 1 reserved slice as part of this selection.
+
 ## Split and holdout safety
 
 The sample package is smoke evidence only. It is not a protected holdout and is
