@@ -1,0 +1,41 @@
+{
+  "evaluation_source": {
+    "commit": "532cc1b81211871198b0ec9c00ed8b986ed4b102",
+    "dirty_tree": false,
+    "dockerfile_sha256_before_base_pin": "8e6795c87e1fe06fa9082505d6e47487d90931726fbecd979a2153bff4255cc3",
+    "solution_sha256": "6ca01a5424b1e9334e47477ea3b1cd262b300dd1755f62e4d3c33ceebef3cb9b"
+  },
+  "frozen_config": {
+    "canonical_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+    "file_sha256": "efc8aa220c63cb66d36d246dfc6ce1aab0383f6635b6d9f06025d72743f147fa",
+    "path": "configs/phase4/b2-screened-dual-clahe.json"
+  },
+  "model_assets": [],
+  "post_holdout_packaging_exception": {
+    "algorithm_impact": "none",
+    "change": "Pin the official Python 3.11 slim linux/amd64 manifest digest and disable pip cache/version-check build state in Dockerfile.",
+    "container_validation": {
+      "contract_status": "passed on both attempts of exact CI run 31297696268",
+      "source_date_epoch": 1786253596,
+      "stable_ci_local_image_id": null,
+      "stable_identity_status": "not reproduced: jobs 93205364788 and 93205509762 produced distinct local IDs"
+    },
+    "dockerfile_sha256_after_base_pin": "c60c6a88bba7c5b94daba77f0699aa269b1239b5aa83b65672fa3a4ec7536673",
+    "dockerfile_sha256_after_reproducibility_controls": "99b87196faa4407930a90d3fb6a0374f1950fbc87d26c7aaa0afc5cb7b1eeded",
+    "reason": "The pre-holdout Dockerfile used a mutable base tag and pip could write wall-clock version-check state; the packaging-only controls eliminate those known inputs without changing solution.py, config, split, or Python dependencies. Exact CI reruns still produced distinct local image IDs, so no reproducibility claim is made."
+  },
+  "protected_split": {
+    "canonical_hash": "d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a",
+    "file_sha256": "ac523c2f8a16d35b2ca6e4516b64698e509314a3649d60f8b80dda1e77078b03",
+    "path": "splits/medium-final-holdout-v1.json"
+  },
+  "runtime": {
+    "base_image_linux_amd64": "python:3.11-slim@sha256:78b39ef14d8e2b4d71f8dc304f1328c37df95fe0ef99477c2ae6bd3d03784553",
+    "development_lock_path": "requirements-dev.lock",
+    "development_lock_sha256": "25f073af181c7bbe67c3b4bad710f9cd6222c972fa672e1853025c8b2b4c193b",
+    "python": "3.11",
+    "runtime_lock_path": "requirements.lock",
+    "runtime_lock_sha256": "067952dcef580eeb9831b0a44f0069a2aeadd291fccbf517cee689dac2948b13"
+  },
+  "schema_version": 1
+}

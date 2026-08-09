@@ -1,0 +1,103 @@
+{
+  "base_image_linux_amd64": "python:3.11-slim@sha256:78b39ef14d8e2b4d71f8dc304f1328c37df95fe0ef99477c2ae6bd3d03784553",
+  "ci_local_image_size_bytes": 365280872,
+  "contract": {
+    "linux_amd64_build": true,
+    "network_disabled": true,
+    "nontrivial_expected_partition": true,
+    "read_only_input": true,
+    "read_only_root": true,
+    "valid_csv": true
+  },
+  "observed_builds_before_timestamp_fix": [
+    {
+      "commit": "0b4febb840244db83281b9cad0b57b679e7ab16a",
+      "container_job_id": 93204279673,
+      "image_id": "sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf",
+      "run_id": 31297253738
+    },
+    {
+      "commit": "068f93577720a7268a78b8fb8f7c84af75070755",
+      "container_job_id": 93204428033,
+      "image_id": "sha256:efe87e9752a860e1f751af69cfce24e721aa78289071805007de2a0d04d2d33c",
+      "run_id": 31297313919
+    }
+  ],
+  "observed_cli_builds_with_timestamp_arg": [
+    {
+      "container_job_id": 93204606993,
+      "image_id": "sha256:a18eb1aef30ac24ff59a49f11f9d90d1ce7c04c579fd2548332c3298b822c008",
+      "run_attempt": 1,
+      "run_id": 31297387851
+    },
+    {
+      "container_job_id": 93204674228,
+      "image_id": "sha256:2c8c0372cacf1ade6f41dfdf5a73215ccdc350e8296fb56933f0aac09ad24d86",
+      "run_attempt": 2,
+      "run_id": 31297387851
+    }
+  ],
+  "observed_buildx_action_without_timestamp_rewrite": [
+    {
+      "build_digest": "sha256:ea9ea5cc120cfe27390e11db9d747643674c6b980c4d4d299c75f7c90d51e8c8",
+      "container_job_id": 93204865846,
+      "image_id": "sha256:0e377f9e84f0e0320751cc4eeb928fb2ced15b9a57078e9e0d73f708353a29b3",
+      "run_attempt": 1,
+      "run_id": 31297489029
+    },
+    {
+      "build_digest": "sha256:109124202ad0afe3ecec420a852c51330a9cb1b8173dacd7ab940557b915ba3f",
+      "container_job_id": 93204943817,
+      "image_id": "sha256:05b9e72a273f82e4fd01ddbf2ba7195d6cbc706ab9c41be2a5d4539807f9f2c9",
+      "run_attempt": 2,
+      "run_id": 31297489029
+    }
+  ],
+  "observed_buildx_action_with_timestamp_rewrite_before_pip_state_fix": [
+    {
+      "build_digest": "sha256:0698457ffe4e97c238c9d59f1162f647c07eaaf9f166c3d14256ad8f140156bd",
+      "container_job_id": 93205115058,
+      "image_id": "sha256:55455323bbe00807de6ddc49955b5c6493a98f9f74af28473e259192d4fb1a38",
+      "run_attempt": 1,
+      "run_id": 31297589692
+    },
+    {
+      "build_digest": "sha256:13bb864de0e4588e82aae7a35c82d0afd9247aef7e6f5bfe47d4f43d75615be2",
+      "container_job_id": 93205206573,
+      "image_id": "sha256:28cc8a8c8948178e207288aa1ed0e34f7ca8a48695f519ba341d79c86cc99b62",
+      "run_attempt": 2,
+      "run_id": 31297589692
+    }
+  ],
+  "observed_buildx_action_with_all_reproducibility_controls": [
+    {
+      "build_digest": "sha256:06af850a28431f6222ec785893d6727fc5b9158f64316e94116d8bee9f249abe",
+      "commit": "489becf006448310c52d783a18f17472872fb740",
+      "container_job_id": 93205364788,
+      "image_id": "sha256:eaf9f5f41fe39a7a6f683de3413ce928b5bebc250897d10aed5c7c1ec1215262",
+      "run_attempt": 1,
+      "run_id": 31297696268
+    },
+    {
+      "build_digest": "sha256:769cb3a03be83a4d01068459261866f09c4cb7909897d3eba50e12fed55e8168",
+      "commit": "489becf006448310c52d783a18f17472872fb740",
+      "container_job_id": 93205509762,
+      "image_id": "sha256:12b21e7a144987fccbc948cda3a103a84671f5b10b9b1f498611bb8acb683d8b",
+      "run_attempt": 2,
+      "run_id": 31297696268
+    }
+  ],
+  "public_registry_digest": null,
+  "repo_digests": [],
+  "reproducible_build": {
+    "builder": "docker/setup-buildx-action@v4 and docker/build-push-action@v7",
+    "exporter": "type=docker,rewrite-timestamp=true",
+    "pip_cache_disabled": true,
+    "pip_version_check_disabled": true,
+    "source_date_epoch": 1786253596,
+    "stable_ci_local_image_id": null,
+    "status": "not established: an exact CI rerun produced distinct local image IDs and build digests"
+  },
+  "schema_version": 1,
+  "status": "contract passed on every observed build; CI-local image identity was not reproducible; public registry digest pending human publication"
+}

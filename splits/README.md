@@ -51,3 +51,13 @@ ordered by SHA-256 of `medium-phase3-dev-v1:<group_id>` and greedily assigned to
 the currently smallest fold that will not exceed 100 images. The result contains
 31, 26, and 29 complete groups. These are still reference-group-only fallbacks,
 not evidence of photoshoot/property isolation.
+
+`medium-final-holdout-v1.json` is the one protected Phase 5 holdout. It excludes
+all 255 reference groups used by the sample, Phase 1 reserved slice, Phase 2
+development folds, and Phase 3 development folds. The remaining complete groups
+are ordered by SHA-256 of `medium-final-holdout-v1:<group_id>` and greedily
+included without overflowing until the split contains exactly 400 images in 110
+groups (18.8% of the 2,126-image medium package). Membership was frozen before
+scoring. Because the source manifest has no photoshoot/property metadata, this
+is the best available reference-group-disjoint fallback rather than proof of
+shoot-level independence.

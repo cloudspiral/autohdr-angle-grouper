@@ -1,0 +1,32 @@
+{
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "eligible_after_exclusion": {
+    "groups": 283,
+    "images": 1060
+  },
+  "excluded_prior_groups": {
+    "phase1_reserved": 24,
+    "phase2_development": 76,
+    "phase3_development": 86,
+    "sample": 69,
+    "unique_total": 255
+  },
+  "generation": {
+    "algorithm": "Order eligible complete reference groups by SHA-256 of medium-final-holdout-v1:<group_id>; greedily include a group when its full image count does not exceed the 400-image target; stop at exactly 400 images.",
+    "seed": 0,
+    "target_fraction_of_medium_images": 0.18814675446848542,
+    "target_images": 400
+  },
+  "holdout": {
+    "group_count": 110,
+    "image_count": 400,
+    "path": "splits/medium-final-holdout-v1.json",
+    "protected": true,
+    "split_hash": "d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a"
+  },
+  "manifest_sha256": "0729a9205646845eeab70e944e115ca9be7d74e2b261e9a586a6c97b724359b6",
+  "non_overlap": {
+    "with_all_prior_groups": true
+  },
+  "schema_version": 1
+}

@@ -1,0 +1,62 @@
+{
+  "artifact_checksums": {
+    "diagnostics_sha256": "283513876ab51ca44ae100b2b9e4a7209441a6dc3df721114fde0a1dc9fd148c",
+    "predictions_sha256": "e7833b755b4ec0639ddd288ade64bfda7b786f85053978f85492072897e30236",
+    "run_record_sha256": "650c38ccc2b7783e69289699b7402dbcdc70227e0c4981285d6f8fd029a17e31"
+  },
+  "config_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "environment": {
+    "numpy": "2.4.6",
+    "opencv": "4.14.0",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "frozen_commit": "532cc1b81211871198b0ec9c00ed8b986ed4b102",
+  "metrics": {
+    "exact_group_score": 0.990909090909091,
+    "exact_matches": 109,
+    "merge_damaged_reference_groups": 0,
+    "non_singleton_exact_matches": 99,
+    "non_singleton_reference_groups": 100,
+    "predicted_exact_group_precision": 0.9819819819819819,
+    "predicted_groups": 111,
+    "predicted_singletons": 11,
+    "singleton_exact_matches": 10,
+    "singleton_reference_groups": 10,
+    "split_reference_groups": 1,
+    "total_reference_groups": 110
+  },
+  "pair_diagnostics": {
+    "candidate_same_group_pair_recall": 1.0,
+    "candidate_true_group_connectivity": {
+      "connected_groups": 110,
+      "total_groups": 110
+    },
+    "positive_pair_precision": 1.0,
+    "same_group_positive_recall": 0.96
+  },
+  "policy": {
+    "algorithm_tuning_after_result": false,
+    "evaluation_count": 1,
+    "post_result_changes_limited_to_packaging_and_documentation": true
+  },
+  "resources": {
+    "all_pair_count": 79800,
+    "candidate_fraction": 0.04404761904761905,
+    "candidate_pair_count": 3515,
+    "candidate_screen_fallbacks": 0,
+    "feature_cache_hits": 0,
+    "feature_cache_misses": 800,
+    "image_count": 400,
+    "pair_cache_hits": 0,
+    "pair_cache_misses": 7030,
+    "peak_rss_bytes": 573997056,
+    "wall_seconds": 161.57112370897084
+  },
+  "run_id": "20260809T053342Z-b2-screened-dual-clahe-b4da2aeebf",
+  "schema_version": 1,
+  "split_hash": "d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a",
+  "split_id": "medium-final-holdout-v1",
+  "status": "passed"
+}

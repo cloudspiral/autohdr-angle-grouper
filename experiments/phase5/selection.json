@@ -1,0 +1,34 @@
+{
+  "decision": "Promote the screened dual-view CLAHE entrypoint as the single Phase 5 finalist and default submission candidate.",
+  "finalists": [
+    {
+      "algorithm": "classical-screened-dual-clahe",
+      "config_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+      "development_exact_groups": "161/162",
+      "holdout_exact_groups": "109/110",
+      "id": "A",
+      "linux_amd64_container": {
+        "ci_local_image_id": null,
+        "image_size_bytes": 365280872,
+        "status": "contract passed on both attempts of exact CI run 31297696268; distinct local IDs prevent a reproducibility claim; public registry digest pending"
+      },
+      "merge_damaged_groups_across_development_and_holdout": 0,
+      "recommended": true,
+      "runtime_evidence": "161.57 seconds and 573,997,056-byte peak RSS for the 400-image cache-free protected run on native arm64 Python 3.11; exact linux/amd64 read-only/no-network contract proof passed in Phase 5 CI."
+    }
+  ],
+  "not_advanced": [
+    {
+      "id": "B",
+      "name": "Phase 2 single-view runtime fallback",
+      "reason": "It is materially faster but scored 160/162 on the six development/regression folds versus 161/162 for A and was not the frozen submission entrypoint. The plan permits one finalist; no holdout comparison was run."
+    }
+  ],
+  "publication": {
+    "codabench_uploaded": false,
+    "docker_image_pushed": false,
+    "human_approval_required": true
+  },
+  "schema_version": 1,
+  "status": "selected"
+}
