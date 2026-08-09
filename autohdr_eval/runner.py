@@ -250,16 +250,55 @@ def _resolve_reference_and_paths(
     return reference_groups, image_paths
 
 
-def _predict(config: EvaluationConfig, image_paths: list[str]) -> list[list[str]]:
+@dataclass(frozen=True)
+class PredictionOutcome:
+    groups: list[list[str]]
+    resources: dict[str, Any]
+    artifacts: dict[str, Any]
+    pair_decisions: tuple[Any, ...] = ()
+
+
+def _predict(
+    config: EvaluationConfig,
+    image_paths: list[str],
+    *,
+    dataset_fingerprint: str,
+    cache_root: Path,
+) -> PredictionOutcome:
     if config.algorithm == "singleton":
         if config.parameters:
             raise ValueError("singleton baseline does not accept parameters")
-        return [[Path(path).name] for path in sorted(image_paths)]
+        return PredictionOutcome(
+            groups=[[Path(path).name] for path in sorted(image_paths)],
+            resources={},
+            artifacts={},
+        )
     if config.algorithm == "structural":
         from solution import StructuralConfig, group_images_with_config
 
         structural_config = StructuralConfig.from_parameters(config.parameters)
-        return group_images_with_config(image_paths, structural_config)
+        return PredictionOutcome(
+            groups=group_images_with_config(image_paths, structural_config),
+            resources={},
+            artifacts={},
+        )
+    if config.algorithm == "classical":
+        from autohdr_eval.classical import ClassicalConfig, run_classical
+
+        classical_config = ClassicalConfig.from_parameters(config.parameters)
+        classical = run_classical(
+            image_paths,
+            classical_config,
+            dataset_fingerprint=dataset_fingerprint,
+            cache_root=cache_root,
+            seed=config.seed,
+        )
+        return PredictionOutcome(
+            groups=classical.groups,
+            resources=classical.resources,
+            artifacts={"classical_summary": classical.summary},
+            pair_decisions=classical.decisions,
+        )
     raise ValueError(f"unsupported algorithm: {config.algorithm}")
 
 
@@ -345,14 +384,26 @@ def run_evaluation(
     predictions_path = artifact_dir / "predictions.csv"
     started_clock = time.perf_counter()
     try:
-        predicted_groups = _predict(config, image_paths)
+        prediction = _predict(
+            config,
+            image_paths,
+            dataset_fingerprint=dataset_fingerprint,
+            cache_root=artifact_root.parent / "cache",
+        )
+        predicted_groups = prediction.groups
         write_predictions(predicted_groups, image_paths, predictions_path)
         metrics = score_groups(reference_groups, predicted_groups)
         diagnostics = diagnose_groups(reference_groups, predicted_groups)
+        if prediction.pair_decisions:
+            from autohdr_eval.classical import diagnose_pair_decisions
+
+            prediction.artifacts["pair_diagnostics"] = diagnose_pair_decisions(
+                reference_groups, list(prediction.pair_decisions)
+            )
         resources = {
             "candidate_pair_count": (
                 len(image_paths) * (len(image_paths) - 1) // 2
-                if config.algorithm == "structural"
+                if config.algorithm in {"classical", "structural"}
                 else 0
             ),
             "image_count": len(image_paths),
@@ -360,12 +411,15 @@ def run_evaluation(
             "predicted_group_count": len(predicted_groups),
             "wall_seconds": time.perf_counter() - started_clock,
         }
+        resources.update(prediction.resources)
         _write_json(artifact_dir / "resolved_config.json", config.as_dict())
         _write_json(artifact_dir / "split.json", split)
         _write_json(artifact_dir / "metrics.json", metrics.as_dict())
         _write_json(artifact_dir / "diagnostics.json", diagnostics)
         _write_json(artifact_dir / "resources.json", resources)
         _write_json(artifact_dir / "environment.json", _environment())
+        for artifact_name, artifact_value in prediction.artifacts.items():
+            _write_json(artifact_dir / f"{artifact_name}.json", artifact_value)
         run_summary = {
             "config_hash": config.fingerprint,
             "dataset_fingerprint": dataset_fingerprint,
@@ -390,6 +444,12 @@ def run_evaluation(
             "run": str(artifact_dir / "run.json"),
             "split": str(artifact_dir / "split.json"),
         }
+        artifact_paths.update(
+            {
+                artifact_name: str(artifact_dir / f"{artifact_name}.json")
+                for artifact_name in prediction.artifacts
+            }
+        )
         registry.finish(
             run_id,
             finished_at=run_summary["finished_at"],

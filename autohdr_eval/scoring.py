@@ -99,7 +99,7 @@ def score_groups(
 
 def diagnose_groups(
     reference_groups: list[list[str]], predicted_groups: list[list[str]]
-) -> dict[str, list[list[str]]]:
+) -> dict[str, Any]:
     """Return deterministic filename-level group failures for gallery generation."""
 
     reference = canonicalize_groups(reference_groups)
@@ -111,8 +111,9 @@ def diagnose_groups(
         filename: group for group in predicted_sets for filename in group
     }
 
-    diagnostics: dict[str, list[list[str]]] = {
+    diagnostics: dict[str, Any] = {
         "exact_reference_groups": [],
+        "failures": [],
         "merge_damaged_reference_groups": [],
         "split_reference_groups": [],
     }
@@ -125,6 +126,19 @@ def diagnose_groups(
             diagnostics["split_reference_groups"].append(reference_group_list)
         if any(predicted_group - reference_group for predicted_group in touched):
             diagnostics["merge_damaged_reference_groups"].append(reference_group_list)
+        failure_types: list[str] = []
+        if len(touched) > 1:
+            failure_types.append("split")
+        if any(predicted_group - reference_group for predicted_group in touched):
+            failure_types.append("merge")
+        if failure_types:
+            diagnostics["failures"].append(
+                {
+                    "failure_types": failure_types,
+                    "predicted_groups": canonicalize_groups(touched),
+                    "reference_group": reference_group_list,
+                }
+            )
     return diagnostics
 
 

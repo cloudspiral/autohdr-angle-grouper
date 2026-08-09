@@ -26,3 +26,10 @@ selection.
 splits select whole reference groups in a fixed order to provide 51-, 102-, and
 203-image points for the early B1 runtime curve. They are resource measurements,
 not accuracy folds.
+
+`medium-exclusive-100-v1.json` is the first larger-package generalization check.
+The medium audit proved that every sample image is nested byte-for-byte, so this
+split excludes all 69 sample group IDs before selecting 24 complete medium-only
+reference groups totaling 100 images. It is fixed before B1/B2 scoring, but the
+lack of photoshoot/property metadata still prevents treating it as a valid
+tuning fold or protected holdout.

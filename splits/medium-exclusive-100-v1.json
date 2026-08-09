@@ -1,0 +1,44 @@
+{
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "limitations": [
+    "The source manifest has no photoshoot or property boundary.",
+    "Every reference group present in the advertised 500 sample is excluded before selection.",
+    "Whole remaining reference groups were selected in lexicographic group-ID order until the slice reached exactly 100 images.",
+    "This fixed Phase 1 generalization check is not a tuning fold or protected holdout."
+  ],
+  "protected": false,
+  "schema_version": 1,
+  "seed": 0,
+  "selection": {
+    "type": "group_ids",
+    "values": [
+      "10253",
+      "10765",
+      "10800",
+      "10908",
+      "11369",
+      "11393",
+      "11479",
+      "1172",
+      "12084",
+      "12289",
+      "12313",
+      "12751",
+      "1277",
+      "12854",
+      "129",
+      "12925",
+      "12965",
+      "1307",
+      "13247",
+      "13755",
+      "13887",
+      "14020",
+      "14103",
+      "14112"
+    ]
+  },
+  "source_package": "official-medium-v1",
+  "split_id": "medium-exclusive-100-v1",
+  "unit": "reference-group-only-fallback"
+}
