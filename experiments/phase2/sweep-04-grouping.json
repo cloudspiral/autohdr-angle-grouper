@@ -1,0 +1,44 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "state-winner-default-grouping",
+      "config": "configs/phase2/b2-state-low-count-strong.json"
+    },
+    {
+      "candidate_id": "distributed-support",
+      "config": "configs/phase2/b2-group-distributed-support.json"
+    },
+    {
+      "candidate_id": "no-negative-veto",
+      "config": "configs/phase2/b2-group-no-negative-veto.json"
+    },
+    {
+      "candidate_id": "three-edge-consensus",
+      "config": "configs/phase2/b2-group-three-edge-consensus.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "The feature, matching, and pair-state winners from the first three blocks are fixed before this block.",
+    "Only support-distribution and negative-veto grouping controls vary; pair decisions are reused unchanged.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "grouping-policy",
+  "sweep_id": "phase2-grouping-v1"
+}
