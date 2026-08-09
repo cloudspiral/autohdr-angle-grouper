@@ -1,5 +1,13 @@
 # AutoHDR Codex handoff
 
+> **Status update (2026-08-09):** The plan is complete and the selected
+> `linux/amd64` image is public at
+> `cloudspires/autohdr-angle-grouper:phase5-532cc1b`, with registry digest
+> `sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`.
+> The original Codabench/bounty endpoints are unavailable; the remaining current
+> delivery is the human-owned Gauntlet Loom/email handoff. The planning rules
+> below are retained for provenance.
+
 ## Mission
 
 Build, evaluate, and freeze an offline CPU solution that groups all images from one real-estate photoshoot by camera angle. Exposure-bracketed images of the same view belong together; materially different viewpoints do not.

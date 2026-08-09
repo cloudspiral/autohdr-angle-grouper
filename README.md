@@ -36,6 +36,22 @@ previous evidence but is not photoshoot/property-disjoint because the organizer
 did not supply that metadata. Representative x86 full-batch timing and
 leaderboard performance remain unmeasured.
 
+## Published artifact
+
+The reviewed submission container is public on
+[Docker Hub](https://hub.docker.com/r/cloudspires/autohdr-angle-grouper/tags):
+
+```text
+Image:  cloudspires/autohdr-angle-grouper:phase5-532cc1b
+Digest: sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b
+```
+
+The registry exposes a `linux/amd64` manifest. The immutable pull reference is
+`cloudspires/autohdr-angle-grouper@sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`.
+The published image has also completed the full 366-image sample run with no
+network, a read-only container root, a read-only input mount, and all 366 output
+rows present exactly once.
+
 ## Grouping algorithm
 
 For batches of 64 images or fewer, the runtime evaluates every unordered pair.
@@ -148,13 +164,19 @@ group; partial overlaps receive no credit. See [`SCORING.md`](SCORING.md).
 
 ## Submission boundary
 
-The repository can build and validate the human-gated `submission.zip`, but no
-unattended agent may register for the contest, publish a Docker image, upload to
-Codabench, or merge its own pull request. Those remain explicit human actions.
-Copy and edit `submission.yaml` only when you are ready to publish under your
-own Docker Hub and contest account.
-See [`docs/SUBMISSION_HANDOFF.md`](docs/SUBMISSION_HANDOFF.md) for the frozen
-tag, exact commands, remaining placeholders, and external-action checklist.
+The original brief and upstream guide describe a Docker Hub plus Codabench
+workflow. As of 2026-08-09, the referenced Codabench competition and AutoHDR
+bounty-registration URLs both return HTTP 404. The current Gauntlet partner
+instructions instead request an under-five-minute Loom walkthrough delivered by
+email. The public Docker image remains the executable artifact that AutoHDR can
+pull for private evaluation.
+
+The repository retains `submission.yaml`, deterministic ZIP tooling, and the
+original submission guide in case the organizer supplies a replacement
+Codabench endpoint. Personal email values belong only in the ignored local ZIP
+workflow and must not be committed. See
+[`docs/SUBMISSION_HANDOFF.md`](docs/SUBMISSION_HANDOFF.md) for the published
+artifact, verification commands, current delivery checklist, and legacy fallback.
 
 ## Upstream provenance
 

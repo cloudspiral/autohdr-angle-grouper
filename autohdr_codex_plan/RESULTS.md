@@ -4,11 +4,11 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 5 — finalist frozen; human publication/upload handoff pending
+- **Phase:** Phase 5 — finalist frozen and public; Gauntlet delivery pending
 - **Current champion:** Screened dual-view CLAHE submission entrypoint (single recommended finalist)
 - **Frozen config:** `configs/phase4/b2-screened-dual-clahe.json`, config hash `8edd0d656ac4…`; protected evaluation source `532cc1b`
 - **Protected holdout touched:** Yes, exactly once; 109/110 exact groups, zero merge damage
-- **Submission published:** No
+- **Submission published:** Docker image public; Loom/email handoff pending
 - **Last updated:** 2026-08-09
 
 ## Current recommendation
@@ -27,8 +27,9 @@ about 119 seconds with at most 637 MB RSS and identical output. Its one protecte
 574 MB RSS; candidate recall/connectivity are complete and the lone error is a
 conservative split. Required Python and pinned `linux/amd64` container CI pass
 for the Phase 5 source under read-only/no-network execution. Representative x86
-machine-profile timing, photoshoot-level split independence, public image
-publication, and leaderboard evidence remain unavailable.
+machine-profile timing, photoshoot-level split independence, and leaderboard
+evidence remain unavailable. The public registry identity is
+`cloudspires/autohdr-angle-grouper:phase5-532cc1b@sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`.
 
 ## Source and rule audit
 
@@ -41,6 +42,7 @@ publication, and leaderboard evidence remain unavailable.
 | Package overlap/nesting | All 366 sample images and all 69 sample groups are byte-for-byte nested in the medium package with unchanged label relations | Cross-audit, 2026-08-08 | Exclude every sample group from larger-package checks; scores are not independent otherwise |
 | Shoot/property metadata | Sample manifest has only `group_id,filename` | Sample audit | No leakage-safe photoshoot/property split can be claimed |
 | Pretrained-model rules | Unknown | Rules audit | Gates learned-model experiments |
+| Current submission route | Original Codabench competition and bounty URLs return HTTP 404; Gauntlet now requests a Loom/email handoff | Endpoint checks + partner update, 2026-08-09 | Preserve the legacy ZIP but do not claim a Codabench score; deliver the public image, digest, repository, and Loom through the current route |
 
 ## Dataset audit
 
@@ -328,36 +330,37 @@ Suggested categories:
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | 365,280,872-byte CI images; exact rerun produced distinct local IDs, so only the post-push public registry digest will be authoritative | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes twice | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
+| A | Public OCI index `sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`; includes `linux/amd64` manifest | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes twice | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
 | B | Not built as a finalist | `855c7c577719…` | 160/162 on the same six folds | Not run; protected comparison intentionally forbidden | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional development split; lower runtime | Preserve as historical runtime control, not a finalist |
 
 ## Submission handoff
 
-Complete this section before asking for human approval. Do not place credentials in the repository.
+Publication is complete. The current delivery remains human-owned; do not place
+credentials or the submitter's email in the repository.
 
 - **Recommended candidate:** A — screened dual-view CLAHE
-- **Local image tag:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
-- **CI-local image ID:** No stable ID established: exact CI rerun jobs `93205364788` and `93205509762` passed but produced distinct IDs; use the immutable public registry digest after human publication
-- **Public tag to use after approval:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
+- **Public image tag:** `cloudspires/autohdr-angle-grouper:phase5-532cc1b`
+- **Public registry digest:** `sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`
+- **Immutable reference:** `cloudspires/autohdr-angle-grouper@sha256:2a096d2b7d6195f749551e730341042617708bbe03ca878e35cd6ca241e8ad8b`
 - **`submission.yaml` path:** `submission.yaml`
-- **`submission.zip` path:** `submission.zip` (local, gitignored; deterministic SHA-256 `100d1058699d…` while placeholders remain)
-- **Docker Hub push commands prepared:** Yes, `docs/SUBMISSION_HANDOFF.md`
-- **Codabench upload checklist prepared:** Yes, `docs/SUBMISSION_HANDOFF.md`
-- **Human approval received:** No
-- **Public image pushed:** No
-- **Codabench upload performed:** No
+- **`submission.zip` path:** `submission.zip` (local and gitignored; legacy fallback only)
+- **Docker Hub publication:** Complete and publicly verified
+- **Human approval received:** Yes
+- **Current Gauntlet Loom/email handoff:** Pending; human-owned
+- **Codabench upload:** Not performed; referenced legacy endpoints are unavailable
 
 ## Submission preparation checklist
 
-- [ ] Recommended finalist public registry digest recorded after human push
-- [ ] Public Docker repository name chosen by the user
-- [x] `submission.yaml` validated with `cpu-large` and explicit namespace/email placeholders
-- [x] `submission.zip` created and inspected; it contains only byte-identical `submission.yaml`
+- [x] Recommended finalist public registry digest recorded after human push
+- [x] Public Docker repository selected and verified public
+- [x] Local `submission.yaml` validated with `cpu-large` and the human-owned values; personal email remains uncommitted
+- [x] Local `submission.zip` created and inspected; it contains only `submission.yaml`
 - [x] Exact Docker tag/push commands documented
-- [x] Exact Codabench upload steps documented
-- [ ] Human approval obtained before any external publication or submission
+- [x] Legacy Codabench upload steps preserved for a replacement endpoint
+- [x] Human approval obtained before Docker publication
+- [ ] Human completes the current Loom/email handoff
 
-## Codabench submissions
+## Legacy Codabench submissions
 
 | Date | Candidate | Submission ID | Private/public score | Notes | Next action |
 |---|---|---|---:|---|---|
@@ -370,7 +373,8 @@ Complete this section before asking for human approval. Do not place credentials
 > 109/110 on the one-time 400-image protected fallback holdout with zero merges.
 > The exact native path remains deterministic and comfortably inside the strict
 > runtime/memory targets, and the pinned Phase 5 `linux/amd64` contract CI is
-> green. Do not retune or rerun the holdout. Await human Docker Hub/Codabench
-> action; public image digest,
-> representative x86 full-batch timing, photoshoot-level split independence,
-> and leaderboard evidence remain unavailable.
+> green. Do not retune or rerun the holdout. The public Docker artifact is now
+> available at the immutable digest recorded above; await only the human-owned
+> Gauntlet Loom/email delivery. Representative x86 full-batch timing,
+> photoshoot-level split independence, and leaderboard evidence remain
+> unavailable.
