@@ -1,0 +1,76 @@
+{
+  "acceptance_gates": {
+    "candidate_generation": {
+      "maximum_candidate_fraction": {
+        "actual": 0.17393939393939395,
+        "maximum": 0.2,
+        "passed": true
+      },
+      "same_group_pair_recall": {
+        "actual": 0.996993987975952,
+        "minimum": 0.995,
+        "passed": true
+      },
+      "true_group_connectivity": {
+        "actual_connected_groups": 161,
+        "minimum_connected_groups": 161,
+        "passed": true,
+        "total_groups": 162
+      }
+    },
+    "exact_group_regression": {
+      "fresh_phase3_exact_groups": {
+        "actual": 85,
+        "minimum": 85,
+        "passed": true,
+        "total_groups": 86
+      },
+      "merge_damaged_groups": {
+        "actual": 0,
+        "maximum": 0,
+        "passed": true
+      },
+      "phase2_exact_groups": {
+        "actual": 76,
+        "minimum": 76,
+        "passed": true,
+        "total_groups": 76
+      },
+      "prediction_identity": {
+        "identical_folds": 6,
+        "passed": true,
+        "total_folds": 6
+      }
+    }
+  },
+  "candidate": {
+    "config_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+    "config_path": "configs/phase4/b2-screened-dual-clahe.json",
+    "implementation_commit": "c2ac7e5",
+    "pair_counts": {
+      "all_pairs_per_fold": 4950,
+      "candidate_pairs_by_fold": [
+        839,
+        835,
+        814,
+        821,
+        861,
+        818
+      ],
+      "total_all_pairs": 29700,
+      "total_candidates": 4988
+    }
+  },
+  "decision": "accept_candidate_screen_pending_scale_and_container_gates",
+  "interpretation": "The structural screen removes 82.6 to 83.6 percent of expensive pairs on each 100-image fold while producing byte-identical predictions to the full dual-view champion. The only disconnected true group is the already-split adjacent-view label 39901; no group that the champion recovered loses connectivity.",
+  "limitations": [
+    "At 100 images, total cold runtime is approximately unchanged because structural screening and feature extraction dominate the saved pair work.",
+    "The nested sample runtime curve is still required to establish the larger-batch crossover and 366-image gate.",
+    "The Phase 1 reserved slice and protected holdout were not evaluated."
+  ],
+  "reports": [
+    "experiments/phase4/results-01-screened-phase3.json",
+    "experiments/phase4/results-02-screened-phase2.json"
+  ],
+  "schema_version": 1
+}
