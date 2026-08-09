@@ -412,7 +412,8 @@ def run_evaluation(
         resources = {
             "candidate_pair_count": (
                 len(image_paths) * (len(image_paths) - 1) // 2
-                if config.algorithm in {"classical", "structural"}
+                if config.algorithm
+                in {"classical", "classical-percentile-clahe", "structural"}
                 else 0
             ),
             "image_count": len(image_paths),
