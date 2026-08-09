@@ -107,6 +107,35 @@ order, are not independent folds, and must not be used to compare accuracy or
 tune thresholds. The measured Phase 0 curve is summarized in
 `autohdr_codex_plan/RESULTS.md`.
 
+## Larger-package check
+
+The archive advertised as 5K audited to 2,126 images and completely nests the
+366-image sample byte-for-byte. `medium-exclusive-100-v1.json` excludes every
+sample group ID, then selects 24 complete medium-only reference groups totaling
+100 images. Run B1 and B2 against the same fixed slice:
+
+```bash
+.venv/bin/python -m autohdr_eval run \
+  --config configs/b1-structural.json \
+  --dataset-root data/medium \
+  --manifest data/medium/public_manifest.csv \
+  --audit artifacts/datasets/autohdr-medium-5000-audit.json \
+  --split splits/medium-exclusive-100-v1.json
+
+.venv/bin/python -m autohdr_eval run \
+  --config configs/b2-classical.json \
+  --dataset-root data/medium \
+  --manifest data/medium/public_manifest.csv \
+  --audit artifacts/datasets/autohdr-medium-5000-audit.json \
+  --split splits/medium-exclusive-100-v1.json
+```
+
+This is a fixed Phase 1 generalization check, not a tuning fold. Its groups are
+content-exclusive from the sample, but neither package exposes the photoshoot or
+property boundary required for a leakage-safe development-fold claim. Do not run
+B2 all-pairs over all 2,126 images: that would require 2,258,875 pair
+comparisons, beyond the measured Phase 1 runtime profile.
+
 ## Split and holdout safety
 
 The sample package is smoke evidence only. It is not a protected holdout and is
