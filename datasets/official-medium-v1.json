@@ -1,0 +1,96 @@
+{
+  "archive": {
+    "advertised_image_count": 5000,
+    "actual_image_count": 2126,
+    "filename": "autohdr_medium_5000.zip",
+    "sha256": "861302e1d3e968304b500d73ed82bb2b4aad9d790388d587cc7f044a7462c964",
+    "size_bytes": 9175266809,
+    "url": "https://grouping-dataset-solution.s3.amazonaws.com/downloads/autohdr_medium_5000.zip"
+  },
+  "audit_date": "2026-08-08",
+  "audit_schema_version": 1,
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "directory_image_counts": {
+    "images": 2126
+  },
+  "exposure": {
+    "bright_clipped_fraction": {
+      "max": 0.9776133040935673,
+      "median": 0.00390625,
+      "min": 0.0
+    },
+    "dark_clipped_fraction": {
+      "max": 0.9990405701754386,
+      "median": 0.0,
+      "min": 0.0
+    },
+    "luminance_median": {
+      "max": 255.0,
+      "median": 99.5,
+      "min": 0.0
+    },
+    "sharpness_laplacian_variance": {
+      "max": 6644.075382907259,
+      "median": 594.8586951061711,
+      "min": 2.2124724190643055
+    }
+  },
+  "filename_group_prefix_fraction": 1.0,
+  "format_counts": {
+    ".jpg": 2126
+  },
+  "group_count": 538,
+  "group_size_distribution": {
+    "1": 46,
+    "2": 10,
+    "3": 259,
+    "4": 12,
+    "5": 178,
+    "6": 6,
+    "7": 8,
+    "8": 2,
+    "9": 2,
+    "10": 2,
+    "11": 2,
+    "12": 1,
+    "13": 2,
+    "14": 2,
+    "15": 2,
+    "16": 1,
+    "20": 2,
+    "25": 1
+  },
+  "integrity": {
+    "corrupt_images": 0,
+    "duplicate_basenames": 0,
+    "exact_duplicate_sets": 0,
+    "extra_images": 0,
+    "missing_images": 0,
+    "perceptual_cross_group_collision_sets": 0,
+    "perceptual_hash_collision_sets": 142
+  },
+  "limitations": [
+    "The archive advertised as 5,000 images contains 2,126 images.",
+    "The manifest contains only group_id and filename; it has no photoshoot or property identifier.",
+    "Every public filename begins with its reference group ID, so filenames and paths are forbidden model inputs.",
+    "All 366 images and all 69 groups from the advertised 500 sample are nested byte-for-byte in this package.",
+    "The package is development evidence only and must not be used as the protected final holdout."
+  ],
+  "manifest": {
+    "columns": [
+      "group_id",
+      "filename"
+    ],
+    "image_count": 2126,
+    "non_label_metadata_columns": [],
+    "sha256": "0729a9205646845eeab70e944e115ca9be7d74e2b261e9a586a6c97b724359b6"
+  },
+  "sample_overlap": {
+    "exact_content_images": 366,
+    "label_relation_disagreements": 0,
+    "sample_fully_nested": true,
+    "shared_filenames": 366
+  },
+  "total_image_bytes": 9174893506,
+  "unique_dimension_count": 126
+}

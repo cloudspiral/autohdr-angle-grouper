@@ -4,8 +4,8 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 0 — audit and trustworthy evaluator
-- **Current champion:** B1 structural baseline (provisional smoke leader only)
+- **Phase:** Phase 1 — classical geometry baseline and larger-package audit
+- **Current champion:** B2 classical geometry baseline (provisional smoke leader only)
 - **Frozen config:** None
 - **Protected holdout touched:** No
 - **Submission published:** No
@@ -13,15 +13,18 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current recommendation
 
-Retain B1 at its existing `0.16` threshold as the untuned comparison baseline.
-It scored 60/69 exact groups on the official sample smoke unit versus B0's 5/69,
-with no observed merge damage and nine split groups. Do not tune on this package:
-it has no photoshoot boundary, contains only 366 of the advertised 500 images,
-and leaks every group ID in the public filename. Local Phase 0 contract,
-diagnostic, determinism, clean-commit evaluation, and container smoke checks
-pass. GitHub Actions also passes both the Python and required `linux/amd64`
-container jobs. Audit a larger package before development-fold selection or any
-B1 tuning.
+Retain B1 unchanged as the structural control and promote the untuned B2
+classical geometry baseline as the provisional smoke leader. On the complete
+official sample, B2 scored 67/69 exact groups versus B1's 60/69 and B0's 5/69,
+with no observed merge damage and two split groups. Its pair-level positive
+precision was 1.0 on this package, while 244/1,459 true same-group pairs remained
+unknown; this is conservative evidence, not a generalization guarantee. Do not
+tune on this package: it has no photoshoot boundary, contains only 366 of the
+advertised 500 images, and leaks every group ID in the public filename. The
+clean, cold B2 run took 202.60 seconds and 456.1 MB peak RSS; a fully cached
+repeat took 7.39 seconds and produced a byte-identical CSV. Complete the 5K
+audit and bounded larger-package slice before development-fold selection or any
+configuration optimization.
 
 ## Source and rule audit
 
@@ -72,26 +75,26 @@ B1 tuning.
 | Run | System | Split | Exact score | Non-singleton exact | Merge damage | Split groups | Runtime | Peak RSS | Status |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|
 | B0 | Singleton contract baseline | sample-smoke-v1 | 5/69 = 0.0725 | 0/64 | 0 | 64 | 0.006 s | 70.1 MB | Passed from clean commit; smoke only |
-| B1 | Direct structural baseline, threshold 0.16 | sample-smoke-v1 | 60/69 = 0.8696 | 55/64 = 0.8594 | 0 | 9 | 45.03 s | 386.9 MB | Passed from clean commit; provisional smoke leader |
-| B2 | Classical geometry baseline | — | — | — | — | — | — | — | Pending |
+| B1 | Direct structural baseline, threshold 0.16 | sample-smoke-v1 | 60/69 = 0.8696 | 55/64 = 0.8594 | 0 | 9 | 45.03 s | 386.9 MB | Passed from clean commit; retained structural control |
+| B2 | RootSIFT + partial-affine RANSAC + tri-state support grouping | sample-smoke-v1 | 67/69 = 0.9710 | 62/64 = 0.9688 | 0 | 2 | 202.60 s cold / 7.39 s cached | 456.1 MB cold | Passed from clean commit; untuned smoke only |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | `20260809T024238Z-b1-structural-597087c3ee` |
-| Git commit | `b482089817302e012d7534dd8f3159c6191af2a1` with `dirty_tree: false` recorded by the run harness |
-| Config hash | `bf7e31050b00b3352903e4c0239017d26fb31e401643e826aae89c4aaa57ae35` |
-| Architecture | Exposure-normalized pooled luminance/Sobel descriptor + 0.16 cosine threshold connected components |
-| Mean dev exact score | Not measured; sample smoke score 0.8696 |
+| Run ID | `20260809T030917Z-b2-classical-147d53d248` |
+| Git commit | `bd6da81791287eaef9ef433eac723320c03bd845` with `dirty_tree: false` recorded by the run harness |
+| Config hash | `ab0151c223f715c7671c251c424f36aa90a5ab1b2ea5375de1d46e3f6aa0ca65` |
+| Architecture | CLAHE + RootSIFT + mutual ratio matches + partial-affine RANSAC + post-warp gradient correlation + tri-state support grouping |
+| Mean dev exact score | Not measured; sample smoke score 0.9710 |
 | Worst-fold exact score | Not measured; no valid folds yet |
-| Non-singleton exact score | Sample smoke 55/64 = 0.8594 |
+| Non-singleton exact score | Sample smoke 62/64 = 0.9688 |
 | Merge damage | 0 sample reference groups |
-| Split groups | 9 sample reference groups |
-| Runtime / batch size | 45.03 s / 366 high-resolution images / 66,795 candidate pairs on Apple Silicon host Python |
-| Peak RSS | 386.9 MB |
-| Why selected | Existing simple deterministic baseline materially beats B0 without observed sample merge damage |
-| Known risks | Smoke package is not a photoshoot unit; nine splits; filenames leak labels; no dev-fold, x86 container-runtime, or leaderboard evidence |
+| Split groups | 2 sample reference groups |
+| Runtime / batch size | 202.60 s cold / 7.39 s cached / 366 high-resolution images / 66,795 candidate pairs on Apple Silicon host Python |
+| Peak RSS | 456.1 MB cold |
+| Why selected | Untuned geometry raises exact sample smoke score by 7 groups over B1 while retaining zero observed merge damage and 1.0 sample positive-pair precision |
+| Known risks | Smoke package is not a photoshoot unit; filenames leak labels; true adjacent-view pairs can remain unknown; all-pairs is not viable for the complete 5K package without screening; no dev-fold, x86 B2 runtime, or leaderboard evidence |
 
 ## Experiment log
 
@@ -101,6 +104,7 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 |---|---|---|---|---|---|---|---|
 | 2026-08-08 | Trustworthy Phase 0 harness and untuned full-sample smoke | B0 | B1 at existing 0.16 | B0 5/69; B1 60/69; no threshold sweep; both repeated from clean commit `b482089` | B1 45.03 s, 386.9 MB on 366-image batch | Retain B1 unchanged; diagnose splits and move calibration to larger audited data | Clean runs `4087578661`, `597087c3ee` |
 | 2026-08-08 | Early B1 scale curve on nested whole-group smoke subsets | B1-51 | B1-102, B1-203, B1-366 | Accuracy is non-comparable across nested smoke subsets and was not used for selection | 51: 7.04 s / 1,275 pairs; 102: 15.27 s / 5,151; 203: 27.84 s / 20,503; 366 clean repeat: 45.03 s / 66,795 | Keep all-pairs B1 as a measured baseline; private batch size and x86 timing remain unknown | Runs `da43343699`, `8a48a89669`, `d0fb52d126`, `597087c3ee` |
+| 2026-08-08 | Untuned classical geometry and raw-evidence cache | B1 | B2 fixed before scored sample runs | B2 67/69 versus B1 60/69; zero merge damage; two split groups; positive-pair precision 1.0 and same-group-pair recall 0.8328 | Clean cold: 202.60 s / 456.1 MB / 66,795 pair misses; clean cached: 7.39 s / 273.1 MB / 66,795 pair hits; prediction SHA-256 identical | Promote B2 as provisional smoke leader without tuning; validate on a bounded larger-package slice | Runs `147d53d248`, `3a73776202`; prediction `a19061188dfa…` |
 
 ## Decision log
 
@@ -132,6 +136,16 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Revisit when:** Larger audited development folds show B1 failure modes or a controlled candidate materially improves exact-group performance.
 - **Related runs:** `20260809T024233Z-b0-singletons-4087578661`, `20260809T024238Z-b1-structural-597087c3ee`
 
+### D-005 — Promote untuned B2 as the provisional smoke champion
+
+- **Status:** Accepted provisionally
+- **Hypothesis:** Exposure-normalized local geometry will recover B1 false splits without creating connected-component false merges.
+- **Evidence:** B2 improves the complete sample from 60/69 to 67/69 exact groups, leaves zero merge-damaged reference groups, and classifies all 1,215 positive pair edges within their reference groups. Cold and cached predictions are byte-identical.
+- **Tradeoffs:** The cold run is 4.5 times slower than B1, the sample is not a valid development fold, negative evidence remained unused because unrelated low-match pairs were correctly unknown, and both residual split labels span noticeable camera movement.
+- **Decision:** Keep the fixed B2 config as the Phase 1 leader without threshold tuning. Preserve B1 and B0 as controls and use the larger-package slice as the next independent check.
+- **Revisit when:** The larger slice shows false merges, substantially lower recall, or a runtime profile that requires candidate screening.
+- **Related runs:** `20260809T030917Z-b2-classical-147d53d248`, `20260809T030749Z-b2-classical-3a73776202`
+
 ### Decision template
 
 #### D-XXX — Title
@@ -150,7 +164,7 @@ Rank by the number of reference groups damaged, not merely the number of pair er
 
 | Rank | Failure category | Groups damaged | Typical evidence | Current hypothesis | Next test |
 |---:|---|---:|---|---|---|
-| 1 | False split | 9 | B1 predicts 80 groups for 69 references, with 13 predicted singletons; affected group IDs are 1055, 22994, 40603, 40615, 44897, 52471, 60452, 747, and 9245 | Extreme exposure, repeated passes, or descriptor-resolution loss; category mix not yet visually labeled | Inspect these nine groups before proposing B2 changes |
+| 1 | Adjacent-view / composition-shift false split | 2 | B2 splits the two-image aerial group 22994 and separates the last two images from the 12-image interior group 40615; both galleries show substantial camera-position or composition change rather than exposure alone | Conservative partial-affine evidence correctly avoids unrelated merges but cannot bridge labels that span adjacent views without indirect support | Measure the same category on the larger package before testing transform chains, group-level structural support, or a broader attachment rule |
 
 Suggested categories:
 
@@ -169,10 +183,10 @@ Suggested categories:
 
 | Gallery | Split/run | Description | Path |
 |---|---|---|---|
-| False merges | sample-smoke-v1 / B1 | Zero merge-damaged reference groups in the smoke run | Run metrics/diagnostics artifact |
-| False splits | sample-smoke-v1 / B1 | Nine reference groups split; filename-level diagnostic artifact is generated per current run | Run diagnostics artifact |
-| Determinism | sample-smoke-v1 / repeated B1 | Pre- and post-hardening full-sample predictions are byte-identical | Predictions SHA-256 `17a3cd6b168044962719d226bc65216a8992d09c2a28e0fb91c03b9976c9bf78` |
-| Unknown-edge chains | — | — | — |
+| False merges | sample-smoke-v1 / B2 `147d53d248` | Zero merge-damaged reference groups; all 1,215 positive pair decisions stay within one reference group | Run metrics and pair-diagnostics artifacts |
+| False splits | sample-smoke-v1 / B2 `147d53d248` | Two rendered contact sheets: aerial group 22994 splits 1+1; interior group 40615 splits 10+2 | `artifacts/cold-b2/runs/144796b2fbc2/ab0151c223f7/20260809T030917Z-b2-classical-147d53d248/gallery/` |
+| Determinism | sample-smoke-v1 / cold and cached B2 | Cold and cached full-sample predictions are byte-identical | Predictions SHA-256 `a19061188dfae4f3a2d1579e0fc48b626f6dc877528d60eee2f896b4c17ae3be` |
+| Unknown-edge chains | sample-smoke-v1 / B2 | 244 same-group and 65,336 different-group pairs are unknown; missing evidence remains neutral and positive support recovers 67/69 exact groups | Pair diagnostics artifact |
 | Runtime outliers | — | — | — |
 
 ## Protected holdout record
@@ -202,7 +216,7 @@ Do not fill this section until the champion is frozen.
 | Native/container predictions match | Pass on smoke fixture | Both CSVs SHA-256 `bbc7fc14db616169382d9f163b443e36f94eaaea27ee5ac7a112798267af239a` |
 | 8 vCPU / 16 GB benchmark | Pending | — |
 | 16 vCPU / 32 GB benchmark | Pending | — |
-| Runtime headroom | Partial only | Clean-commit native B1 smoke batch: 45.03 s for 366 high-resolution images; 51/102/203-image scale points are also recorded, but private batch size and x86 runtime remain unknown |
+| Runtime headroom | Partial only | Clean-commit native B2 cold smoke batch: 202.60 s for 366 high-resolution images and 66,795 pairs; complete 5K all-pairs would be 12,497,500 pairs and is intentionally not attempted, while private batch size and x86 B2 runtime remain unknown |
 | Packaged asset licenses/checksums | No model assets | Runtime image contains Python, NumPy, OpenCV, source package, and solution entrypoint only |
 
 ## Submission candidates

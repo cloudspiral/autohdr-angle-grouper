@@ -91,7 +91,7 @@ def _render_failure(
     )
     cv2.putText(
         canvas,
-        "border = predicted group; REF = reference member",
+        "border = predicted; REF = reference",
         (10, 44),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.42,
