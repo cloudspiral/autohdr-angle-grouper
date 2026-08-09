@@ -1,0 +1,53 @@
+{
+  "baseline": {
+    "config_hash": "ab0151c223f715c7671c251c424f36aa90a5ab1b2ea5375de1d46e3f6aa0ca65",
+    "config_path": "configs/b2-classical.json",
+    "development_exact_groups": 75,
+    "development_merge_damaged_groups": 0,
+    "development_total_groups": 76
+  },
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "development_evidence": {
+    "folds": [
+      {
+        "path": "splits/medium-dev-a-v1.json",
+        "split_hash": "f7194b1ce20e1718e02116cba03c96e14056e39586b3b648cf1bf1c4fe77cb94"
+      },
+      {
+        "path": "splits/medium-dev-b-v1.json",
+        "split_hash": "88f9dfad699223bef671ecfd457ca29a132d642ac96ed697811ef07aef0a753f"
+      },
+      {
+        "path": "splits/medium-dev-c-v1.json",
+        "split_hash": "e568d3f37aa46c16367b6c166d4f8280cc0b4895059fcba61b2947b9bcb4ef05"
+      }
+    ],
+    "selected_exact_groups": 76,
+    "selected_merge_damaged_groups": 0,
+    "selected_total_groups": 76,
+    "stability": {
+      "count_5_exact_groups": 76,
+      "count_6_exact_groups": 76,
+      "count_7_exact_groups": 75,
+      "looser_guards_exact_groups": 76,
+      "tighter_guards_exact_groups": 76,
+      "zero_merge_candidates": 5
+    }
+  },
+  "limitations": [
+    "The source manifest exposes no photoshoot or property identifier, so development folds are reference-group-disjoint fallbacks only.",
+    "The count-7 neighbor loses the recovered low-texture group because its strongest valid attachment has exactly six inliers.",
+    "Cached sub-second ranking differences in the final threshold and grouping blocks are not treated as meaningful runtime evidence.",
+    "The reserved Phase 1 slice remains untouched by Phase 2 selection and will be evaluated once after this record and config are committed."
+  ],
+  "reserved_evaluation": {
+    "split_path": "splits/medium-exclusive-100-v1.json",
+    "status": "pending"
+  },
+  "schema_version": 1,
+  "selected": {
+    "config_hash": "855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5",
+    "config_path": "configs/phase2/b2-selected.json",
+    "reason": "Retain the balanced six-inlier guards because they match the exact development partition of both nearby guard variants and the count-5 neighbor, improve one group over Phase 1 B2 without merge damage, and are stricter than the automatically runtime-ranked loose-guard variant. Use three-edge distributed grouping with the negative veto retained."
+  }
+}
