@@ -4,31 +4,30 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 1 — classical geometry baseline and larger-package audit
-- **Current champion:** B2 classical geometry baseline (provisional smoke leader only)
-- **Frozen config:** None
+- **Phase:** Phase 2 — controlled classical configuration optimization complete
+- **Current champion:** B2 Phase 2 selected classical configuration (provisional; no protected holdout)
+- **Frozen config:** `configs/phase2/b2-selected.json` at commit `6a2069354b3a1b128b6b481057dadea078f444ec`, config hash `855c7c577719…`
 - **Protected holdout touched:** No
 - **Submission published:** No
 - **Last updated:** 2026-08-08
 
 ## Current recommendation
 
-Retain B1 unchanged as the structural control and promote the untuned B2
-classical geometry baseline as the provisional smoke leader. On the complete
-official sample, B2 scored 67/69 exact groups versus B1's 60/69 and B0's 5/69,
-with no observed merge damage and two split groups. Its pair-level positive
-precision was 1.0 on this package, while 244/1,459 true same-group pairs remained
-unknown; this is conservative evidence, not a generalization guarantee. Do not
-tune on this package: it has no photoshoot boundary, contains only 366 of the
-advertised 500 images, and leaks every group ID in the public filename. The
-clean, cold B2 run took 202.60 seconds and 456.1 MB peak RSS; a fully cached
-repeat took 7.39 seconds and produced a byte-identical CSV. Complete the 5K
-audit and bounded larger-package slice before development-fold selection or any
-configuration optimization. On the fixed 100-image sample-exclusive medium
-slice, B1 and B2 produced the same partition and tied at 22/24 exact groups with
-zero merge damage. B2 therefore remains provisional because it improves the
-sample without regressing this first independent content slice, not because it
-won every comparison.
+Retain B1 and the Phase 1 B2 config as controls, and promote the frozen Phase 2
+B2 config as the provisional classical leader. Five bounded, predeclared blocks
+used three disjoint 100-image medium-only development folds that exclude both
+the nested sample and reserved Phase 1 slice. The selected config improves the
+Phase 1 B2 development result from 75/76 to 76/76 exact groups with zero merge
+damage, mainly by accepting a six-inlier edge whose geometry remains strict.
+Count 5, count 6, and both nearby geometric-guard variants preserve 76/76 with
+zero merges; count 7 loses the recovered group, so the integer boundary remains
+a documented sensitivity. The single post-selection reserved-slice comparison
+tied Phase 1 B2 at 22/24, produced a byte-identical partition, and retained zero
+merge damage while reducing cold native runtime from 26.71 to 23.43 seconds on
+100 images. This is a no-regression generalization check, not protected-holdout,
+leaderboard, photoshoot-level, or full-package evidence. The source manifest
+still lacks a photoshoot/property boundary, filenames still expose group IDs,
+and all-pairs execution over all 2,126 medium images remains out of scope.
 
 ## Source and rule audit
 
@@ -74,7 +73,7 @@ won every comparison.
 | sample-scale-102-v1 | Nested whole-reference-group subset | Advertised 500 sample | 102 images / 20 groups | Split `6749c5088095…` | Runtime curve only |
 | sample-scale-203-v1 | Nested whole-reference-group subset | Advertised 500 sample | 203 images / 36 groups | Split `2d57a4f2c105…` | Runtime curve only |
 | medium-exclusive-100-v1 | Reference-group-only fallback; all sample group IDs excluded | Advertised 5K medium | 100 images / 24 groups | Dataset `b06b3319f878…`; split `b71a717e8fad…` | Fixed Phase 1 generalization check only |
-| dev-folds-v1 | Pending | — | — | — | Model/config selection |
+| medium-dev-a/b/c-v1 | Reference-group-only fallback; sample and reserved groups excluded | Advertised 5K medium | 300 images / 76 distinct groups across three 100-image folds | Splits `f7194b1ce20e…`, `88f9dfad6992…`, `e568d3f37aa4…` | Phase 2 configuration selection only |
 | final-holdout-v1 | Pending | — | — | — | One-time final validation |
 
 ## Baselines
@@ -86,24 +85,26 @@ won every comparison.
 | B2 | RootSIFT + partial-affine RANSAC + tri-state support grouping | sample-smoke-v1 | 67/69 = 0.9710 | 62/64 = 0.9688 | 0 | 2 | 202.60 s cold / 7.39 s cached | 456.1 MB cold | Passed from clean commit; untuned smoke only |
 | B1-medium | Direct structural baseline, threshold 0.16 | medium-exclusive-100-v1 | 22/24 = 0.9167 | 21/23 = 0.9130 | 0 | 2 | 13.08 s | 306.8 MB | Passed from clean commit; fixed sample-exclusive slice |
 | B2-medium | Fixed classical geometry baseline | medium-exclusive-100-v1 | 22/24 = 0.9167 | 21/23 = 0.9130 | 0 | 2 | 26.71 s cold / 0.94 s cached | 375.4 MB cold | Passed from clean commit; byte-identical to B1 on this slice |
+| B2-Phase2-dev | Frozen Phase 2 classical config | medium-dev-a/b/c-v1 | 76/76 = 1.0000 | 71/71 = 1.0000 | 0 | 0 | 2.67 s fully cached confirmation; cold block timings recorded separately | 105.1 MB process peak during cached confirmation | Selected on development folds only; reference-group fallback |
+| B2-Phase2-reserved | Frozen Phase 2 classical config | medium-exclusive-100-v1 | 22/24 = 0.9167 | 21/23 = 0.9130 | 0 | 2 | 23.43 s cold | 364.4 MB cold | First and only Phase 2 post-selection run; byte-identical to Phase 1 B2 |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | `20260809T030917Z-b2-classical-147d53d248` |
-| Git commit | `bd6da81791287eaef9ef433eac723320c03bd845` with `dirty_tree: false` recorded by the run harness |
-| Config hash | `ab0151c223f715c7671c251c424f36aa90a5ab1b2ea5375de1d46e3f6aa0ca65` |
+| Run ID | Development confirmation `20260809T040534Z-b2-group-three-edge-consensus-433eecd590`; reserved run `20260809T040908Z-b2-phase2-selected-64e4032389` |
+| Git commit | Frozen config commit `6a2069354b3a1b128b6b481057dadea078f444ec`; reserved run recorded `dirty_tree: false` |
+| Config hash | `855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5` |
 | Architecture | CLAHE + RootSIFT + mutual ratio matches + partial-affine RANSAC + post-warp gradient correlation + tri-state support grouping |
-| Mean dev exact score | Not measured; sample smoke score 0.9710 |
-| Worst-fold exact score | Not measured; no valid folds yet |
-| Non-singleton exact score | Sample smoke 62/64 = 0.9688 |
-| Merge damage | 0 sample reference groups |
-| Split groups | 2 sample reference groups |
-| Runtime / batch size | 202.60 s cold / 7.39 s cached / 366 high-resolution images / 66,795 candidate pairs on Apple Silicon host Python |
-| Peak RSS | 456.1 MB cold |
-| Why selected | Untuned geometry raises exact sample smoke score by 7 groups over B1 while retaining zero observed merge damage and 1.0 sample positive-pair precision |
-| Known risks | Neither package exposes a photoshoot unit; filenames leak labels; true adjacent-view pairs can remain unknown; B2 only ties B1 on the first sample-exclusive slice; all-pairs is not viable for the complete medium package without screening; no dev-fold, x86 B2 runtime, or leaderboard evidence |
+| Mean dev exact score | 1.0000 across three folds |
+| Worst-fold exact score | 1.0000 |
+| Non-singleton exact score | Development 71/71 = 1.0000; reserved 21/23 = 0.9130 |
+| Merge damage | 0 across all three development folds and the reserved slice |
+| Split groups | 0 development; 2 reserved |
+| Runtime / batch size | 23.43 s cold / 100 images / 4,950 pairs on the reserved slice; 2.67 s fully cached across three development folds |
+| Peak RSS | 364.4 MB cold on the selected reserved run |
+| Why selected | Improves the Phase 1 B2 development result by one exact group without merge damage, remains exact under count-5 and nearby guard perturbations, uses the more conservative passing thresholds, and exactly preserves the Phase 1 reserved partition |
+| Known risks | Reference-group folds do not prove photoshoot/property separation; the count-7 neighbor loses one group; filenames leak labels but are forbidden inputs; two reserved adjacent-view/extreme-exposure labels remain split; all-pairs is not viable for the complete medium package; x86 Phase 2 runtime, protected holdout, and leaderboard evidence remain unavailable |
 
 ## Experiment log
 
@@ -115,6 +116,11 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 | 2026-08-08 | Early B1 scale curve on nested whole-group smoke subsets | B1-51 | B1-102, B1-203, B1-366 | Accuracy is non-comparable across nested smoke subsets and was not used for selection | 51: 7.04 s / 1,275 pairs; 102: 15.27 s / 5,151; 203: 27.84 s / 20,503; 366 clean repeat: 45.03 s / 66,795 | Keep all-pairs B1 as a measured baseline; private batch size and x86 timing remain unknown | Runs `da43343699`, `8a48a89669`, `d0fb52d126`, `597087c3ee` |
 | 2026-08-08 | Untuned classical geometry and raw-evidence cache | B1 | B2 fixed before scored sample runs | B2 67/69 versus B1 60/69; zero merge damage; two split groups; positive-pair precision 1.0 and same-group-pair recall 0.8328 | Clean cold: 202.60 s / 456.1 MB / 66,795 pair misses; clean cached: 7.39 s / 273.1 MB / 66,795 pair hits; prediction SHA-256 identical | Promote B2 as provisional smoke leader without tuning; validate on a bounded larger-package slice | Runs `147d53d248`, `3a73776202`; prediction `a19061188dfa…` |
 | 2026-08-08 | Fixed generalization check after proving complete sample nesting | B1 | Untuned B2 on 100 images from 24 medium-only groups | Both 22/24 exact with zero merge damage and identical predictions; B2 positive-pair precision 1.0, same-group-pair recall 0.6453 | B1 13.08 s / 306.8 MB; B2 cold 26.71 s / 375.4 MB and cached 0.94 s / 121.7 MB for 4,950 pairs | Retain B2 provisionally because it improves sample and does not regress the exclusive slice; do not tune from two visually explained failures | Runs `f95378c584`, `8563c1d1c0`, `26ea0dbe05`; prediction `94a25cd5e053…` |
+| 2026-08-08 | Phase 2 feature budget | Phase 1 B2 at 512 px / 320 features | 384/256 and 640/400 | All three 75/76 across three disjoint folds with zero merges | Cold aggregate 61.78 s at 384/256, 78.34 s baseline, 94.81 s dense | Select 384/256 for equivalent grouping with 21% lower measured runtime than baseline | `experiments/phase2/results-01-feature.json` |
+| 2026-08-08 | Matching/RANSAC block with fair cache isolation | Ratio 0.78 / RANSAC 3 px | Ratio 0.74, ratio 0.82, and RANSAC 4 px | All four 75/76 with zero merges | Each candidate: 300 feature hits, 14,850 pair misses; RANSAC 4 measured 22.13 s versus 23.07 s baseline | Select RANSAC 4 by the fixed tie-break; treat the small timing difference conservatively | `experiments/phase2/results-02-match.json` |
+| 2026-08-08 | Pair-state threshold block | Phase 1 state thresholds | Positive recall, low-count strong, conservative | Low-count strong reaches 76/76 with zero merges; all others remain 75/76 | Every candidate reuses 14,850 pair records with zero misses | Select six-inlier strong-positive evidence guarded by strict ratio, coverage, transfer, transform, and structural checks | `experiments/phase2/results-03-state.json` |
+| 2026-08-08 | Grouping policy and nearby stability | Representative shortcut, two-edge support, negative veto | Distributed support, no veto, three-edge consensus; count and guard neighbors | All grouping policies 76/76; count 5/6 and ±0.05 guards 76/76; count 7 is 75/76; zero merges throughout | Fully cached runs 0.80–0.97 s per fold; timing differences are not material | Freeze balanced count 6 with three-edge distributed support and retained negative veto; document the integer boundary | `experiments/phase2/results-04-grouping.json`, `results-05-stability.json` |
+| 2026-08-08 | One post-selection reserved-slice comparison | Phase 1 B2 | Frozen Phase 2 B2 | Both 22/24 with zero merges and byte-identical predictions | Phase 1 26.71 s / 375.4 MB; Phase 2 23.43 s / 364.4 MB, both cold | Promote Phase 2 provisionally as a development improvement with no reserved-slice regression; do not claim a holdout gain | Run `64e4032389`; `experiments/phase2/reserved-comparison.json` |
 
 ## Decision log
 
@@ -156,6 +162,16 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Revisit when:** The larger slice shows false merges, substantially lower recall, or a runtime profile that requires candidate screening.
 - **Related runs:** `20260809T030917Z-b2-classical-147d53d248`, `20260809T030749Z-b2-classical-3a73776202`
 
+### D-006 — Freeze the balanced Phase 2 classical configuration
+
+- **Status:** Accepted provisionally
+- **Hypothesis:** A smaller feature budget, slightly wider RANSAC tolerance, strict low-count geometry, and distributed group support can recover a low-texture exposure frame without increasing merge damage.
+- **Evidence:** The selected config reaches 76/76 exact groups over three disjoint development folds versus 75/76 for Phase 1 B2, with zero merge damage. Count 5, count 6, and both ±0.05 strong-guard neighbors reproduce 76/76; count 7 loses the recovered group. All grouping-policy candidates reproduce 76/76. The single frozen post-selection reserved run ties Phase 1 B2 at 22/24 with a byte-identical CSV and zero merges.
+- **Tradeoffs:** The gain is one development group and depends on accepting exactly six inliers for its best attachment. Cached runtime differences among threshold/grouping variants are too small to interpret. Neither development nor reserved slices are photoshoot/property-disjoint, and the two Phase 1 reserved failures remain.
+- **Decision:** Freeze `configs/phase2/b2-selected.json` with balanced count-6 guards, three-edge distributed support, and the negative veto. Prefer it over the automatically runtime-ranked loose-guard variant because grouping evidence is identical and the balanced thresholds are stricter. Preserve B0, B1, and Phase 1 B2 as controls.
+- **Revisit when:** A valid photoshoot-level unit, protected holdout, representative x86 container benchmark, or new development failures contradict the provisional choice.
+- **Related runs:** Development `433eecd590`, stability report `phase2-stability-v1`, reserved `20260809T040908Z-b2-phase2-selected-64e4032389`
+
 ### Decision template
 
 #### D-XXX — Title
@@ -174,8 +190,9 @@ Rank by the number of reference groups damaged, not merely the number of pair er
 
 | Rank | Failure category | Groups damaged | Typical evidence | Current hypothesis | Next test |
 |---:|---|---:|---|---|---|
-| 1 | Adjacent-view / composition-shift false split | 3 | Sample groups 22994 and 40615 shift camera position; medium-only group 11393 contains three visually distinct neighboring compositions that B1 and B2 both split | Conservative pair evidence avoids unrelated merges but cannot bridge coarse labels spanning neighboring views without indirect group support | Test transform-chain or group-level structural support as a later isolated architecture change, not a threshold relaxation |
-| 2 | Extreme-exposure false split | 1 | In medium-only group 11479, four images connect while the fifth is almost entirely clipped white; B1 and B2 both isolate it | The most clipped frame has insufficient direct structure and no alternate same-view chain under the fixed grouping evidence | Test a bounded exposure-normalization or representative-attachment ablation on development folds once valid folds exist |
+| 1 | Adjacent-view / composition-shift false split | 1 reserved group | Medium-only group 11393 remains three predicted components matching three visibly different compositions in both Phase 1 and frozen Phase 2 | Conservative same-view geometry correctly avoids unrelated merges but cannot recover a coarse reference label spanning neighboring camera positions | Treat as a later isolated architecture experiment; do not relax pair thresholds against the already-read reserved slice |
+| 2 | Extreme-exposure false split | 1 reserved group | In medium-only group 11479, four images connect while the fifth nearly white frame remains isolated in both Phase 1 and frozen Phase 2 | The clipped frame has insufficient direct structure and no safe alternate chain under the frozen evidence | Test a new normalization or exposure-specific attachment architecture only on fresh development data |
+| 3 | Low-texture exposure attachment boundary | 0 selected development groups; 1 group at count 7 | Dev group 18608 needs one six-inlier edge with 0.75 inlier ratio, 0.125 coverage, 0.46 px error, and 0.44 structural correlation | Strict multi-signal geometry can safely use a small absolute match count, but the recovery sits at an explicit integer boundary | Preserve the frozen count-6 policy and collect new independent low-texture cases before changing it |
 
 Suggested categories:
 
@@ -201,6 +218,20 @@ Suggested categories:
 | Medium false splits | medium-exclusive-100-v1 / B2 `8563c1d1c0` | Two rendered sheets: 15-image group 11393 splits by three visible compositions; five-image group 11479 isolates one nearly white frame | `artifacts/runs/b06b3319f878/ab0151c223f7/20260809T033129Z-b2-classical-8563c1d1c0/gallery/` |
 | Medium determinism | medium-exclusive-100-v1 / B1, cold B2, cached B2 | All three predictions are byte-identical | Predictions SHA-256 `94a25cd5e053cbc775ba61592c2de14a1f4957d70c930f550fd7546352c6ecec` |
 | Runtime outliers | medium-exclusive-100-v1 | B2 is approximately twice B1 cold on 100 images; cache reduces B2 prediction work from 26.71 s to 0.94 s | Run resources artifacts |
+| Phase 2 recovered development split | medium-dev-a-v1 / frozen thresholds | Group 18608 changes from 4+1 to one exact five-image group; count-7 neighbor restores the split | State and stability reports plus run `433eecd590` |
+| Phase 2 reserved comparison | medium-exclusive-100-v1 / selected `64e4032389` | Same two split groups and byte-identical partition as Phase 1 B2; no new failure category or merge | `experiments/phase2/reserved-comparison.json`; prediction SHA-256 `94a25cd5e053…` |
+
+## Reserved Phase 1 slice record
+
+- **Freeze commit:** `6a2069354b3a1b128b6b481057dadea078f444ec`
+- **Freeze config hash:** `855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5`
+- **Reserved split fingerprint:** `b71a717e8fadb260c1fa5b9a84b746d20633902c8bda4422deeeb046d653e62a`
+- **First and only Phase 2 run ID:** `20260809T040908Z-b2-phase2-selected-64e4032389`
+- **Exact score:** 22/24 = 0.9167
+- **Non-singleton exact score:** 21/23 = 0.9130
+- **Merge damage / split groups:** 0 / 2
+- **Runtime / peak RSS:** 23.43 s / 364.4 MB, cold cache
+- **Interpretation:** Byte-identical to Phase 1 B2. This supports no regression after selection; it is not a protected holdout and was not used for further tuning.
 
 ## Protected holdout record
 
@@ -229,14 +260,14 @@ Do not fill this section until the champion is frozen.
 | Native/container predictions match | Pass on smoke fixture | Both CSVs SHA-256 `bbc7fc14db616169382d9f163b443e36f94eaaea27ee5ac7a112798267af239a` |
 | 8 vCPU / 16 GB benchmark | Pending | — |
 | 16 vCPU / 32 GB benchmark | Pending | — |
-| Runtime headroom | Partial only | Clean-commit native B2 cold runs: 26.71 s for 100 images / 4,950 pairs and 202.60 s for 366 / 66,795. The actual 2,126-image medium package would require 2,258,875 all-pairs comparisons and is intentionally not attempted; candidate screening is required before package-scale execution, while private batch size and x86 B2 runtime remain unknown |
+| Runtime headroom | Partial only | Frozen Phase 2 native cold run: 23.43 s / 364.4 MB for 100 images / 4,950 pairs, versus Phase 1 B2 at 26.71 s / 375.4 MB. Phase 1 required 202.60 s for 366 / 66,795. The actual 2,126-image medium package would require 2,258,875 all-pairs comparisons and is intentionally not attempted; candidate screening is required before package-scale execution, while private batch size and x86 Phase 2 runtime remain unknown |
 | Packaged asset licenses/checksums | No model assets | Runtime image contains Python, NumPy, OpenCV, source package, and solution entrypoint only |
 
 ## Submission candidates
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | — | — | — | — | — | Conservative classical | — |
+| A | Pending Phase 2 CI image | `855c7c577719…` | 76/76 across three fallback folds | Reserved slice 22/24; no protected holdout | 23.43 s / 364.4 MB native cold per 100 images | Conservative classical; six-inlier boundary; all-pairs scaling | Provisional leader; do not publish or submit yet |
 | B | — | — | — | — | — | Higher-recall grouping | — |
 | C | — | — | — | — | — | Learned/retrieval variant | — |
 
@@ -274,4 +305,9 @@ Complete this section before asking for human approval. Do not place credentials
 
 ## Final recommendation
 
-> Fill after freeze. State which candidate to submit, why it is preferred, and which unresolved risks remain.
+> Retain the frozen Phase 2 classical config as the provisional candidate because
+> it improves development exact groups from 75/76 to 76/76 without merge damage,
+> is stable across the bounded guard neighborhood, and exactly preserves the Phase
+> 1 reserved partition. Do not publish or submit it yet: the count-7 sensitivity,
+> reference-group-only split boundary, absent protected holdout, unknown x86 runtime,
+> and all-pairs package-scale limit remain unresolved.

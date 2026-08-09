@@ -1,0 +1,49 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "selected-count-6-balanced-guards",
+      "config": "configs/phase2/b2-group-three-edge-consensus.json"
+    },
+    {
+      "candidate_id": "count-5",
+      "config": "configs/phase2/b2-stability-count-5.json"
+    },
+    {
+      "candidate_id": "count-7",
+      "config": "configs/phase2/b2-stability-count-7.json"
+    },
+    {
+      "candidate_id": "looser-geometric-guards",
+      "config": "configs/phase2/b2-stability-guards-loose.json"
+    },
+    {
+      "candidate_id": "tighter-geometric-guards",
+      "config": "configs/phase2/b2-stability-guards-tight.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "The selected architecture and grouping policy are fixed before this confirmation block.",
+    "The inlier-count neighbors move by one; guard neighbors move strong inlier-ratio and structural-correlation thresholds by 0.05 in the same strictness direction.",
+    "All candidates reuse identical raw pair evidence, so this block measures only nearby decision-boundary stability.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "nearby-configuration-stability",
+  "sweep_id": "phase2-stability-v1"
+}

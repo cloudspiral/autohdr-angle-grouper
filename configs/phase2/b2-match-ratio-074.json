@@ -1,0 +1,51 @@
+{
+  "algorithm": "classical",
+  "name": "b2-match-ratio-074",
+  "parameters": {
+    "feature": {
+      "clahe_clip_limit": 2.0,
+      "clahe_grid_size": 8,
+      "contrast_threshold": 0.02,
+      "edge_threshold": 12.0,
+      "max_dimension": 384,
+      "max_features": 256,
+      "sigma": 1.6
+    },
+    "grouping": {
+      "min_independent_support_edges": 2,
+      "representative_strong_support": true,
+      "strong_negative_veto": true
+    },
+    "match": {
+      "coverage_grid_size": 4,
+      "min_matches_for_model": 4,
+      "ransac_confidence": 0.995,
+      "ransac_max_iters": 2000,
+      "ransac_reproj_threshold": 3.0,
+      "ratio_test": 0.74,
+      "structural_thumbnail_size": 128
+    },
+    "state": {
+      "max_abs_rotation_degrees": 6.0,
+      "max_scale": 1.22,
+      "max_translation_fraction": 0.18,
+      "min_scale": 0.82,
+      "negative_max_inlier_ratio": 0.08,
+      "negative_max_structural_correlation": 0.0,
+      "negative_min_keypoints": 100,
+      "negative_min_mutual_matches": 20,
+      "positive_max_transfer_error": 4.0,
+      "positive_min_coverage": 0.0625,
+      "positive_min_inlier_ratio": 0.22,
+      "positive_min_inliers": 10,
+      "positive_min_structural_correlation": 0.05,
+      "strong_max_transfer_error": 2.5,
+      "strong_min_coverage": 0.125,
+      "strong_min_inlier_ratio": 0.35,
+      "strong_min_inliers": 18,
+      "strong_min_structural_correlation": 0.2
+    }
+  },
+  "schema_version": 1,
+  "seed": 0
+}

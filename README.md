@@ -22,6 +22,14 @@ singleton B0 control, official exact-group scoring, strict CSV validation,
 content-hashed configs and splits, a SQLite run registry, dataset auditing, and a
 protected-holdout gate. See [`docs/EVALUATION.md`](docs/EVALUATION.md).
 
+The evaluation-only B2 classical pipeline is intentionally separate from the
+default `solution.py` entrypoint. Its frozen Phase 2 config scores 76/76 exact
+groups with zero merge damage across three 100-image reference-group-disjoint
+development folds, then ties Phase 1 B2 at 22/24 with a byte-identical partition
+on the one-time reserved slice. These are provisional local measurements, not a
+protected-holdout or leaderboard claim; promotion into the submission entrypoint
+belongs to a later packaging issue after x86/container validation.
+
 ## Grouping algorithm
 
 For each image, `solution.py` decodes grayscale pixels with EXIF orientation

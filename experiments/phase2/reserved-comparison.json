@@ -1,0 +1,48 @@
+{
+  "baseline": {
+    "config_hash": "ab0151c223f715c7671c251c424f36aa90a5ab1b2ea5375de1d46e3f6aa0ca65",
+    "config_path": "configs/b2-classical.json",
+    "exact_groups": 22,
+    "feature_cache_hits": 0,
+    "feature_cache_misses": 100,
+    "git_commit": "aefd467969c72674f3d7057e73aa77cfae96b0c3",
+    "merge_damaged_groups": 0,
+    "pair_cache_hits": 0,
+    "pair_cache_misses": 4950,
+    "peak_rss_bytes": 375439360,
+    "run_id": "20260809T033129Z-b2-classical-8563c1d1c0",
+    "split_reference_groups": 2,
+    "total_groups": 24,
+    "wall_seconds": 26.709861041978
+  },
+  "comparison": {
+    "exact_group_delta": 0,
+    "interpretation": "The frozen Phase 2 candidate preserves the Phase 1 B2 partition exactly on the reserved slice. This is a no-regression generalization check, not protected-holdout or leaderboard evidence.",
+    "merge_damage_delta": 0,
+    "peak_rss_delta_bytes": -11026432,
+    "prediction_csv_identical": true,
+    "prediction_sha256": "94a25cd5e053cbc775ba61592c2de14a1f4957d70c930f550fd7546352c6ecec",
+    "wall_seconds_delta": -3.275357583072036
+  },
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "schema_version": 1,
+  "selected": {
+    "config_hash": "855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5",
+    "config_path": "configs/phase2/b2-selected.json",
+    "dirty_tree": false,
+    "exact_groups": 22,
+    "feature_cache_hits": 0,
+    "feature_cache_misses": 100,
+    "git_commit": "6a2069354b3a1b128b6b481057dadea078f444ec",
+    "merge_damaged_groups": 0,
+    "pair_cache_hits": 0,
+    "pair_cache_misses": 4950,
+    "peak_rss_bytes": 364412928,
+    "run_id": "20260809T040908Z-b2-phase2-selected-64e4032389",
+    "split_reference_groups": 2,
+    "total_groups": 24,
+    "wall_seconds": 23.434503458905965
+  },
+  "split_fingerprint": "b71a717e8fadb260c1fa5b9a84b746d20633902c8bda4422deeeb046d653e62a",
+  "split_id": "medium-exclusive-100-v1"
+}

@@ -1,0 +1,40 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "baseline-512x320",
+      "config": "configs/b2-classical.json"
+    },
+    {
+      "candidate_id": "efficient-384x256",
+      "config": "configs/phase2/b2-feature-efficient.json"
+    },
+    {
+      "candidate_id": "dense-640x400",
+      "config": "configs/phase2/b2-feature-dense.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "Only feature working resolution and descriptor budget vary in this block.",
+    "All sample and Phase 1 validation groups are excluded from these folds.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "feature-resolution-and-budget",
+  "sweep_id": "phase2-feature-v1"
+}
