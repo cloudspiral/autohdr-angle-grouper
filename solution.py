@@ -264,14 +264,7 @@ def group_images(image_paths: list[str]) -> list[list[str]]:
     component membership is decided exclusively from decoded pixel evidence.
     """
 
-    from autohdr_eval.classical import run_screened_dual_classical_uncached
-
-    config, seed = _submission_config()
-    outcome = run_screened_dual_classical_uncached(
-        image_paths,
-        config,
-        seed=seed,
-    )
+    outcome = group_images_with_resources(image_paths)
     print(
         "Evaluated "
         f"{outcome.resources['candidate_pair_count']}/"
@@ -279,6 +272,15 @@ def group_images(image_paths: list[str]) -> list[list[str]]:
         flush=True,
     )
     return outcome.groups
+
+
+def group_images_with_resources(image_paths: list[str]) -> Any:
+    """Run the submission implementation and expose counters for benchmarks."""
+
+    from autohdr_eval.classical import run_screened_dual_classical_uncached
+
+    config, seed = _submission_config()
+    return run_screened_dual_classical_uncached(image_paths, config, seed=seed)
 
 
 @lru_cache(maxsize=1)
