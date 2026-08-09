@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "match-winner-default-state",
+      "config": "configs/phase2/b2-match-ransac-4.json"
+    },
+    {
+      "candidate_id": "positive-recall",
+      "config": "configs/phase2/b2-state-positive-recall.json"
+    },
+    {
+      "candidate_id": "low-count-strong",
+      "config": "configs/phase2/b2-state-low-count-strong.json"
+    },
+    {
+      "candidate_id": "conservative-state",
+      "config": "configs/phase2/b2-state-conservative.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "The feature and matching winners from the first two blocks are fixed before this block.",
+    "Only pair-state classification thresholds vary; raw pair evidence is reused unchanged.",
+    "The low-count-strong candidate deliberately tests whether strict geometry can safely recover low-texture exposure frames.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "pair-state-thresholds",
+  "sweep_id": "phase2-state-v1"
+}
