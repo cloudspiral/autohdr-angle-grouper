@@ -1,0 +1,41 @@
+{
+  "baseline": {
+    "config_hash": "855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5",
+    "exact_groups": 84,
+    "merge_damaged_groups": 0,
+    "split_groups": 2,
+    "total_groups": 86
+  },
+  "failure_categories": [
+    {
+      "category": "extreme-exposure false split",
+      "damaged_reference_groups": 2,
+      "examples": [
+        {
+          "evidence": "The nearly black frame exposes only 7 selected SIFT keypoints and has zero mutual matches to either brighter exposure.",
+          "group_id": "18127",
+          "predicted_component_sizes": [
+            1,
+            2
+          ]
+        },
+        {
+          "evidence": "The brightest frame reaches the 256-feature budget but has at most 3 mutual matches to another exposure, below model estimation.",
+          "group_id": "39901",
+          "predicted_component_sizes": [
+            1,
+            3
+          ]
+        }
+      ],
+      "rank": 1
+    }
+  ],
+  "limitations": [
+    "Failure categories are derived only from the fresh Phase 3 folds.",
+    "The Phase 1 reserved slice was not consulted for this ranking.",
+    "Gallery appearance is supporting diagnosis; exact-group damage is the ranking unit."
+  ],
+  "run_id": "20260809T041736Z-b2-phase2-selected-cef5abd820",
+  "schema_version": 1
+}

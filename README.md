@@ -23,12 +23,15 @@ content-hashed configs and splits, a SQLite run registry, dataset auditing, and 
 protected-holdout gate. See [`docs/EVALUATION.md`](docs/EVALUATION.md).
 
 The evaluation-only B2 classical pipeline is intentionally separate from the
-default `solution.py` entrypoint. Its frozen Phase 2 config scores 76/76 exact
-groups with zero merge damage across three 100-image reference-group-disjoint
-development folds, then ties Phase 1 B2 at 22/24 with a byte-identical partition
-on the one-time reserved slice. These are provisional local measurements, not a
-protected-holdout or leaderboard claim; promotion into the submission entrypoint
-belongs to a later packaging issue after x86/container validation.
+default `solution.py` entrypoint. The Phase 3 selection fuses complete baseline
+CLAHE and percentile-stretched CLAHE decisions with a negative veto. It scores
+85/86 exact groups on three new 100-image folds and preserves 76/76 on all three
+earlier Phase 2 folds, for 161/162 cumulative exact groups with zero merge
+damage. The one remaining error is a conservative adjacent-view split, while
+cold runtime is about twice the single-view control. These are provisional
+reference-group-disjoint local measurements, not a protected-holdout,
+photoshoot-level, or leaderboard claim. Promotion into the submission entrypoint
+and representative `linux/amd64` benchmarking belong to Phase 4.
 
 ## Grouping algorithm
 

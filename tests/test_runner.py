@@ -87,3 +87,47 @@ def test_runner_rejects_image_bytes_changed_after_audit(tmp_path: Path) -> None:
             artifact_root=tmp_path / "artifacts",
             registry_path=tmp_path / "registry.sqlite3",
         )
+
+
+@pytest.mark.parametrize(
+    ("config_filename", "expected_pair_misses"),
+    [
+        ("b2-percentile-clahe.json", 1),
+        ("b2-dual-clahe.json", 2),
+    ],
+)
+def test_exposure_classical_dispatches_as_pairwise_algorithm(
+    tmp_path: Path,
+    config_filename: str,
+    expected_pair_misses: int,
+) -> None:
+    repo_root = Path(__file__).parents[1]
+    dataset = tmp_path / "dataset"
+    images = dataset / "images"
+    images.mkdir(parents=True)
+    rng = np.random.default_rng(19)
+    for filename in ("a.png", "b.png"):
+        assert cv2.imwrite(
+            str(images / filename),
+            rng.integers(0, 256, size=(64, 64, 3), dtype=np.uint8),
+        )
+    manifest = dataset / "public_manifest.csv"
+    manifest.write_text(
+        "group_id,filename\n0,a.png\n1,b.png\n",
+        encoding="utf-8",
+    )
+    audit_path = tmp_path / "audit.json"
+    audit_path.write_text(json.dumps(audit_dataset(dataset, manifest)), encoding="utf-8")
+
+    outcome = run_evaluation(
+        repo_root=repo_root,
+        config_path=repo_root / "configs" / "phase3" / config_filename,
+        dataset_root=dataset,
+        manifest_path=manifest,
+        audit_path=audit_path,
+        artifact_root=tmp_path / "artifacts",
+        registry_path=tmp_path / "registry.sqlite3",
+    )
+
+    assert outcome.resources["candidate_pair_count"] == 1
+    assert outcome.resources["pair_cache_misses"] == expected_pair_misses

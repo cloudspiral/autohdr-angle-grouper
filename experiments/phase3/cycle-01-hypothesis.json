@@ -1,0 +1,22 @@
+{
+  "acceptance": {
+    "maximum_runtime_multiple": 1.5,
+    "minimum_exact_groups": 85,
+    "minimum_worst_fold_exact_score": 0.9230769230769231,
+    "require_zero_merge_damage": true,
+    "require_zero_regressions_on_perfect_baseline_folds": true
+  },
+  "baseline_config": "configs/phase2/b2-selected.json",
+  "candidate_config": "configs/phase3/b2-percentile-clahe.json",
+  "change": {
+    "algorithm": "classical-percentile-clahe",
+    "high_percentile": 99.0,
+    "low_percentile": 1.0,
+    "scope": "Apply a deterministic global percentile stretch before the existing CLAHE and RootSIFT extraction. Keep matching, state classification, and grouping policy unchanged."
+  },
+  "cycle_id": "phase3-cycle-01",
+  "failure_category": "extreme-exposure false split",
+  "hypothesis": "Global robust percentile stretching before local CLAHE will expose stable structure in severely dark or bright brackets, recover at least one of the two fresh false splits, and preserve zero merge damage without regressing the two perfect baseline folds.",
+  "rejection": "Reject the architecture if it fails any acceptance gate; do not tune the percentile endpoints within this cycle.",
+  "schema_version": 1
+}

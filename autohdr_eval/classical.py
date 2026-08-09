@@ -180,6 +180,55 @@ class ClassicalConfig:
 
 
 @dataclass(frozen=True)
+class PercentileStretchConfig:
+    low_percentile: float
+    high_percentile: float
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.low_percentile < self.high_percentile <= 100:
+            raise ValueError("percentile stretch bounds must be ordered within [0, 100]")
+
+
+@dataclass(frozen=True)
+class PercentileClassicalConfig(ClassicalConfig):
+    percentile_stretch: PercentileStretchConfig
+
+    @classmethod
+    def from_parameters(cls, raw: dict[str, Any]) -> PercentileClassicalConfig:
+        expected = {"feature", "grouping", "match", "percentile_stretch", "state"}
+        if set(raw) != expected:
+            raise ValueError(
+                "percentile classical parameters must be exactly "
+                f"{sorted(expected)}; got {sorted(raw)}"
+            )
+        base = ClassicalConfig.from_parameters(
+            {key: raw[key] for key in ("feature", "grouping", "match", "state")}
+        )
+        return cls(
+            feature=base.feature,
+            match=base.match,
+            state=base.state,
+            grouping=base.grouping,
+            percentile_stretch=_strict_dataclass(
+                PercentileStretchConfig,
+                raw["percentile_stretch"],
+                "percentile_stretch",
+            ),
+        )
+
+    @property
+    def feature_fingerprint(self) -> str:
+        return _fingerprint(
+            {
+                "architecture": "percentile-clahe-v1",
+                "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+                "feature": asdict(self.feature),
+                "percentile_stretch": asdict(self.percentile_stretch),
+            }
+        )
+
+
+@dataclass(frozen=True)
 class FeatureRecord:
     filename: str
     content_hash: str
@@ -252,13 +301,36 @@ def _resize_for_features(grayscale: np.ndarray, maximum: int) -> np.ndarray:
     )
 
 
+def _percentile_stretch(
+    grayscale: np.ndarray, config: PercentileStretchConfig
+) -> np.ndarray:
+    low, high = np.percentile(
+        grayscale,
+        [config.low_percentile, config.high_percentile],
+    )
+    dynamic_range = float(high - low)
+    if dynamic_range <= 1e-12:
+        return grayscale.copy()
+    normalized = np.clip(
+        (grayscale.astype(np.float32) - float(low)) / dynamic_range,
+        0.0,
+        1.0,
+    )
+    return np.rint(normalized * 255.0).astype(np.uint8)
+
+
 def _extract_features(
-    path: Path, content_hash: str, config: FeatureConfig
+    path: Path,
+    content_hash: str,
+    config: FeatureConfig,
+    percentile_stretch: PercentileStretchConfig | None = None,
 ) -> FeatureRecord:
     grayscale = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
     if grayscale is None:
         raise ValueError(f"unable to decode image: {path}")
     working = _resize_for_features(grayscale, config.max_dimension)
+    if percentile_stretch is not None:
+        working = _percentile_stretch(working, percentile_stretch)
     clahe = cv2.createCLAHE(
         clipLimit=config.clahe_clip_limit,
         tileGridSize=(config.clahe_grid_size, config.clahe_grid_size),
@@ -302,7 +374,11 @@ class FeatureCache:
         self.root.mkdir(parents=True, exist_ok=True)
 
     def get(
-        self, path: Path, content_hash: str, config: FeatureConfig
+        self,
+        path: Path,
+        content_hash: str,
+        config: FeatureConfig,
+        percentile_stretch: PercentileStretchConfig | None = None,
     ) -> tuple[FeatureRecord, bool]:
         cache_path = self.root / f"{content_hash}.npz"
         if cache_path.is_file():
@@ -322,7 +398,7 @@ class FeatureCache:
             except (OSError, ValueError, KeyError):
                 pass
 
-        record = _extract_features(path, content_hash, config)
+        record = _extract_features(path, content_hash, config, percentile_stretch)
         temporary: Path | None = None
         try:
             with tempfile.NamedTemporaryFile(
@@ -947,11 +1023,21 @@ def run_classical(
 
     ordered_paths = sorted((Path(path) for path in image_paths), key=lambda path: path.name)
     feature_cache = FeatureCache(cache_root, config.feature_fingerprint)
+    percentile_stretch = (
+        config.percentile_stretch
+        if isinstance(config, PercentileClassicalConfig)
+        else None
+    )
     features: list[FeatureRecord] = []
     feature_hits = 0
     for index, path in enumerate(ordered_paths, start=1):
         content_hash = sha256_file(path)
-        record, hit = feature_cache.get(path, content_hash, config.feature)
+        record, hit = feature_cache.get(
+            path,
+            content_hash,
+            config.feature,
+            percentile_stretch,
+        )
         feature_hits += int(hit)
         features.append(record)
         if index == 1 or index % 50 == 0 or index == len(ordered_paths):
@@ -1030,4 +1116,133 @@ def run_classical(
         resources=resources,
         summary=summary,
         decisions=tuple(decisions),
+    )
+
+
+def fuse_pair_decisions(
+    *decision_sets: tuple[PairDecision, ...],
+) -> tuple[PairDecision, ...]:
+    """Fuse complete pair graphs while allowing either view to veto a merge."""
+
+    if len(decision_sets) < 2:
+        raise ValueError("dual-view fusion requires at least two decision sets")
+    by_view = [
+        {
+            tuple(sorted((decision.left, decision.right))): decision
+            for decision in decisions
+        }
+        for decisions in decision_sets
+    ]
+    expected_pairs = set(by_view[0])
+    if any(set(view) != expected_pairs for view in by_view[1:]):
+        raise ValueError("dual-view decisions must cover identical image pairs")
+
+    state_priority = {"unknown": 0, "positive": 1, "strong_positive": 2}
+    fused: list[PairDecision] = []
+    for pair in sorted(expected_pairs):
+        values = [view[pair] for view in by_view]
+        negatives = [decision for decision in values if decision.state == "negative"]
+        if negatives:
+            chosen = max(negatives, key=lambda decision: (decision.score, decision.reasons))
+            state = "negative"
+            reason = "dual_view_negative_veto"
+        else:
+            if any(decision.state not in state_priority for decision in values):
+                raise ValueError("dual-view decision has an unsupported state")
+            chosen = max(
+                values,
+                key=lambda decision: (
+                    state_priority[decision.state],
+                    decision.score,
+                    decision.reasons,
+                ),
+            )
+            state = chosen.state
+            reason = "dual_view_strongest_nonnegative_state"
+        fused.append(
+            PairDecision(
+                left=pair[0],
+                right=pair[1],
+                state=state,
+                score=chosen.score,
+                reasons=(reason, *chosen.reasons),
+            )
+        )
+    return tuple(fused)
+
+
+def run_dual_classical(
+    image_paths: list[str],
+    config: PercentileClassicalConfig,
+    *,
+    dataset_fingerprint: str,
+    cache_root: Path,
+    seed: int,
+) -> ClassicalOutcome:
+    """Fuse baseline-CLAHE and percentile-CLAHE evidence before grouping."""
+
+    baseline_config = ClassicalConfig(
+        feature=config.feature,
+        match=config.match,
+        state=config.state,
+        grouping=config.grouping,
+    )
+    baseline = run_classical(
+        image_paths,
+        baseline_config,
+        dataset_fingerprint=dataset_fingerprint,
+        cache_root=cache_root,
+        seed=seed,
+    )
+    percentile = run_classical(
+        image_paths,
+        config,
+        dataset_fingerprint=dataset_fingerprint,
+        cache_root=cache_root,
+        seed=seed,
+    )
+    decisions = fuse_pair_decisions(baseline.decisions, percentile.decisions)
+    filenames = sorted(Path(path).name for path in image_paths)
+    groups = group_from_decisions(
+        filenames,
+        list(decisions),
+        {filename: 0.0 for filename in filenames},
+        config.grouping,
+    )
+    state_counts = Counter(decision.state for decision in decisions)
+    numeric_resource_keys = (
+        "feature_cache_hits",
+        "feature_cache_misses",
+        "pair_cache_hits",
+        "pair_cache_misses",
+    )
+    resources = {
+        key: int(baseline.resources[key]) + int(percentile.resources[key])
+        for key in numeric_resource_keys
+    }
+    resources["pair_state_counts"] = dict(sorted(state_counts.items()))
+    resources["view_resources"] = {
+        "baseline_clahe": baseline.resources,
+        "percentile_clahe": percentile.resources,
+    }
+    summary = {
+        "architecture": "dual-clahe-v1",
+        "baseline_clahe": baseline.summary,
+        "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+        "dataset_fingerprint": dataset_fingerprint,
+        "pair_state_counts": dict(sorted(state_counts.items())),
+        "percentile_clahe": percentile.summary,
+        "strongest_pairs": [
+            asdict(decision)
+            for decision in sorted(
+                decisions,
+                key=lambda item: (-item.score, item.left, item.right),
+            )[:50]
+        ],
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=decisions,
     )

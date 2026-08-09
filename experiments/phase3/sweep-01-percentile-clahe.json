@@ -1,0 +1,37 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "frozen-phase2",
+      "config": "configs/phase2/b2-selected.json"
+    },
+    {
+      "candidate_id": "percentile-clahe",
+      "config": "configs/phase3/b2-percentile-clahe.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-phase3-dev-a-v1.json",
+    "splits/medium-phase3-dev-b-v1.json",
+    "splits/medium-phase3-dev-c-v1.json"
+  ],
+  "limitations": [
+    "The candidate changes only preprocessing by adding the predeclared 1st-to-99th-percentile stretch before CLAHE.",
+    "Matching, pair-state thresholds, and grouping policy remain identical to the frozen Phase 2 baseline.",
+    "Both candidates must run from cold, architecture-separated feature and pair caches for runtime comparison.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "cycle-01-percentile-clahe",
+  "sweep_id": "phase3-cycle-01-v1"
+}

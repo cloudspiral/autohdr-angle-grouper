@@ -1,0 +1,19 @@
+{
+  "actual": {
+    "exact_groups": 75,
+    "merge_damaged_groups": 0,
+    "split_groups": 1,
+    "total_groups": 76
+  },
+  "cycle_id": "phase3-cycle-01",
+  "decision": "reject_as_standalone_champion",
+  "expected": {
+    "exact_groups": 76,
+    "merge_damaged_groups": 0,
+    "total_groups": 76
+  },
+  "interpretation": "Replacing baseline CLAHE with percentile-CLAHE recovers one fresh extreme-shadow group but removes the exact six-inlier baseline attachment for Phase 2 group 18608. The two preprocessing views provide complementary safe evidence and neither should replace the other globally.",
+  "regressed_group": "18608",
+  "run_id": "20260809T043357Z-b2-percentile-clahe-6f71efc5d9",
+  "schema_version": 1
+}

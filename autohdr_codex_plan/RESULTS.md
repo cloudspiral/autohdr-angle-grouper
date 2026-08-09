@@ -4,30 +4,29 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 2 — controlled classical configuration optimization complete
-- **Current champion:** B2 Phase 2 selected classical configuration (provisional; no protected holdout)
-- **Frozen config:** `configs/phase2/b2-selected.json` at commit `6a2069354b3a1b128b6b481057dadea078f444ec`, config hash `855c7c577719…`
+- **Phase:** Phase 3 — bounded researcher loop complete; scale and packaging next
+- **Current champion:** B2 dual-view CLAHE evaluation configuration (provisional; no protected holdout)
+- **Frozen config:** `configs/phase3/b2-dual-clahe.json`, selected at commit `96d0b56f1cd95e010ad210d8dadaf88e0a31019d`, config hash `7a3494e8805d…`
 - **Protected holdout touched:** No
 - **Submission published:** No
 - **Last updated:** 2026-08-08
 
 ## Current recommendation
 
-Retain B1 and the Phase 1 B2 config as controls, and promote the frozen Phase 2
-B2 config as the provisional classical leader. Five bounded, predeclared blocks
-used three disjoint 100-image medium-only development folds that exclude both
-the nested sample and reserved Phase 1 slice. The selected config improves the
-Phase 1 B2 development result from 75/76 to 76/76 exact groups with zero merge
-damage, mainly by accepting a six-inlier edge whose geometry remains strict.
-Count 5, count 6, and both nearby geometric-guard variants preserve 76/76 with
-zero merges; count 7 loses the recovered group, so the integer boundary remains
-a documented sensitivity. The single post-selection reserved-slice comparison
-tied Phase 1 B2 at 22/24, produced a byte-identical partition, and retained zero
-merge damage while reducing cold native runtime from 26.71 to 23.43 seconds on
-100 images. This is a no-regression generalization check, not protected-holdout,
-leaderboard, photoshoot-level, or full-package evidence. The source manifest
-still lacks a photoshoot/property boundary, filenames still expose group IDs,
-and all-pairs execution over all 2,126 medium images remains out of scope.
+Retain B1 and the single-view Phase 2 B2 config as controls, and promote the
+Phase 3 dual-view config as the provisional evaluation leader. Three new
+100-image folds exclude every sample, Phase 1 reserved, and Phase 2 development
+group. The frozen Phase 2 baseline scored 84/86; percentile-stretched CLAHE
+recovered one extreme-shadow group but regressed a prior six-inlier attachment,
+so it was rejected alone. Negative-veto decision fusion preserves both views'
+safe evidence: it scores 85/86 on the fresh folds and 76/76 on the earlier
+Phase 2 folds, for 161/162 cumulative exact groups with zero merge damage. Its
+one remaining fresh error is a conservative adjacent-view/composition-shift
+split for which exploratory descriptors showed no safe wrong-group margin.
+Dual-view cold runtime is 2.003 times the single-view baseline and all-pairs
+scale remains unresolved. This is evaluation-only evidence: `solution.py` still
+runs B1, the Phase 1 reserved slice was not rerun, no protected holdout was
+touched, and no leaderboard or photoshoot-level claim is made.
 
 ## Source and rule audit
 
@@ -74,6 +73,7 @@ and all-pairs execution over all 2,126 medium images remains out of scope.
 | sample-scale-203-v1 | Nested whole-reference-group subset | Advertised 500 sample | 203 images / 36 groups | Split `2d57a4f2c105…` | Runtime curve only |
 | medium-exclusive-100-v1 | Reference-group-only fallback; all sample group IDs excluded | Advertised 5K medium | 100 images / 24 groups | Dataset `b06b3319f878…`; split `b71a717e8fad…` | Fixed Phase 1 generalization check only |
 | medium-dev-a/b/c-v1 | Reference-group-only fallback; sample and reserved groups excluded | Advertised 5K medium | 300 images / 76 distinct groups across three 100-image folds | Splits `f7194b1ce20e…`, `88f9dfad6992…`, `e568d3f37aa4…` | Phase 2 configuration selection only |
+| medium-phase3-dev-a/b/c-v1 | Reference-group-only fallback; all 169 prior sample, reserved, and Phase 2 development groups excluded | Advertised 5K medium | 300 images / 86 distinct groups across three 100-image folds | Splits `ff309ac0285b…`, `87386062b168…`, `b8ebb028ac6c…` | Fresh Phase 3 architecture selection only |
 | final-holdout-v1 | Pending | — | — | — | One-time final validation |
 
 ## Baselines
@@ -87,24 +87,27 @@ and all-pairs execution over all 2,126 medium images remains out of scope.
 | B2-medium | Fixed classical geometry baseline | medium-exclusive-100-v1 | 22/24 = 0.9167 | 21/23 = 0.9130 | 0 | 2 | 26.71 s cold / 0.94 s cached | 375.4 MB cold | Passed from clean commit; byte-identical to B1 on this slice |
 | B2-Phase2-dev | Frozen Phase 2 classical config | medium-dev-a/b/c-v1 | 76/76 = 1.0000 | 71/71 = 1.0000 | 0 | 0 | 2.67 s fully cached confirmation; cold block timings recorded separately | 105.1 MB process peak during cached confirmation | Selected on development folds only; reference-group fallback |
 | B2-Phase2-reserved | Frozen Phase 2 classical config | medium-exclusive-100-v1 | 22/24 = 0.9167 | 21/23 = 0.9130 | 0 | 2 | 23.43 s cold | 364.4 MB cold | First and only Phase 2 post-selection run; byte-identical to Phase 1 B2 |
+| B2-Phase3-baseline | Frozen Phase 2 single-view config | medium-phase3-dev-a/b/c-v1 | 84/86 = 0.9767 | 74/76 = 0.9737 | 0 | 2 | 64.25 s cold comparison | 554.7 MB max | Fresh-fold control; no selection changes |
+| B2-Phase3-dual | Baseline + percentile-CLAHE decision fusion | medium-phase3-dev-a/b/c-v1 | 85/86 = 0.9884 | 75/76 = 0.9868 | 0 | 1 | 128.69 s cold | 551.2 MB max | Selected after passing fresh and prior-development gates |
+| B2-Phase3-regression | Selected dual-view config | medium-dev-a/b/c-v1 | 76/76 = 1.0000 | 71/71 = 1.0000 | 0 | 0 | 121.92 s cold | 467.1 MB max | Required no-regression gate; not fresh selection evidence |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | Development confirmation `20260809T040534Z-b2-group-three-edge-consensus-433eecd590`; reserved run `20260809T040908Z-b2-phase2-selected-64e4032389` |
-| Git commit | Frozen config commit `6a2069354b3a1b128b6b481057dadea078f444ec`; reserved run recorded `dirty_tree: false` |
-| Config hash | `855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5` |
-| Architecture | CLAHE + RootSIFT + mutual ratio matches + partial-affine RANSAC + post-warp gradient correlation + tri-state support grouping |
-| Mean dev exact score | 1.0000 across three folds |
-| Worst-fold exact score | 1.0000 |
-| Non-singleton exact score | Development 71/71 = 1.0000; reserved 21/23 = 0.9130 |
-| Merge damage | 0 across all three development folds and the reserved slice |
-| Split groups | 0 development; 2 reserved |
-| Runtime / batch size | 23.43 s cold / 100 images / 4,950 pairs on the reserved slice; 2.67 s fully cached across three development folds |
-| Peak RSS | 364.4 MB cold on the selected reserved run |
-| Why selected | Improves the Phase 1 B2 development result by one exact group without merge damage, remains exact under count-5 and nearby guard perturbations, uses the more conservative passing thresholds, and exactly preserves the Phase 1 reserved partition |
-| Known risks | Reference-group folds do not prove photoshoot/property separation; the count-7 neighbor loses one group; filenames leak labels but are forbidden inputs; two reserved adjacent-view/extreme-exposure labels remain split; all-pairs is not viable for the complete medium package; x86 Phase 2 runtime, protected holdout, and leaderboard evidence remain unavailable |
+| Run ID | Fresh runs `440af1ffb8`, `ab66a7d842`, `3dec020a50`; prior-development regression runs `1fba9018d8`, `ca5607d71e`, `468b936eab` |
+| Git commit | Candidate evaluated from clean implementation commit `43dd34118bf5f01fb07cca18fb33556de14020f7`; selection recorded at `96d0b56f1cd95e010ad210d8dadaf88e0a31019d` |
+| Config hash | `7a3494e8805d6e56c4f98220fedd1423511951978d79f8fc91b0a0ebdcd406ef` |
+| Architecture | Complete baseline-CLAHE and percentile-stretched-CLAHE RootSIFT/RANSAC views; negative-veto decision fusion; one tri-state support grouping pass |
+| Mean fresh exact score | 0.9872 across three folds; micro 85/86 = 0.9884 |
+| Worst-fold exact score | 0.9615 fresh; 1.0000 on the prior-development regression folds |
+| Non-singleton exact score | Fresh 75/76 = 0.9868; prior development 71/71 = 1.0000 |
+| Merge damage | 0 across all six development/regression folds |
+| Split groups | 1 fresh; 0 prior-development regression |
+| Runtime / batch size | 128.69 s cold across three sequential 100-image folds; 2.003x the comparable single-view run |
+| Peak RSS | 551.2 MB maximum across the fresh cold runs |
+| Why selected | Recovers complementary exposure failures without relaxing geometry or grouping thresholds, improves fresh exact recovery by one group, and preserves 76/76 prior-development groups with zero merges |
+| Known risks | Evaluation-only until Phase 4 packaging; approximately doubled runtime; all-pairs package scaling; one unresolved adjacent-view split; reference-group-only split boundary; unknown x86 runtime; untouched protected holdout and leaderboard |
 
 ## Experiment log
 
@@ -121,6 +124,9 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 | 2026-08-08 | Pair-state threshold block | Phase 1 state thresholds | Positive recall, low-count strong, conservative | Low-count strong reaches 76/76 with zero merges; all others remain 75/76 | Every candidate reuses 14,850 pair records with zero misses | Select six-inlier strong-positive evidence guarded by strict ratio, coverage, transfer, transform, and structural checks | `experiments/phase2/results-03-state.json` |
 | 2026-08-08 | Grouping policy and nearby stability | Representative shortcut, two-edge support, negative veto | Distributed support, no veto, three-edge consensus; count and guard neighbors | All grouping policies 76/76; count 5/6 and ±0.05 guards 76/76; count 7 is 75/76; zero merges throughout | Fully cached runs 0.80–0.97 s per fold; timing differences are not material | Freeze balanced count 6 with three-edge distributed support and retained negative veto; document the integer boundary | `experiments/phase2/results-04-grouping.json`, `results-05-stability.json` |
 | 2026-08-08 | One post-selection reserved-slice comparison | Phase 1 B2 | Frozen Phase 2 B2 | Both 22/24 with zero merges and byte-identical predictions | Phase 1 26.71 s / 375.4 MB; Phase 2 23.43 s / 364.4 MB, both cold | Promote Phase 2 provisionally as a development improvement with no reserved-slice regression; do not claim a holdout gain | Run `64e4032389`; `experiments/phase2/reserved-comparison.json` |
+| 2026-08-08 | Fresh Phase 3 baseline on 300 images from 86 previously unseen groups | Frozen Phase 2 B2 | None | 84/86 exact, zero merges, two folds perfect and fold B at 24/26 | 64.25 s cold comparison; 300 feature and 14,850 pair misses | Rank the two fold-B splits and test only the dominant exposure-normalization failure | `experiments/phase3/results-00-frozen-baseline.json` |
+| 2026-08-08 | Cycle 1: percentile stretch before CLAHE can expose structure in clipped brackets | Frozen Phase 2 B2 | Percentile-CLAHE single view | Fresh improves to 85/86 with zero merges, but prior development regresses from 76/76 to 75/76 | 64.90 s fresh cold, 1.010x baseline | Reject as a standalone champion; the two views hold complementary safe evidence | `results-01-percentile-clahe.json`, `results-02-phase2-regression.json` |
+| 2026-08-08 | Cycle 2: fuse complete single-view decisions with a negative veto | Frozen Phase 2 B2 | Dual CLAHE views | Fresh 85/86 and prior development 76/76, zero merges throughout; cumulative 161/162 | 128.69 s fresh cold, 2.003x single view; 551.2 MB max | Accept as the Phase 3 evaluation champion; stop architecture search because the remaining adjacent-view label has no safe margin | `results-03-dual-fresh.json`, `results-04-dual-phase2-regression.json` |
 
 ## Decision log
 
@@ -172,6 +178,16 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Revisit when:** A valid photoshoot-level unit, protected holdout, representative x86 container benchmark, or new development failures contradict the provisional choice.
 - **Related runs:** Development `433eecd590`, stability report `phase2-stability-v1`, reserved `20260809T040908Z-b2-phase2-selected-64e4032389`
 
+### D-007 — Select complementary preprocessing with a negative veto
+
+- **Status:** Accepted provisionally for evaluation; packaging pending
+- **Hypothesis:** Baseline CLAHE and percentile-stretched CLAHE expose complementary safe local geometry, so decision-level fusion can retain both recovered attachments without relaxing any geometric threshold.
+- **Evidence:** The percentile view alone improves fresh development from 84/86 to 85/86 but regresses prior development from 76/76 to 75/76. Negative-veto fusion scores 85/86 fresh and restores 76/76 prior development, with zero merge damage on all six folds. It passes the predeclared worst-fold and 2.25x runtime gates at 0.9615 and 2.003x respectively.
+- **Tradeoffs:** Two complete views approximately double feature and pair work. The remaining fresh group 39901 spans visibly shifted compositions, and both the B1 structural descriptor and direct gradient comparisons lack a safe margin from wrong-group images.
+- **Decision:** Freeze `configs/phase3/b2-dual-clahe.json` as the Phase 3 evaluation champion. Stop the researcher loop instead of adding a risky adjacent-view fallback; preserve all single-view systems as controls and defer runtime architecture to Phase 4.
+- **Revisit when:** Candidate screening, representative x86 container benchmarks, a valid photoshoot-level unit, or protected-holdout evidence changes the accuracy/runtime balance.
+- **Related runs:** Fresh `440af1ffb8`, `ab66a7d842`, `3dec020a50`; prior-development regression `1fba9018d8`, `ca5607d71e`, `468b936eab`; `experiments/phase3/cycle-02-decision.json`
+
 ### Decision template
 
 #### D-XXX — Title
@@ -190,9 +206,10 @@ Rank by the number of reference groups damaged, not merely the number of pair er
 
 | Rank | Failure category | Groups damaged | Typical evidence | Current hypothesis | Next test |
 |---:|---|---:|---|---|---|
-| 1 | Adjacent-view / composition-shift false split | 1 reserved group | Medium-only group 11393 remains three predicted components matching three visibly different compositions in both Phase 1 and frozen Phase 2 | Conservative same-view geometry correctly avoids unrelated merges but cannot recover a coarse reference label spanning neighboring camera positions | Treat as a later isolated architecture experiment; do not relax pair thresholds against the already-read reserved slice |
-| 2 | Extreme-exposure false split | 1 reserved group | In medium-only group 11479, four images connect while the fifth nearly white frame remains isolated in both Phase 1 and frozen Phase 2 | The clipped frame has insufficient direct structure and no safe alternate chain under the frozen evidence | Test a new normalization or exposure-specific attachment architecture only on fresh development data |
-| 3 | Low-texture exposure attachment boundary | 0 selected development groups; 1 group at count 7 | Dev group 18608 needs one six-inlier edge with 0.75 inlier ratio, 0.125 coverage, 0.46 px error, and 0.44 structural correlation | Strict multi-signal geometry can safely use a small absolute match count, but the recovery sits at an explicit integer boundary | Preserve the frozen count-6 policy and collect new independent low-texture cases before changing it |
+| 1 | Adjacent-view / composition-shift false split | 1 fresh Phase 3 group | Group 39901 remains 1+3 under both single and dual views; its bright oblique kitchen frame differs from three darker frontal views | Existing structural and direct-gradient descriptors place wrong-group images as close as the coarse same-label view, so a fallback would risk false merges | Stop the Phase 3 architecture loop; collect genuinely independent cases before designing an adjacent-view model |
+| 2 | Extreme-exposure false split | 0 selected fresh groups; 1 under the frozen baseline | Group 18127's dark frame has only seven keypoints and no baseline mutual matches; percentile-CLAHE safely restores the exact group | Complementary normalization can expose enough geometry without globally replacing the baseline view | Preserve dual-view negative-veto fusion and verify its runtime path during packaging |
+| 3 | Low-texture exposure attachment boundary | 0 selected prior-development groups; 1 under percentile-only or count 7 | Group 18608 needs one six-inlier baseline edge; percentile-only preprocessing or a count-7 boundary splits it | Neither preprocessing view dominates globally; strict decision fusion retains the safe baseline attachment | Preserve both views and the frozen count-6 policy |
+| 4 | Previously observed reserved adjacent-view/extreme-exposure splits | 2 Phase 1 reserved groups, not reevaluated in Phase 3 | Groups 11393 and 11479 remain the one-time Phase 1/2 evidence | Reusing the reserved slice during architecture selection would leak it into the loop | Keep the historical record only; do not infer Phase 3 behavior without a future predeclared validation step |
 
 Suggested categories:
 
@@ -220,6 +237,9 @@ Suggested categories:
 | Runtime outliers | medium-exclusive-100-v1 | B2 is approximately twice B1 cold on 100 images; cache reduces B2 prediction work from 26.71 s to 0.94 s | Run resources artifacts |
 | Phase 2 recovered development split | medium-dev-a-v1 / frozen thresholds | Group 18608 changes from 4+1 to one exact five-image group; count-7 neighbor restores the split | State and stability reports plus run `433eecd590` |
 | Phase 2 reserved comparison | medium-exclusive-100-v1 / selected `64e4032389` | Same two split groups and byte-identical partition as Phase 1 B2; no new failure category or merge | `experiments/phase2/reserved-comparison.json`; prediction SHA-256 `94a25cd5e053…` |
+| Phase 3 percentile recovery | medium-phase3-dev-b-v1 / Cycle 1 | Group 18127 changes from 2+1 to one exact three-image group; dual fusion preserves the recovery | `experiments/phase3/results-01-percentile-clahe.json`, `results-03-dual-fresh.json` |
+| Phase 3 remaining split | medium-phase3-dev-b-v1 / dual `ab66a7d842` | Group 39901 remains 1+3; the isolated bright frame also shifts composition, and exploratory fallback distances lack wrong-group margin | `experiments/phase3/cycle-01-decision.json`, `cycle-02-decision.json` |
+| Phase 3 regression repair | medium-dev-a-v1 / percentile-only then dual | Percentile-only re-splits group 18608; dual negative-veto fusion restores all 76 prior-development groups | `experiments/phase3/results-02-phase2-regression.json`, `results-04-dual-phase2-regression.json` |
 
 ## Reserved Phase 1 slice record
 
@@ -260,15 +280,15 @@ Do not fill this section until the champion is frozen.
 | Native/container predictions match | Pass on smoke fixture | Both CSVs SHA-256 `bbc7fc14db616169382d9f163b443e36f94eaaea27ee5ac7a112798267af239a` |
 | 8 vCPU / 16 GB benchmark | Pending | — |
 | 16 vCPU / 32 GB benchmark | Pending | — |
-| Runtime headroom | Partial only | Frozen Phase 2 native cold run: 23.43 s / 364.4 MB for 100 images / 4,950 pairs, versus Phase 1 B2 at 26.71 s / 375.4 MB. Phase 1 required 202.60 s for 366 / 66,795. The actual 2,126-image medium package would require 2,258,875 all-pairs comparisons and is intentionally not attempted; candidate screening is required before package-scale execution, while private batch size and x86 Phase 2 runtime remain unknown |
+| Runtime headroom | Partial only | Phase 3 dual view requires 128.69 s across three cold 100-image folds, 2.003x its comparable single-view baseline, with 551.2 MB maximum RSS. Each fold evaluates both complete 4,950-pair views. The actual 2,126-image medium package would require 2,258,875 pairs per view and is intentionally not attempted; candidate screening is required before package-scale execution, while private batch size and representative x86 runtime remain unknown |
 | Packaged asset licenses/checksums | No model assets | Runtime image contains Python, NumPy, OpenCV, source package, and solution entrypoint only |
 
 ## Submission candidates
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | Pending Phase 2 CI image | `855c7c577719…` | 76/76 across three fallback folds | Reserved slice 22/24; no protected holdout | 23.43 s / 364.4 MB native cold per 100 images | Conservative classical; six-inlier boundary; all-pairs scaling | Provisional leader; do not publish or submit yet |
-| B | — | — | — | — | — | Higher-recall grouping | — |
+| A | Pending Phase 4 image | `7a3494e8805d…` | 161/162 across six fallback development/regression folds | Phase 1 reserved not rerun; no protected holdout | 128.69 s / 551.2 MB across three cold 100-image folds | Dual-view classical; conservative negative veto; doubled all-pairs work | Provisional leader; package and benchmark before any submission |
+| B | Pending Phase 4 comparison | `855c7c577719…` | 160/162 on the same six folds | Phase 1 reserved 22/24 under the one-time Phase 2 run; no protected holdout | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional fresh split; lower runtime | Retain as the runtime fallback |
 | C | — | — | — | — | — | Learned/retrieval variant | — |
 
 ## Submission handoff
@@ -305,9 +325,10 @@ Complete this section before asking for human approval. Do not place credentials
 
 ## Final recommendation
 
-> Retain the frozen Phase 2 classical config as the provisional candidate because
-> it improves development exact groups from 75/76 to 76/76 without merge damage,
-> is stable across the bounded guard neighborhood, and exactly preserves the Phase
-> 1 reserved partition. Do not publish or submit it yet: the count-7 sensitivity,
-> reference-group-only split boundary, absent protected holdout, unknown x86 runtime,
-> and all-pairs package-scale limit remain unresolved.
+> Retain the Phase 3 dual-view config as the provisional evaluation candidate
+> because it reaches 161/162 exact groups across fresh and prior-development
+> folds with zero merge damage, while the single-view Phase 2 control reaches
+> 160/162. Do not publish or submit it yet: the dual view is not wired into
+> `solution.py`, its all-pairs cost is approximately doubled, representative x86
+> runtime and a protected holdout remain unavailable, and the source metadata
+> cannot prove photoshoot/property-level split independence.

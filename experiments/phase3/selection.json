@@ -1,0 +1,42 @@
+{
+  "cumulative_development_evidence": {
+    "exact_groups": 161,
+    "merge_damaged_groups": 0,
+    "split_groups": 1,
+    "total_groups": 162
+  },
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "fresh_development": {
+    "baseline_exact_groups": 84,
+    "baseline_total_groups": 86,
+    "fold_hashes": [
+      "ff309ac0285b16a86749ccc7c06054e7636484547748f6a8436540b6be8d087d",
+      "87386062b168f0b74b1e7841f5b43fb022f6d4280b320b1a118509f92903f885",
+      "b8ebb028ac6c7d335e0c67c95d4d22faa2aafb80d19a9cd086b0712ab2462722"
+    ],
+    "selected_exact_groups": 85,
+    "selected_merge_damaged_groups": 0,
+    "selected_total_groups": 86,
+    "selected_worst_fold_exact_score": 0.9615384615384616
+  },
+  "limitations": [
+    "Phase 3 folds exclude all sample, Phase 1 reserved, and Phase 2 development groups, but remain reference-group-disjoint fallbacks because the manifest lacks photoshoot/property metadata.",
+    "The selected dual-view algorithm costs 2.003 times the single-view baseline on the fresh cold-cache comparison.",
+    "One coarse adjacent-view/composition-shift group remains conservatively split; exploratory structural and gradient distances showed no safe wrong-group margin.",
+    "The Phase 1 reserved slice was not rerun, and no protected holdout or leaderboard score exists.",
+    "The evaluation-only selection is not yet wired into solution.py; scale and packaging remain Phase 4 work."
+  ],
+  "phase2_regression": {
+    "exact_groups": 76,
+    "merge_damaged_groups": 0,
+    "split_groups": 0,
+    "total_groups": 76
+  },
+  "schema_version": 1,
+  "selected": {
+    "config_hash": "7a3494e8805d6e56c4f98220fedd1423511951978d79f8fc91b0a0ebdcd406ef",
+    "config_path": "configs/phase3/b2-dual-clahe.json",
+    "reason": "Fuse complete baseline-CLAHE and percentile-CLAHE pair decisions with a negative veto. This retains all Phase 2 development groups, recovers one of the two fresh Phase 3 baseline splits, creates no merge damage, and stays within the predeclared 2.25x runtime budget without relaxing any geometric or grouping threshold."
+  },
+  "status": "phase3_evaluation_selection_complete"
+}
