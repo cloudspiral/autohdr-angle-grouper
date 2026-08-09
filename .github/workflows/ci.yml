@@ -26,3 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build --platform linux/amd64 --tag autohdr-angle-grouper:ci .
+      - run: python tests/container_smoke.py prepare /tmp/autohdr-smoke-input
+      - run: mkdir -p /tmp/autohdr-smoke-output
+      - run: >-
+          docker run --rm --platform linux/amd64 --network none --read-only
+          --mount type=bind,src=/tmp/autohdr-smoke-input,dst=/input/images,readonly
+          --mount type=bind,src=/tmp/autohdr-smoke-output,dst=/output
+          autohdr-angle-grouper:ci
+      - run: python tests/container_smoke.py validate /tmp/autohdr-smoke-output/predictions.csv

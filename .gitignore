@@ -12,3 +12,4 @@ images/
 output/
 predictions.csv
 submission.zip
+artifacts/

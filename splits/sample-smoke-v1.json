@@ -1,0 +1,17 @@
+{
+  "dataset_fingerprint": "144796b2fbc2f2cbbe1dfcf8b640aa16f835d23e5266d85b0aaa3e6012315451",
+  "limitations": [
+    "The source manifest has no photoshoot or property boundary.",
+    "All 366 images are evaluated as one provisional smoke unit.",
+    "This split is not suitable for model selection or a generalization claim."
+  ],
+  "protected": false,
+  "schema_version": 1,
+  "seed": 0,
+  "selection": {
+    "type": "all"
+  },
+  "source_package": "official-sample-v1",
+  "split_id": "sample-smoke-v1",
+  "unit": "reference-group-only-fallback"
+}
