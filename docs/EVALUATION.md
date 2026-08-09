@@ -136,6 +136,28 @@ property boundary required for a leakage-safe development-fold claim. Do not run
 B2 all-pairs over all 2,126 images: that would require 2,258,875 pair
 comparisons, beyond the measured Phase 1 runtime profile.
 
+## Configuration sweeps
+
+Phase 2 sweep definitions commit candidate configs, fold paths, limitations, and
+the fixed zero-merge ranking policy before execution. Run one definition with:
+
+```bash
+.venv/bin/python -m autohdr_eval sweep \
+  --repo-root . \
+  --definition experiments/phase2/sweep-01-feature.json \
+  --dataset-root data/medium \
+  --manifest data/medium/public_manifest.csv \
+  --audit artifacts/datasets/autohdr-medium-5000-audit.json \
+  --output experiments/phase2/results-01-feature.json
+```
+
+The report records every config and split hash, per-fold run ID, exact metrics,
+aggregate micro/mean/worst-fold scores, merge and split damage, runtime, memory,
+and feature/pair-cache reuse. A candidate with any merge damage ranks behind all
+zero-merge candidates regardless of mean score. The Phase 1 exclusive slice is
+not part of sweep definitions and is evaluated only after selecting the Phase 2
+candidate.
+
 ## Split and holdout safety
 
 The sample package is smoke evidence only. It is not a protected holdout and is

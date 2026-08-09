@@ -1,0 +1,45 @@
+{
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "limitations": [
+    "The source manifest has no photoshoot or property boundary.",
+    "All advertised-sample groups and every group in medium-exclusive-100-v1 are excluded.",
+    "Eligible group IDs are ordered by SHA-256 of medium-dev-v1:<group_id> and greedily assigned to the currently smallest fold until each fold contains 100 images.",
+    "Reference-group-disjoint fallback folds do not prove photoshoot- or property-level leakage safety."
+  ],
+  "protected": false,
+  "schema_version": 1,
+  "seed": 0,
+  "selection": {
+    "type": "group_ids",
+    "values": [
+      "50128",
+      "65010",
+      "25219",
+      "22525",
+      "82083",
+      "50826",
+      "39128",
+      "8110",
+      "29433",
+      "70724",
+      "52636",
+      "27790",
+      "79018",
+      "92839",
+      "93142",
+      "61485",
+      "60641",
+      "83902",
+      "54236",
+      "48360",
+      "47143",
+      "78628",
+      "38084",
+      "5135",
+      "70089"
+    ]
+  },
+  "source_package": "official-medium-v1",
+  "split_id": "medium-dev-c-v1",
+  "unit": "reference-group-only-fallback"
+}

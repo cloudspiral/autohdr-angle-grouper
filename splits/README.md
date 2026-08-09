@@ -33,3 +33,12 @@ split excludes all 69 sample group IDs before selecting 24 complete medium-only
 reference groups totaling 100 images. It is fixed before B1/B2 scoring, but the
 lack of photoshoot/property metadata still prevents treating it as a valid
 tuning fold or protected holdout.
+
+`medium-dev-a-v1.json`, `medium-dev-b-v1.json`, and
+`medium-dev-c-v1.json` are three disjoint 100-image fallback development folds.
+They exclude every sample group and all 24 groups reserved in
+`medium-exclusive-100-v1`. The remaining group IDs are ordered by SHA-256 of
+`medium-dev-v1:<group_id>` and greedily assigned to the currently smallest fold;
+the fixed result contains 27, 24, and 25 complete reference groups. These folds
+support provisional configuration comparisons only because group-disjointness
+does not establish property/photoshoot independence.

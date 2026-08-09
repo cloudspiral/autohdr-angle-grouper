@@ -18,6 +18,7 @@ from autohdr_eval.runner import (
     validate_frozen_evaluation,
 )
 from autohdr_eval.scoring import score_csv
+from autohdr_eval.sweep import run_sweep
 
 
 def _print_json(value: Any) -> None:
@@ -86,6 +87,20 @@ def build_parser() -> argparse.ArgumentParser:
     gallery.add_argument("--dataset-root", type=Path, required=True)
     gallery.add_argument("--diagnostics", type=Path, required=True)
     gallery.add_argument("--output-dir", type=Path, required=True)
+
+    sweep = subparsers.add_parser(
+        "sweep", help="run a fixed candidate set across immutable development folds"
+    )
+    sweep.add_argument("--repo-root", type=Path, default=Path.cwd())
+    sweep.add_argument("--definition", type=Path, required=True)
+    sweep.add_argument("--dataset-root", type=Path, required=True)
+    sweep.add_argument("--manifest", type=Path, required=True)
+    sweep.add_argument("--audit", type=Path, required=True)
+    sweep.add_argument("--output", type=Path, required=True)
+    sweep.add_argument("--artifact-root", type=Path, default=Path("artifacts/runs"))
+    sweep.add_argument(
+        "--registry", type=Path, default=Path("artifacts/run-registry.sqlite3")
+    )
 
     fingerprint = subparsers.add_parser(
         "fingerprint", help="print canonical config or split fingerprints"
@@ -168,6 +183,19 @@ def main(argv: list[str] | None = None) -> int:
                 output_dir=args.output_dir.resolve(),
             )
         )
+        return 0
+    if args.command == "sweep":
+        result = run_sweep(
+            repo_root=args.repo_root.resolve(),
+            definition_path=args.definition.resolve(),
+            dataset_root=args.dataset_root.resolve(),
+            manifest_path=args.manifest.resolve(),
+            audit_path=args.audit.resolve(),
+            artifact_root=args.artifact_root.resolve(),
+            registry_path=args.registry.resolve(),
+        )
+        _write_json(args.output, result)
+        _print_json(result)
         return 0
     if args.command == "fingerprint":
         if bool(args.config) == bool(args.split):
