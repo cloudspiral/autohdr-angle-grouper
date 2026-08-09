@@ -264,8 +264,19 @@ Ordinary `run` rejects a split with `"protected": true`. The separate
 - the exact canonical split hash;
 - a split explicitly marked protected.
 
-No protected split should be created until package overlap and the best available
-photoshoot/property grouping unit are known.
+Phase 5 freezes `medium-final-holdout-v1.json` as the single protected split.
+It contains 400 images in 110 complete reference groups (18.8% of the audited
+medium package) and excludes all 255 groups used by earlier sample, reserved,
+Phase 2, or Phase 3 evaluations. The manifest exposes no photoshoot/property
+unit, so this remains an explicitly limited reference-group fallback.
+
+The holdout was evaluated exactly once from clean commit `532cc1b81211871198b0ec9c00ed8b986ed4b102`
+with config hash `8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e`
+and split hash `d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a`.
+It scored 109/110 exact groups, zero merge damage, and one split in 161.57
+seconds with 573,997,056-byte peak RSS under the locked native Python 3.11
+environment. Do not rerun or tune against this split. The immutable result is
+`experiments/phase5/final-holdout-result.json`.
 
 ## Interpretation boundaries
 

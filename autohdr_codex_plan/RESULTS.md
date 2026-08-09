@@ -4,16 +4,16 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 4 — scale and submission-entrypoint packaging complete
-- **Current champion:** Screened dual-view CLAHE submission entrypoint (provisional; no protected holdout)
-- **Frozen config:** `configs/phase4/b2-screened-dual-clahe.json`, config hash `8edd0d656ac4…`; packaged source proof `f14624d`
-- **Protected holdout touched:** No
+- **Phase:** Phase 5 — finalist frozen; human publication/upload handoff pending
+- **Current champion:** Screened dual-view CLAHE submission entrypoint (single recommended finalist)
+- **Frozen config:** `configs/phase4/b2-screened-dual-clahe.json`, config hash `8edd0d656ac4…`; protected evaluation source `532cc1b`
+- **Protected holdout touched:** Yes, exactly once; 109/110 exact groups, zero merge damage
 - **Submission published:** No
 - **Last updated:** 2026-08-09
 
 ## Current recommendation
 
-Promote the Phase 4 screened dual-view config as the provisional submission
+Retain the screened dual-view config as the single recommended submission
 candidate while retaining B1, single-view Phase 2, and full-pair Phase 3 as
 controls. The screen uses B1 structural distance only to nominate the union of
 12 nearest neighbors above 64 images; every group edge still requires the
@@ -22,11 +22,13 @@ development partitions byte-for-byte: 161/162 exact groups, zero merge damage,
 995/998 same-group candidate recall, and connectivity for 161/162 groups. At
 100 images it retains at most 17.394% of pairs; at 366 images it retains 4.785%.
 The exact cache-free entrypoint completes the 366-image native probe twice in
-about 119 seconds with at most 637 MB RSS and identical output. Required Python
-and `linux/amd64` container CI pass, including a nontrivial grouped pair under
-read-only/no-network execution. Representative x86 machine-profile timing,
-photoshoot-level split independence, a protected holdout, image publication,
-and leaderboard evidence remain unavailable.
+about 119 seconds with at most 637 MB RSS and identical output. Its one protected
+400-image run scores 109/110 exact groups with zero merges in 161.57 seconds and
+574 MB RSS; candidate recall/connectivity are complete and the lone error is a
+conservative split. Required Python and `linux/amd64` container CI pass for the
+Phase 4 source; Phase 5 pinned-image CI is pending. Representative x86
+machine-profile timing, photoshoot-level split independence, public image
+publication, and leaderboard evidence remain unavailable.
 
 ## Source and rule audit
 
@@ -74,7 +76,7 @@ and leaderboard evidence remain unavailable.
 | medium-exclusive-100-v1 | Reference-group-only fallback; all sample group IDs excluded | Advertised 5K medium | 100 images / 24 groups | Dataset `b06b3319f878…`; split `b71a717e8fad…` | Fixed Phase 1 generalization check only |
 | medium-dev-a/b/c-v1 | Reference-group-only fallback; sample and reserved groups excluded | Advertised 5K medium | 300 images / 76 distinct groups across three 100-image folds | Splits `f7194b1ce20e…`, `88f9dfad6992…`, `e568d3f37aa4…` | Phase 2 configuration selection only |
 | medium-phase3-dev-a/b/c-v1 | Reference-group-only fallback; all 169 prior sample, reserved, and Phase 2 development groups excluded | Advertised 5K medium | 300 images / 86 distinct groups across three 100-image folds | Splits `ff309ac0285b…`, `87386062b168…`, `b8ebb028ac6c…` | Fresh Phase 3 architecture selection only |
-| final-holdout-v1 | Pending | — | — | — | One-time final validation |
+| medium-final-holdout-v1 | Reference-group-only fallback; all 255 previously used groups excluded | Advertised 5K medium | 400 images / 110 groups | Dataset `b06b3319f878…`; split `d54349e11053…` | One-time protected validation; scored once from `532cc1b` |
 
 ## Baselines
 
@@ -92,13 +94,14 @@ and leaderboard evidence remain unavailable.
 | B2-Phase3-regression | Selected dual-view config | medium-dev-a/b/c-v1 | 76/76 = 1.0000 | 71/71 = 1.0000 | 0 | 0 | 121.92 s cold | 467.1 MB max | Required no-regression gate; not fresh selection evidence |
 | B2-Phase4-screened | Structural top-12 candidates + selected dual views | All six Phase 2/3 development folds | 161/162 = 0.9938 | 146/147 = 0.9932 | 0 | 1 | 250.09 s cold across six sequential folds | 439.6 MB max fresh / 425.5 MB max prior | Byte-identical to full dual on all six folds; packaging selection |
 | B2-Phase4-scale | Exact cache-free `solution.py` entrypoint | Nested sample resource probes | Not used for accuracy selection | Not used | Not scored | Not scored | 12.02 / 38.65 / 74.76 / 119.22 s at 51/102/203/366 images | 637.1 MB max | Repeated 366 hash-identical; native arm64 resource evidence only |
+| B2-Phase5-holdout | Frozen screened dual entrypoint | medium-final-holdout-v1 | 109/110 = 0.9909 | 99/100 = 0.9900 | 0 | 1 | 161.57 s | 574.0 MB | One and only protected run from clean commit `532cc1b`; no post-result tuning |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | Screened fresh `5db86b6b01`, `f04205bf73`, `d3403b0413`; screened prior `0af7adca29`, `060f0f0529`, `0e255e5288`; CI run `31296540040` |
-| Git commit | Screen implementation `c2ac7e5`; two-worker scale source `3847c128059f29319c82eb58e24551c26fa89e6d`; packaged CI source `f14624d` |
+| Run ID | Screened fresh `5db86b6b01`, `f04205bf73`, `d3403b0413`; screened prior `0af7adca29`, `060f0f0529`, `0e255e5288`; protected `20260809T053342Z-b2-screened-dual-clahe-b4da2aeebf`; Phase 4 CI `31296540040` |
+| Git commit | Screen implementation `c2ac7e5`; two-worker scale source `3847c128059f29319c82eb58e24551c26fa89e6d`; protected evaluation source `532cc1b81211871198b0ec9c00ed8b986ed4b102` |
 | Config hash | `8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e` |
 | Architecture | B1 structural top-12 candidate union above 64 images; complete baseline-CLAHE and percentile-stretched RootSIFT/RANSAC evidence on candidates; negative-veto fusion; support-aware grouping |
 | Mean fresh exact score | 0.9872 across three folds; micro 85/86 = 0.9884 |
@@ -106,10 +109,11 @@ and leaderboard evidence remain unavailable.
 | Non-singleton exact score | Fresh 75/76 = 0.9868; prior development 71/71 = 1.0000 |
 | Merge damage | 0 across all six development/regression folds |
 | Split groups | 1 fresh; 0 prior-development regression |
+| Protected holdout | 109/110 exact, 99/100 non-singleton, 10/10 singleton; 0 merges and 1 split; candidate recall/connectivity 1.0 |
 | Runtime / batch size | Exact cache-free entrypoint: 119.22 s maximum across two 366-image native arm64 runs; 3,196/66,795 candidates per view |
 | Peak RSS | 637.1 MB maximum on repeated 366-image native runs |
 | Why selected | Produces the full dual-view partition byte-for-byte on all six development folds, removes over 82% of expensive 100-image pairs, remains deterministic at 366 images, and passes the exact offline container contract without model assets |
-| Known risks | One unresolved adjacent-view split and candidate disconnect; cheap structural screen remains quadratic; private batch sizes and representative x86 timing are unknown; reference-group-only split boundary; untouched protected holdout and leaderboard |
+| Known risks | One development candidate disconnect and one protected geometry split; cheap structural screen remains quadratic; private batch sizes and representative x86 timing are unknown; reference-group-only split boundary; no leaderboard evidence |
 
 ## Experiment log
 
@@ -133,6 +137,7 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 | 2026-08-09 | Bound OpenCV workers on the smallest machine profile | Host default | Requested 1, 2, 4, 8 | All prediction hashes identical | 18.44 s at 1; 12.00/11.99/12.06 s at 2/4/8 on 51 images | Select 2 by the predeclared lower-thread tie rule | `experiments/phase4/thread-benchmark-decision.json` |
 | 2026-08-09 | Exact cache-free submission scale and determinism | 51-image all-pairs probe | 102/203/366 screened probes | Accuracy intentionally not compared on nested resource subsets; repeated 366 partition hashes match | 12.02/38.65/74.76/119.22 s; 366 max 637.1 MB and 3,196/66,795 candidates | Accept native scale gate with 15.1x headroom under 30 minutes; retain x86 timing limitation | `experiments/phase4/native-scale-results.json` |
 | 2026-08-09 | Exact native and read-only/no-network `linux/amd64` contract | Trivial Phase 0 smoke | Textured identical-pixel pair through promoted entrypoint | Native and container both place the two randomized names in one group | Python 18 s; container build/smoke 22 s | Accept Phase 4 packaging gate; no local daemon bypass or image publication | CI run `31296540040`, jobs `93202426775`, `93202426802` |
+| 2026-08-09 | One-time protected validation after complete Phase 5 freeze | Frozen screened dual entrypoint | No comparison candidate permitted | 109/110 exact; 99/100 non-singleton; 10/10 singleton; zero merge damage; one split; candidate recall/connectivity 1.0 | 161.57 s / 574.0 MB / 3,515 of 79,800 candidates on locked native arm64 Python 3.11 | Accept the frozen finalist without tuning; proceed only with packaging, CI, and human handoff | `experiments/phase5/final-holdout-result.json` |
 
 ## Decision log
 
@@ -214,6 +219,16 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Revisit when:** Actual 8-vCPU/16-GB or 16-vCPU/32-GB container benchmarks contradict native headroom.
 - **Related runs:** `experiments/phase4/thread-benchmark-decision.json`, `native-scale-results.json`, `selection.json`; CI jobs `93202426775`, `93202426802`
 
+### D-010 — Freeze one finalist after the protected holdout
+
+- **Status:** Accepted for human publication review
+- **Hypothesis:** The screened dual-view entrypoint selected entirely on development evidence will retain its high exact-group rate and zero-merge profile on 400 previously unused images without requiring a second finalist.
+- **Evidence:** The fail-closed command ran once from clean commit `532cc1b81211871198b0ec9c00ed8b986ed4b102` with matching config and split hashes. It scored 109/110 exact groups, including 99/100 non-singletons and 10/10 singletons, with zero merge damage and one 4+1 split. Screening retained every same-group pair and connected all 110 reference groups. The cache-free locked Python 3.11 run took 161.57 seconds and 574.0 MB RSS for 400 images.
+- **Tradeoffs:** The source manifest still cannot establish photoshoot/property independence, representative x86 full-batch timing is unavailable, and the holdout must not become another tuning fold. A post-result Dockerfile-only exception pins the already-resolved official Python 3.11 Linux/AMD64 manifest digest; solution code, config, split, and Python dependencies remain unchanged.
+- **Decision:** Advance candidate A as the single finalist. Do not run candidate B on the holdout and do not adjust geometry or grouping thresholds. Prepare deterministic submission artifacts and wait for human Docker Hub/Codabench action.
+- **Revisit when:** Only a clear container contract defect, organizer rule change, or materially different future dataset justifies new work; never reuse this holdout for selection.
+- **Related runs:** `experiments/phase5/freeze.json`, `final-holdout-result.json`, `selection.json`
+
 ### Decision template
 
 #### D-XXX — Title
@@ -232,10 +247,11 @@ Rank by the number of reference groups damaged, not merely the number of pair er
 
 | Rank | Failure category | Groups damaged | Typical evidence | Current hypothesis | Next test |
 |---:|---|---:|---|---|---|
-| 1 | Adjacent-view / composition-shift false split | 1 fresh Phase 3 group | Group 39901 remains 1+3 under both single and dual views; its bright oblique kitchen frame differs from three darker frontal views | Existing structural and direct-gradient descriptors place wrong-group images as close as the coarse same-label view, so a fallback would risk false merges | Stop the Phase 3 architecture loop; collect genuinely independent cases before designing an adjacent-view model |
-| 2 | Extreme-exposure false split | 0 selected fresh groups; 1 under the frozen baseline | Group 18127's dark frame has only seven keypoints and no baseline mutual matches; percentile-CLAHE safely restores the exact group | Complementary normalization can expose enough geometry without globally replacing the baseline view | Preserve dual-view negative-veto fusion and verify its runtime path during packaging |
-| 3 | Low-texture exposure attachment boundary | 0 selected prior-development groups; 1 under percentile-only or count 7 | Group 18608 needs one six-inlier baseline edge; percentile-only preprocessing or a count-7 boundary splits it | Neither preprocessing view dominates globally; strict decision fusion retains the safe baseline attachment | Preserve both views and the frozen count-6 policy |
-| 4 | Previously observed reserved adjacent-view/extreme-exposure splits | 2 Phase 1 reserved groups, not reevaluated in Phase 3 | Groups 11393 and 11479 remain the one-time Phase 1/2 evidence | Reusing the reserved slice during architecture selection would leak it into the loop | Keep the historical record only; do not infer Phase 3 behavior without a future predeclared validation step |
+| 1 | Protected insufficient-geometry split | 1 protected group | The five-image group is split 4+1 even though candidate screening preserves full true-group connectivity; the isolated frame has only unknown direct edges | The conservative positive-evidence policy avoids merging without sufficient geometry | Document only; never tune or rerun the protected split |
+| 2 | Adjacent-view / composition-shift false split | 1 fresh Phase 3 group | Group 39901 remains 1+3 under both single and dual views; its bright oblique kitchen frame differs from three darker frontal views | Existing structural and direct-gradient descriptors place wrong-group images as close as the coarse same-label view, so a fallback would risk false merges | Stop the Phase 3 architecture loop; collect genuinely independent cases before designing an adjacent-view model |
+| 3 | Extreme-exposure false split | 0 selected fresh groups; 1 under the frozen baseline | Group 18127's dark frame has only seven keypoints and no baseline mutual matches; percentile-CLAHE safely restores the exact group | Complementary normalization can expose enough geometry without globally replacing the baseline view | Preserve dual-view negative-veto fusion and verify its runtime path during packaging |
+| 4 | Low-texture exposure attachment boundary | 0 selected prior-development groups; 1 under percentile-only or count 7 | Group 18608 needs one six-inlier baseline edge; percentile-only preprocessing or a count-7 boundary splits it | Neither preprocessing view dominates globally; strict decision fusion retains the safe baseline attachment | Preserve both views and the frozen count-6 policy |
+| 5 | Previously observed reserved adjacent-view/extreme-exposure splits | 2 Phase 1 reserved groups, not reevaluated in Phase 3 | Groups 11393 and 11479 remain the one-time Phase 1/2 evidence | Reusing the reserved slice during architecture selection would leak it into the loop | Keep the historical record only; do not infer Phase 3 behavior without a future predeclared validation step |
 
 Suggested categories:
 
@@ -313,34 +329,33 @@ Do not fill this section until the champion is frozen.
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | CI-built only; no published digest | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | Phase 1 reserved not rerun; no protected holdout | 119.22 s / 637.1 MB native arm64 at 366 images | Screened dual-view classical; one known candidate disconnect; unknown representative x86 timing | Recommended provisional finalist; freeze/holdout and human publication handoff remain |
-| B | Pending Phase 4 comparison | `855c7c577719…` | 160/162 on the same six folds | Phase 1 reserved 22/24 under the one-time Phase 2 run; no protected holdout | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional fresh split; lower runtime | Retain as the runtime fallback |
-| C | — | — | — | — | — | Learned/retrieval variant | — |
+| A | Phase 5 CI-local identity pending; public digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 `linux/amd64` smoke pending | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
+| B | Not built as a finalist | `855c7c577719…` | 160/162 on the same six folds | Not run; protected comparison intentionally forbidden | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional development split; lower runtime | Preserve as historical runtime control, not a finalist |
 
 ## Submission handoff
 
 Complete this section before asking for human approval. Do not place credentials in the repository.
 
-- **Recommended candidate:**
-- **Local image tag:**
-- **Local image digest:**
-- **Public tag to use after approval:**
-- **`submission.yaml` path:**
-- **`submission.zip` path:**
-- **Docker Hub push commands prepared:** Yes / No
-- **Codabench upload checklist prepared:** Yes / No
+- **Recommended candidate:** A — screened dual-view CLAHE
+- **Local image tag:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
+- **Local image digest:** Pending Phase 5 CI; local daemon unavailable and not bypassed
+- **Public tag to use after approval:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
+- **`submission.yaml` path:** `submission.yaml`
+- **`submission.zip` path:** `submission.zip` (local, gitignored; deterministic SHA-256 `100d1058699d…` while placeholders remain)
+- **Docker Hub push commands prepared:** Yes, `docs/SUBMISSION_HANDOFF.md`
+- **Codabench upload checklist prepared:** Yes, `docs/SUBMISSION_HANDOFF.md`
 - **Human approval received:** No
 - **Public image pushed:** No
 - **Codabench upload performed:** No
 
 ## Submission preparation checklist
 
-- [ ] Recommended finalist image tag and immutable digest recorded
+- [ ] Recommended finalist public registry digest recorded after human push
 - [ ] Public Docker repository name chosen by the user
-- [ ] `submission.yaml` validated with the selected machine type and registered email placeholder/value
-- [ ] `submission.zip` created and inspected
-- [ ] Exact Docker tag/push commands documented
-- [ ] Exact Codabench upload steps documented
+- [x] `submission.yaml` validated with `cpu-large` and explicit namespace/email placeholders
+- [x] `submission.zip` created and inspected; it contains only byte-identical `submission.yaml`
+- [x] Exact Docker tag/push commands documented
+- [x] Exact Codabench upload steps documented
 - [ ] Human approval obtained before any external publication or submission
 
 ## Codabench submissions
@@ -351,11 +366,11 @@ Complete this section before asking for human approval. Do not place credentials
 
 ## Final recommendation
 
-> Retain the Phase 4 screened dual-view entrypoint as the provisional finalist.
-> It reproduces the full champion's 161/162 development groups with zero merge
-> damage, removes more than 82% of expensive pairs at 100 images, completes the
-> exact 366-image native path twice in about 119 seconds with identical output,
-> and passes the offline `linux/amd64` container contract. Do not publish or
-> submit it yet: representative x86 timing, a protected holdout, an immutable
-> local/public image digest, and photoshoot-level split independence remain
-> unavailable.
+> Advance the screened dual-view entrypoint as the single Phase 5 finalist. It
+> reproduces 161/162 development groups with zero merge damage and scores
+> 109/110 on the one-time 400-image protected fallback holdout with zero merges.
+> The exact native path remains deterministic and comfortably inside the strict
+> runtime/memory targets. Do not retune or rerun the holdout. Await green Phase 5
+> `linux/amd64` CI and human Docker Hub/Codabench action; public image digest,
+> representative x86 full-batch timing, photoshoot-level split independence,
+> and leaderboard evidence remain unavailable.

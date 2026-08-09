@@ -11,8 +11,8 @@ handed back as a tested pull request for human review.
 
 ## Current status
 
-The checked-in `solution.py` is now the deterministic, CPU-only Phase 4
-submission candidate. It uses a cheap structural screen to nominate pairs, then
+The checked-in `solution.py` is the deterministic, CPU-only Phase 5 finalist.
+It uses a cheap structural screen to nominate pairs, then
 requires local geometric evidence before grouping. It preserves the challenge's
 public function, input mount, and CSV output contracts without runtime downloads,
 model weights, persistent caches, filename-derived grouping, or network services.
@@ -24,14 +24,17 @@ auditing, and a protected-holdout gate. See
 [`docs/EVALUATION.md`](docs/EVALUATION.md).
 
 The screened entrypoint reproduces the full Phase 3 dual-view partition on all
-six development folds: 161/162 exact groups with zero merge damage. At 100
+six development folds: 161/162 exact groups with zero merge damage. Its single
+protected run from clean frozen commit `532cc1b` scores 109/110 exact groups
+(99.09%) with zero merge damage and one conservative split. At 100
 images it evaluates at most 861 of 4,950 possible pairs per view. The exact
 cache-free native path completes the 366-image public resource probe twice in
 about 119 seconds with a maximum 637 MB RSS and identical predictions. GitHub
 Actions also passes the nontrivial native smoke and the read-only, no-network
-`linux/amd64` container job. These remain provisional reference-group-disjoint
-measurements, not a protected-holdout, photoshoot-level, representative x86
-runtime, or leaderboard claim.
+`linux/amd64` container job. The holdout is reference-group-disjoint from all
+previous evidence but is not photoshoot/property-disjoint because the organizer
+did not supply that metadata. Representative x86 full-batch timing and
+leaderboard performance remain unmeasured.
 
 ## Grouping algorithm
 
@@ -80,6 +83,9 @@ The runtime values are frozen in `configs/phase4/b2-screened-dual-clahe.json`:
 - Candidate screening can miss unusual true partners. Across the six development
   folds it retains 995/998 same-group pairs and connectivity for 161/162 groups;
   the one disconnected group is the already-unrecovered adjacent-view label.
+- The protected holdout's candidate graph contains every true group, but one
+  five-image group is conservatively split 4+1 by insufficient direct geometry.
+  No tuning was performed after that one-time result.
 - Feature extraction and the cheap exact structural screen still grow with input
   count, and representative private photoshoot sizes are unavailable.
 - `linux/amd64` build and contract behavior are proven in CI, but representative
@@ -106,7 +112,7 @@ Python 3.11 is the reference runtime.
 
 ```bash
 python3.11 -m venv .venv
-.venv/bin/python -m pip install --requirement requirements-dev.txt
+.venv/bin/python -m pip install --requirement requirements-dev.lock
 .venv/bin/ruff check .
 .venv/bin/python -m pytest
 ```
@@ -142,10 +148,13 @@ group; partial overlaps receive no credit. See [`SCORING.md`](SCORING.md).
 
 ## Submission boundary
 
-The repository can build a submission, but no unattended agent may register for
-the contest, publish a Docker image, upload to Codabench, or merge its own pull
-request. Those remain explicit human actions. Copy and edit `submission.yaml`
-only when you are ready to publish under your own Docker Hub and contest account.
+The repository can build and validate the human-gated `submission.zip`, but no
+unattended agent may register for the contest, publish a Docker image, upload to
+Codabench, or merge its own pull request. Those remain explicit human actions.
+Copy and edit `submission.yaml` only when you are ready to publish under your
+own Docker Hub and contest account.
+See [`docs/SUBMISSION_HANDOFF.md`](docs/SUBMISSION_HANDOFF.md) for the frozen
+tag, exact commands, remaining placeholders, and external-action checklist.
 
 ## Upstream provenance
 

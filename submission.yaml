@@ -9,6 +9,6 @@
 #   cpu-large  — 8 vCPU, 16 GB RAM, 60 min timeout
 #   cpu-xlarge — 16 vCPU, 32 GB RAM, 60 min timeout
 
-docker_image: your-dockerhub-username/your-solution:v1
-machine_type: cpu-xlarge
-email: your-registered-email@example.com
+docker_image: YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b
+machine_type: cpu-large
+email: YOUR_CODABENCH_EMAIL
