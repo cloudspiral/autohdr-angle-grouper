@@ -18,9 +18,9 @@ It scored 60/69 exact groups on the official sample smoke unit versus B0's 5/69,
 with no observed merge damage and nine split groups. Do not tune on this package:
 it has no photoshoot boundary, contains only 366 of the advertised 500 images,
 and leaks every group ID in the public filename. Local Phase 0 contract,
-diagnostic, determinism, and container smoke checks pass; clean-commit evidence
-and GitHub Actions remain pending. Audit a larger package before development-fold
-selection or any B1 tuning.
+diagnostic, determinism, clean-commit evaluation, and container smoke checks
+pass; GitHub Actions remains pending. Audit a larger package before
+development-fold selection or any B1 tuning.
 
 ## Source and rule audit
 
@@ -70,16 +70,16 @@ selection or any B1 tuning.
 
 | Run | System | Split | Exact score | Non-singleton exact | Merge damage | Split groups | Runtime | Peak RSS | Status |
 |---|---|---|---:|---:|---:|---:|---:|---:|---|
-| B0 | Singleton contract baseline | sample-smoke-v1 | 5/69 = 0.0725 | 0/64 | 0 | 64 | 0.006 s | 72.5 MB | Passed; smoke only |
-| B1 | Direct structural baseline, threshold 0.16 | sample-smoke-v1 | 60/69 = 0.8696 | 55/64 = 0.8594 | 0 | 9 | 45.07 s | 306.6 MB | Passed; provisional smoke leader |
+| B0 | Singleton contract baseline | sample-smoke-v1 | 5/69 = 0.0725 | 0/64 | 0 | 64 | 0.006 s | 70.1 MB | Passed from clean commit; smoke only |
+| B1 | Direct structural baseline, threshold 0.16 | sample-smoke-v1 | 60/69 = 0.8696 | 55/64 = 0.8594 | 0 | 9 | 45.03 s | 386.9 MB | Passed from clean commit; provisional smoke leader |
 | B2 | Classical geometry baseline | — | — | — | — | — | — | — | Pending |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | `20260809T023729Z-b1-structural-79d844449b` |
-| Git commit | `25c3a6a9887a8d7bb2f3eb77275ed0e85e879e02` with recorded dirty tree during Phase 0 implementation |
+| Run ID | `20260809T024238Z-b1-structural-597087c3ee` |
+| Git commit | `b482089817302e012d7534dd8f3159c6191af2a1` with `dirty_tree: false` recorded by the run harness |
 | Config hash | `bf7e31050b00b3352903e4c0239017d26fb31e401643e826aae89c4aaa57ae35` |
 | Architecture | Exposure-normalized pooled luminance/Sobel descriptor + 0.16 cosine threshold connected components |
 | Mean dev exact score | Not measured; sample smoke score 0.8696 |
@@ -87,8 +87,8 @@ selection or any B1 tuning.
 | Non-singleton exact score | Sample smoke 55/64 = 0.8594 |
 | Merge damage | 0 sample reference groups |
 | Split groups | 9 sample reference groups |
-| Runtime / batch size | 45.07 s / 366 high-resolution images / 66,795 candidate pairs on Apple Silicon host Python |
-| Peak RSS | 306.6 MB |
+| Runtime / batch size | 45.03 s / 366 high-resolution images / 66,795 candidate pairs on Apple Silicon host Python |
+| Peak RSS | 386.9 MB |
 | Why selected | Existing simple deterministic baseline materially beats B0 without observed sample merge damage |
 | Known risks | Smoke package is not a photoshoot unit; nine splits; filenames leak labels; no dev-fold, x86 container-runtime, or leaderboard evidence |
 
@@ -98,8 +98,8 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 
 | Date | Hypothesis / sweep | Baseline | Candidate(s) | Development result | Resource result | Decision | Run/report |
 |---|---|---|---|---|---|---|---|
-| 2026-08-08 | Trustworthy Phase 0 harness and untuned full-sample smoke | B0 | B1 at existing 0.16 | B0 5/69; B1 60/69; no threshold sweep | B1 45.07 s, 306.6 MB on 366-image batch | Retain B1 unchanged; diagnose splits and move calibration to larger audited data | SQLite registry + content-addressed run artifacts |
-| 2026-08-08 | Early B1 scale curve on nested whole-group smoke subsets | B1-51 | B1-102, B1-203, B1-366 | Accuracy is non-comparable across nested smoke subsets and was not used for selection | 51: 7.04 s / 1,275 pairs; 102: 15.27 s / 5,151; 203: 27.84 s / 20,503; 366: 45.07 s / 66,795 | Keep all-pairs B1 as a measured baseline; private batch size and x86 timing remain unknown | Runs `da43343699`, `8a48a89669`, `d0fb52d126`, `79d844449b` |
+| 2026-08-08 | Trustworthy Phase 0 harness and untuned full-sample smoke | B0 | B1 at existing 0.16 | B0 5/69; B1 60/69; no threshold sweep; both repeated from clean commit `b482089` | B1 45.03 s, 386.9 MB on 366-image batch | Retain B1 unchanged; diagnose splits and move calibration to larger audited data | Clean runs `4087578661`, `597087c3ee` |
+| 2026-08-08 | Early B1 scale curve on nested whole-group smoke subsets | B1-51 | B1-102, B1-203, B1-366 | Accuracy is non-comparable across nested smoke subsets and was not used for selection | 51: 7.04 s / 1,275 pairs; 102: 15.27 s / 5,151; 203: 27.84 s / 20,503; 366 clean repeat: 45.03 s / 66,795 | Keep all-pairs B1 as a measured baseline; private batch size and x86 timing remain unknown | Runs `da43343699`, `8a48a89669`, `d0fb52d126`, `597087c3ee` |
 
 ## Decision log
 
@@ -129,7 +129,7 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Tradeoffs:** Connected-component chaining remains architecturally risky, and the sample cannot establish a robust threshold or generalization score.
 - **Decision:** Preserve B1 and its 0.16 threshold; add B2 and tri-state grouping only as controlled comparisons.
 - **Revisit when:** Larger audited development folds show B1 failure modes or a controlled candidate materially improves exact-group performance.
-- **Related runs:** `20260809T023828Z-b0-singletons-a19277b884`, `20260809T023729Z-b1-structural-79d844449b`
+- **Related runs:** `20260809T024233Z-b0-singletons-4087578661`, `20260809T024238Z-b1-structural-597087c3ee`
 
 ### Decision template
 
@@ -201,7 +201,7 @@ Do not fill this section until the champion is frozen.
 | Native/container predictions match | Pass on smoke fixture | Both CSVs SHA-256 `bbc7fc14db616169382d9f163b443e36f94eaaea27ee5ac7a112798267af239a` |
 | 8 vCPU / 16 GB benchmark | Pending | — |
 | 16 vCPU / 32 GB benchmark | Pending | — |
-| Runtime headroom | Partial only | Native B1 smoke batch: 45.07 s for 366 high-resolution images; 51/102/203-image scale points are also recorded, but private batch size and x86 runtime remain unknown |
+| Runtime headroom | Partial only | Clean-commit native B1 smoke batch: 45.03 s for 366 high-resolution images; 51/102/203-image scale points are also recorded, but private batch size and x86 runtime remain unknown |
 | Packaged asset licenses/checksums | No model assets | Runtime image contains Python, NumPy, OpenCV, source package, and solution entrypoint only |
 
 ## Submission candidates
