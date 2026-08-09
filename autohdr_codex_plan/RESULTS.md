@@ -4,29 +4,29 @@ This is the living human-readable summary. The machine-readable run registry and
 
 ## Current status
 
-- **Phase:** Phase 3 — bounded researcher loop complete; scale and packaging next
-- **Current champion:** B2 dual-view CLAHE evaluation configuration (provisional; no protected holdout)
-- **Frozen config:** `configs/phase3/b2-dual-clahe.json`, selected at commit `96d0b56f1cd95e010ad210d8dadaf88e0a31019d`, config hash `7a3494e8805d…`
+- **Phase:** Phase 4 — scale and submission-entrypoint packaging complete
+- **Current champion:** Screened dual-view CLAHE submission entrypoint (provisional; no protected holdout)
+- **Frozen config:** `configs/phase4/b2-screened-dual-clahe.json`, config hash `8edd0d656ac4…`; packaged source proof `f14624d`
 - **Protected holdout touched:** No
 - **Submission published:** No
-- **Last updated:** 2026-08-08
+- **Last updated:** 2026-08-09
 
 ## Current recommendation
 
-Retain B1 and the single-view Phase 2 B2 config as controls, and promote the
-Phase 3 dual-view config as the provisional evaluation leader. Three new
-100-image folds exclude every sample, Phase 1 reserved, and Phase 2 development
-group. The frozen Phase 2 baseline scored 84/86; percentile-stretched CLAHE
-recovered one extreme-shadow group but regressed a prior six-inlier attachment,
-so it was rejected alone. Negative-veto decision fusion preserves both views'
-safe evidence: it scores 85/86 on the fresh folds and 76/76 on the earlier
-Phase 2 folds, for 161/162 cumulative exact groups with zero merge damage. Its
-one remaining fresh error is a conservative adjacent-view/composition-shift
-split for which exploratory descriptors showed no safe wrong-group margin.
-Dual-view cold runtime is 2.003 times the single-view baseline and all-pairs
-scale remains unresolved. This is evaluation-only evidence: `solution.py` still
-runs B1, the Phase 1 reserved slice was not rerun, no protected holdout was
-touched, and no leaderboard or photoshoot-level claim is made.
+Promote the Phase 4 screened dual-view config as the provisional submission
+candidate while retaining B1, single-view Phase 2, and full-pair Phase 3 as
+controls. The screen uses B1 structural distance only to nominate the union of
+12 nearest neighbors above 64 images; every group edge still requires the
+frozen dual-view RootSIFT/RANSAC evidence. It reproduces all six full-dual
+development partitions byte-for-byte: 161/162 exact groups, zero merge damage,
+995/998 same-group candidate recall, and connectivity for 161/162 groups. At
+100 images it retains at most 17.394% of pairs; at 366 images it retains 4.785%.
+The exact cache-free entrypoint completes the 366-image native probe twice in
+about 119 seconds with at most 637 MB RSS and identical output. Required Python
+and `linux/amd64` container CI pass, including a nontrivial grouped pair under
+read-only/no-network execution. Representative x86 machine-profile timing,
+photoshoot-level split independence, a protected holdout, image publication,
+and leaderboard evidence remain unavailable.
 
 ## Source and rule audit
 
@@ -90,24 +90,26 @@ touched, and no leaderboard or photoshoot-level claim is made.
 | B2-Phase3-baseline | Frozen Phase 2 single-view config | medium-phase3-dev-a/b/c-v1 | 84/86 = 0.9767 | 74/76 = 0.9737 | 0 | 2 | 64.25 s cold comparison | 554.7 MB max | Fresh-fold control; no selection changes |
 | B2-Phase3-dual | Baseline + percentile-CLAHE decision fusion | medium-phase3-dev-a/b/c-v1 | 85/86 = 0.9884 | 75/76 = 0.9868 | 0 | 1 | 128.69 s cold | 551.2 MB max | Selected after passing fresh and prior-development gates |
 | B2-Phase3-regression | Selected dual-view config | medium-dev-a/b/c-v1 | 76/76 = 1.0000 | 71/71 = 1.0000 | 0 | 0 | 121.92 s cold | 467.1 MB max | Required no-regression gate; not fresh selection evidence |
+| B2-Phase4-screened | Structural top-12 candidates + selected dual views | All six Phase 2/3 development folds | 161/162 = 0.9938 | 146/147 = 0.9932 | 0 | 1 | 250.09 s cold across six sequential folds | 439.6 MB max fresh / 425.5 MB max prior | Byte-identical to full dual on all six folds; packaging selection |
+| B2-Phase4-scale | Exact cache-free `solution.py` entrypoint | Nested sample resource probes | Not used for accuracy selection | Not used | Not scored | Not scored | 12.02 / 38.65 / 74.76 / 119.22 s at 51/102/203/366 images | 637.1 MB max | Repeated 366 hash-identical; native arm64 resource evidence only |
 
 ## Champion summary
 
 | Field | Value |
 |---|---|
-| Run ID | Fresh runs `440af1ffb8`, `ab66a7d842`, `3dec020a50`; prior-development regression runs `1fba9018d8`, `ca5607d71e`, `468b936eab` |
-| Git commit | Candidate evaluated from clean implementation commit `43dd34118bf5f01fb07cca18fb33556de14020f7`; selection recorded at `96d0b56f1cd95e010ad210d8dadaf88e0a31019d` |
-| Config hash | `7a3494e8805d6e56c4f98220fedd1423511951978d79f8fc91b0a0ebdcd406ef` |
-| Architecture | Complete baseline-CLAHE and percentile-stretched-CLAHE RootSIFT/RANSAC views; negative-veto decision fusion; one tri-state support grouping pass |
+| Run ID | Screened fresh `5db86b6b01`, `f04205bf73`, `d3403b0413`; screened prior `0af7adca29`, `060f0f0529`, `0e255e5288`; CI run `31296540040` |
+| Git commit | Screen implementation `c2ac7e5`; two-worker scale source `3847c128059f29319c82eb58e24551c26fa89e6d`; packaged CI source `f14624d` |
+| Config hash | `8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e` |
+| Architecture | B1 structural top-12 candidate union above 64 images; complete baseline-CLAHE and percentile-stretched RootSIFT/RANSAC evidence on candidates; negative-veto fusion; support-aware grouping |
 | Mean fresh exact score | 0.9872 across three folds; micro 85/86 = 0.9884 |
 | Worst-fold exact score | 0.9615 fresh; 1.0000 on the prior-development regression folds |
 | Non-singleton exact score | Fresh 75/76 = 0.9868; prior development 71/71 = 1.0000 |
 | Merge damage | 0 across all six development/regression folds |
 | Split groups | 1 fresh; 0 prior-development regression |
-| Runtime / batch size | 128.69 s cold across three sequential 100-image folds; 2.003x the comparable single-view run |
-| Peak RSS | 551.2 MB maximum across the fresh cold runs |
-| Why selected | Recovers complementary exposure failures without relaxing geometry or grouping thresholds, improves fresh exact recovery by one group, and preserves 76/76 prior-development groups with zero merges |
-| Known risks | Evaluation-only until Phase 4 packaging; approximately doubled runtime; all-pairs package scaling; one unresolved adjacent-view split; reference-group-only split boundary; unknown x86 runtime; untouched protected holdout and leaderboard |
+| Runtime / batch size | Exact cache-free entrypoint: 119.22 s maximum across two 366-image native arm64 runs; 3,196/66,795 candidates per view |
+| Peak RSS | 637.1 MB maximum on repeated 366-image native runs |
+| Why selected | Produces the full dual-view partition byte-for-byte on all six development folds, removes over 82% of expensive 100-image pairs, remains deterministic at 366 images, and passes the exact offline container contract without model assets |
+| Known risks | One unresolved adjacent-view split and candidate disconnect; cheap structural screen remains quadratic; private batch sizes and representative x86 timing are unknown; reference-group-only split boundary; untouched protected holdout and leaderboard |
 
 ## Experiment log
 
@@ -127,6 +129,10 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 | 2026-08-08 | Fresh Phase 3 baseline on 300 images from 86 previously unseen groups | Frozen Phase 2 B2 | None | 84/86 exact, zero merges, two folds perfect and fold B at 24/26 | 64.25 s cold comparison; 300 feature and 14,850 pair misses | Rank the two fold-B splits and test only the dominant exposure-normalization failure | `experiments/phase3/results-00-frozen-baseline.json` |
 | 2026-08-08 | Cycle 1: percentile stretch before CLAHE can expose structure in clipped brackets | Frozen Phase 2 B2 | Percentile-CLAHE single view | Fresh improves to 85/86 with zero merges, but prior development regresses from 76/76 to 75/76 | 64.90 s fresh cold, 1.010x baseline | Reject as a standalone champion; the two views hold complementary safe evidence | `results-01-percentile-clahe.json`, `results-02-phase2-regression.json` |
 | 2026-08-08 | Cycle 2: fuse complete single-view decisions with a negative veto | Frozen Phase 2 B2 | Dual CLAHE views | Fresh 85/86 and prior development 76/76, zero merges throughout; cumulative 161/162 | 128.69 s fresh cold, 2.003x single view; 551.2 MB max | Accept as the Phase 3 evaluation champion; stop architecture search because the remaining adjacent-view label has no safe margin | `results-03-dual-fresh.json`, `results-04-dual-phase2-regression.json` |
+| 2026-08-09 | Screen expensive pairs with the retained B1 structural descriptor | Full-pair Phase 3 dual view | Top-12 union above 64 images | Byte-identical partitions on all six folds: 161/162 exact, zero merges; 995/998 same-pair candidates and 161/162 group connectivity | 814–861 candidates per 100 images, at most 17.394% of all pairs; 250.09 s cold across six folds | Accept for packaging; the sole candidate disconnect is the already-split group 39901 | `experiments/phase4/candidate-screen-decision.json` |
+| 2026-08-09 | Bound OpenCV workers on the smallest machine profile | Host default | Requested 1, 2, 4, 8 | All prediction hashes identical | 18.44 s at 1; 12.00/11.99/12.06 s at 2/4/8 on 51 images | Select 2 by the predeclared lower-thread tie rule | `experiments/phase4/thread-benchmark-decision.json` |
+| 2026-08-09 | Exact cache-free submission scale and determinism | 51-image all-pairs probe | 102/203/366 screened probes | Accuracy intentionally not compared on nested resource subsets; repeated 366 partition hashes match | 12.02/38.65/74.76/119.22 s; 366 max 637.1 MB and 3,196/66,795 candidates | Accept native scale gate with 15.1x headroom under 30 minutes; retain x86 timing limitation | `experiments/phase4/native-scale-results.json` |
+| 2026-08-09 | Exact native and read-only/no-network `linux/amd64` contract | Trivial Phase 0 smoke | Textured identical-pixel pair through promoted entrypoint | Native and container both place the two randomized names in one group | Python 18 s; container build/smoke 22 s | Accept Phase 4 packaging gate; no local daemon bypass or image publication | CI run `31296540040`, jobs `93202426775`, `93202426802` |
 
 ## Decision log
 
@@ -187,6 +193,26 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 - **Decision:** Freeze `configs/phase3/b2-dual-clahe.json` as the Phase 3 evaluation champion. Stop the researcher loop instead of adding a risky adjacent-view fallback; preserve all single-view systems as controls and defer runtime architecture to Phase 4.
 - **Revisit when:** Candidate screening, representative x86 container benchmarks, a valid photoshoot-level unit, or protected-holdout evidence changes the accuracy/runtime balance.
 - **Related runs:** Fresh `440af1ffb8`, `ab66a7d842`, `3dec020a50`; prior-development regression `1fba9018d8`, `ca5607d71e`, `468b936eab`; `experiments/phase3/cycle-02-decision.json`
+
+### D-008 — Use structural top-12 screening above 64 images
+
+- **Status:** Accepted for the submission entrypoint
+- **Hypothesis:** The retained B1 descriptor can nominate a generous local-feature candidate graph without becoming grouping evidence, preserving every recovery of the full dual-view champion while avoiding quadratic expensive matching.
+- **Evidence:** Across six 100-image development folds, the screen evaluates 814–861/4,950 pairs, retains 995/998 same-group pairs and connectivity for 161/162 groups, and produces byte-identical full-dual predictions: 161/162 exact groups with zero merge damage. The only disconnected label is group 39901, already split by the full champion.
+- **Tradeoffs:** Exact cheap structural similarity remains quadratic and adds enough overhead that 100-image cold runtime is approximately unchanged. Candidate recall is measured on reference-group-only folds, not a valid photoshoot unit.
+- **Decision:** Use all pairs through 64 images, then the union of each image's 12 nearest structural neighbors with every numeric boundary tie retained. Keep RootSIFT/RANSAC, pair states, fusion, and grouping unchanged.
+- **Revisit when:** Representative private batch sizes, x86 profiles, or protected evidence expose a recovered-group candidate miss or insufficient runtime headroom.
+- **Related runs:** `experiments/phase4/results-01-screened-phase3.json`, `results-02-screened-phase2.json`, `candidate-screen-decision.json`
+
+### D-009 — Promote the cache-free two-worker runtime
+
+- **Status:** Accepted for Phase 4 packaging
+- **Hypothesis:** In-memory features plus bounded OpenCV workers will preserve deterministic predictions and fit comfortably below the stricter runtime and memory limits without writable caches.
+- **Evidence:** Requested 2/4/8 workers form a native wall-time plateau with identical hashes; two is selected by the lower-thread tie rule. The exact two-worker entrypoint completes 366 images twice in 119.22/119.11 seconds, peaks at 637.1 MB, and emits the same hash. CI run `31296540040` passes native tests and the read-only/no-network `linux/amd64` container with a nontrivial grouped pair.
+- **Tradeoffs:** The macOS OpenCV getter reports the 14-host-CPU default after every requested value, and native arm64 timing cannot stand in for representative x86 machine profiles. The CI fixture proves behavior, not scale.
+- **Decision:** Enforce two requested OpenCV workers, keep BLAS/OpenMP layers at one, run without persistent caches, package the frozen config, and promote `solution.group_images` to the screened dual-view implementation.
+- **Revisit when:** Actual 8-vCPU/16-GB or 16-vCPU/32-GB container benchmarks contradict native headroom.
+- **Related runs:** `experiments/phase4/thread-benchmark-decision.json`, `native-scale-results.json`, `selection.json`; CI jobs `93202426775`, `93202426802`
 
 ### Decision template
 
@@ -273,21 +299,21 @@ Do not fill this section until the champion is frozen.
 
 | Check | Result | Evidence |
 |---|---|---|
-| Builds for `linux/amd64` | Local pass plus GitHub Actions pass | Local image ID `sha256:51f24d5f0c5d224b68040aad1e2ac1991904bf809734d86310354f650cdd1333`, 130,729,877 bytes, reports `amd64 linux`; [CI container job 93187979812](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31290986687/job/93187979812) passed in 16 seconds |
-| Runs with read-only input | Pass on one-image generated smoke fixture | Bind input mounted `readonly`; container root used `--read-only` |
-| Runs without network | Pass on smoke fixture | Container run used `--network none` |
-| Writes valid CSV | Pass | Dependency-free validator confirmed one filename exactly once with required headers |
-| Native/container predictions match | Pass on smoke fixture | Both CSVs SHA-256 `bbc7fc14db616169382d9f163b443e36f94eaaea27ee5ac7a112798267af239a` |
-| 8 vCPU / 16 GB benchmark | Pending | — |
-| 16 vCPU / 32 GB benchmark | Pending | — |
-| Runtime headroom | Partial only | Phase 3 dual view requires 128.69 s across three cold 100-image folds, 2.003x its comparable single-view baseline, with 551.2 MB maximum RSS. Each fold evaluates both complete 4,950-pair views. The actual 2,126-image medium package would require 2,258,875 pairs per view and is intentionally not attempted; candidate screening is required before package-scale execution, while private batch size and representative x86 runtime remain unknown |
+| Builds for `linux/amd64` | Pass on exact Phase 4 source | [CI container job 93202426802](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31296540040/job/93202426802) builds the Dockerfile and passes in 22 seconds; local Docker access was policy-blocked and not bypassed |
+| Runs with read-only input | Pass on two-image generated fixture | Bind input is `readonly`; container root uses `--read-only`; runtime uses in-memory features and no cache |
+| Runs without network | Pass | Container uses `--network none`; no model assets, services, or runtime downloads exist |
+| Writes valid CSV | Pass | Dependency-free validator requires the two case-preserved filenames exactly once with required headers |
+| Native/container predictions match | Pass on nontrivial expected partition | [Python job 93202426775](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31296540040/job/93202426775) and the container job both group `same-a.png,same-b.png` together |
+| 8 vCPU / 16 GB benchmark | Unverified | Native two-worker 366-image probe provides headroom evidence but is not an x86 machine-profile run |
+| 16 vCPU / 32 GB benchmark | Unverified | No representative runner was available; do not infer timing from CI build/smoke duration |
+| Runtime headroom | Native pass; x86 partial | Exact arm64 entrypoint: 119.22 s maximum and 637.1 MB maximum for 366 images, 3,196/66,795 candidates, hash-identical repeat. This is 15.1x below the 30-minute target, but representative x86 and private batch-size evidence remain unavailable |
 | Packaged asset licenses/checksums | No model assets | Runtime image contains Python, NumPy, OpenCV, source package, and solution entrypoint only |
 
 ## Submission candidates
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | Pending Phase 4 image | `7a3494e8805d…` | 161/162 across six fallback development/regression folds | Phase 1 reserved not rerun; no protected holdout | 128.69 s / 551.2 MB across three cold 100-image folds | Dual-view classical; conservative negative veto; doubled all-pairs work | Provisional leader; package and benchmark before any submission |
+| A | CI-built only; no published digest | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | Phase 1 reserved not rerun; no protected holdout | 119.22 s / 637.1 MB native arm64 at 366 images | Screened dual-view classical; one known candidate disconnect; unknown representative x86 timing | Recommended provisional finalist; freeze/holdout and human publication handoff remain |
 | B | Pending Phase 4 comparison | `855c7c577719…` | 160/162 on the same six folds | Phase 1 reserved 22/24 under the one-time Phase 2 run; no protected holdout | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional fresh split; lower runtime | Retain as the runtime fallback |
 | C | — | — | — | — | — | Learned/retrieval variant | — |
 
@@ -325,10 +351,11 @@ Complete this section before asking for human approval. Do not place credentials
 
 ## Final recommendation
 
-> Retain the Phase 3 dual-view config as the provisional evaluation candidate
-> because it reaches 161/162 exact groups across fresh and prior-development
-> folds with zero merge damage, while the single-view Phase 2 control reaches
-> 160/162. Do not publish or submit it yet: the dual view is not wired into
-> `solution.py`, its all-pairs cost is approximately doubled, representative x86
-> runtime and a protected holdout remain unavailable, and the source metadata
-> cannot prove photoshoot/property-level split independence.
+> Retain the Phase 4 screened dual-view entrypoint as the provisional finalist.
+> It reproduces the full champion's 161/162 development groups with zero merge
+> damage, removes more than 82% of expensive pairs at 100 images, completes the
+> exact 366-image native path twice in about 119 seconds with identical output,
+> and passes the offline `linux/amd64` container contract. Do not publish or
+> submit it yet: representative x86 timing, a protected holdout, an immutable
+> local/public image digest, and photoshoot-level split independence remain
+> unavailable.

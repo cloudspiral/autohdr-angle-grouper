@@ -208,9 +208,48 @@ The fresh report records 85/86 exact groups, zero merge damage, a 0.9615
 worst-fold score, and 128.69 seconds cold runtime. The separately predeclared
 prior-development regression scores 76/76 with zero merge damage. See
 `experiments/phase3/cycle-02-decision.json` and `selection.json` for the gate
-outcome and limitations. The selected config remains evaluation-only until the
-Phase 4 entrypoint, scale, and container work is complete. Do not rerun the
-Phase 1 reserved slice as part of this selection.
+outcome and limitations. It was evaluation-only at the end of Phase 3; the
+separately gated Phase 4 config below promotes it into the entrypoint. Do not
+rerun the Phase 1 reserved slice as part of either selection.
+
+## Phase 4 screening, entrypoint, and scale
+
+The Phase 4 config preserves every local-match, state, fusion, and grouping
+parameter from the Phase 3 champion. It adds only candidate generation: use all
+pairs through 64 images, then nominate the union of each image's 12 nearest B1
+structural neighbors and retain every exact boundary tie. Structural proximity
+never becomes a grouping edge.
+
+The two committed screen sweeps rerun the six already-used development folds.
+They preserve the full dual-view predictions byte-for-byte: 85/86 fresh and
+76/76 prior-development exact groups with zero merge damage. Across the folds,
+the screen retains 995/998 same-group pairs, candidate connectivity for 161/162
+groups, and at most 17.394 percent of all pairs. The sole disconnected group is
+the adjacent-view label already split by the full champion. See
+`experiments/phase4/candidate-screen-decision.json` and `selection.json`.
+
+Run one exact cache-free native resource probe in a fresh process with:
+
+```bash
+.venv/bin/python -m scripts.benchmark_submission \
+  --repo-root . \
+  --dataset-root data/sample \
+  --manifest data/sample/public_manifest.csv \
+  --split splits/sample-smoke-v1.json \
+  --output artifacts/phase4-native-366.json
+```
+
+The committed 51/102/203/366-image curve uses the selected two-worker request.
+The complete 366-image probe runs twice in approximately 119 seconds, peaks at
+637,075,456 bytes, evaluates 3,196/66,795 candidates per view, and produces the
+same prediction hash. These nested sample subsets are resource probes only.
+
+The final entrypoint is `solution.group_images`; it uses in-memory features and
+does not rely on a writable cache. GitHub Actions builds the exact
+`linux/amd64` Dockerfile, then runs it with no network, a read-only root, and a
+read-only input mount. Both native and container jobs must group the generated
+textured identical-pixel pair into one group. CI proves build and contract
+parity, not representative x86 machine-profile runtime.
 
 ## Split and holdout safety
 
