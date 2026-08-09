@@ -64,7 +64,8 @@ directly. Phase 5 therefore uses Docker's documented GitHub Actions path:
 Buildx plus `docker/build-push-action`, with fixed
 `SOURCE_DATE_EPOCH=1786253596` tied to the frozen evaluation commit and the
 explicit `type=docker,rewrite-timestamp=true` exporter required to normalize
-timestamps inside generated layers. Two independent CI confirmations are
+timestamps inside generated layers. The Dockerfile also disables pip's cache
+and wall-clock version-check state. Two independent CI confirmations are
 required before recording a stable ID. That ID will still be a local image
 configuration ID, not a Docker Hub registry digest. The registry digest remains
 unavailable until the human push.

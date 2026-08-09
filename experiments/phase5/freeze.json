@@ -13,7 +13,7 @@
   "model_assets": [],
   "post_holdout_packaging_exception": {
     "algorithm_impact": "none",
-    "change": "Pin the official Python 3.11 slim linux/amd64 manifest digest in Dockerfile.",
+    "change": "Pin the official Python 3.11 slim linux/amd64 manifest digest and disable pip cache/version-check build state in Dockerfile.",
     "container_validation": {
       "contract_status": "passed twice",
       "source_date_epoch": 1786253596,
@@ -21,7 +21,8 @@
       "stable_identity_status": "pending independent CI confirmation"
     },
     "dockerfile_sha256_after_base_pin": "c60c6a88bba7c5b94daba77f0699aa269b1239b5aa83b65672fa3a4ec7536673",
-    "reason": "The pre-holdout Dockerfile used a mutable base tag; pinning the resolved manifest closes a packaging reproducibility gap without changing solution.py, config, split, or Python dependencies."
+    "dockerfile_sha256_after_reproducibility_controls": "99b87196faa4407930a90d3fb6a0374f1950fbc87d26c7aaa0afc5cb7b1eeded",
+    "reason": "The pre-holdout Dockerfile used a mutable base tag and pip could write wall-clock version-check state; the packaging-only controls close those reproducibility gaps without changing solution.py, config, split, or Python dependencies."
   },
   "protected_split": {
     "canonical_hash": "d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a",
