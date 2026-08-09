@@ -1,0 +1,44 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "feature-winner-ratio-078-ransac-3",
+      "config": "configs/phase2/b2-feature-efficient.json"
+    },
+    {
+      "candidate_id": "ratio-074-ransac-3",
+      "config": "configs/phase2/b2-match-ratio-074.json"
+    },
+    {
+      "candidate_id": "ratio-082-ransac-3",
+      "config": "configs/phase2/b2-match-ratio-082.json"
+    },
+    {
+      "candidate_id": "ratio-078-ransac-4",
+      "config": "configs/phase2/b2-match-ransac-4.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "The feature winner from phase2-feature-v1 is fixed before this block.",
+    "Only the descriptor ratio threshold or RANSAC reprojection threshold varies.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "matching-and-ransac",
+  "sweep_id": "phase2-match-v1"
+}
