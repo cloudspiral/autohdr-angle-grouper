@@ -89,7 +89,18 @@ def test_runner_rejects_image_bytes_changed_after_audit(tmp_path: Path) -> None:
         )
 
 
-def test_percentile_classical_dispatches_as_pairwise_algorithm(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("config_filename", "expected_pair_misses"),
+    [
+        ("b2-percentile-clahe.json", 1),
+        ("b2-dual-clahe.json", 2),
+    ],
+)
+def test_exposure_classical_dispatches_as_pairwise_algorithm(
+    tmp_path: Path,
+    config_filename: str,
+    expected_pair_misses: int,
+) -> None:
     repo_root = Path(__file__).parents[1]
     dataset = tmp_path / "dataset"
     images = dataset / "images"
@@ -110,7 +121,7 @@ def test_percentile_classical_dispatches_as_pairwise_algorithm(tmp_path: Path) -
 
     outcome = run_evaluation(
         repo_root=repo_root,
-        config_path=repo_root / "configs" / "phase3" / "b2-percentile-clahe.json",
+        config_path=repo_root / "configs" / "phase3" / config_filename,
         dataset_root=dataset,
         manifest_path=manifest,
         audit_path=audit_path,
@@ -119,4 +130,4 @@ def test_percentile_classical_dispatches_as_pairwise_algorithm(tmp_path: Path) -
     )
 
     assert outcome.resources["candidate_pair_count"] == 1
-    assert outcome.resources["pair_cache_misses"] == 1
+    assert outcome.resources["pair_cache_misses"] == expected_pair_misses

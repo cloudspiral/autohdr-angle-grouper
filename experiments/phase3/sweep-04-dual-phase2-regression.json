@@ -1,0 +1,32 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "dual-clahe",
+      "config": "configs/phase3/b2-dual-clahe.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "This is the predeclared Cycle 2 regression gate on prior Phase 2 development folds, not new selection evidence.",
+    "The dual-view candidate must preserve 76/76 exact groups and zero merge damage.",
+    "The Phase 1 reserved slice is not rerun."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "cycle-02-prior-development-regression",
+  "sweep_id": "phase3-cycle-02-regression-v1"
+}

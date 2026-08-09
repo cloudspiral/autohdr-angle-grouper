@@ -1117,3 +1117,132 @@ def run_classical(
         summary=summary,
         decisions=tuple(decisions),
     )
+
+
+def fuse_pair_decisions(
+    *decision_sets: tuple[PairDecision, ...],
+) -> tuple[PairDecision, ...]:
+    """Fuse complete pair graphs while allowing either view to veto a merge."""
+
+    if len(decision_sets) < 2:
+        raise ValueError("dual-view fusion requires at least two decision sets")
+    by_view = [
+        {
+            tuple(sorted((decision.left, decision.right))): decision
+            for decision in decisions
+        }
+        for decisions in decision_sets
+    ]
+    expected_pairs = set(by_view[0])
+    if any(set(view) != expected_pairs for view in by_view[1:]):
+        raise ValueError("dual-view decisions must cover identical image pairs")
+
+    state_priority = {"unknown": 0, "positive": 1, "strong_positive": 2}
+    fused: list[PairDecision] = []
+    for pair in sorted(expected_pairs):
+        values = [view[pair] for view in by_view]
+        negatives = [decision for decision in values if decision.state == "negative"]
+        if negatives:
+            chosen = max(negatives, key=lambda decision: (decision.score, decision.reasons))
+            state = "negative"
+            reason = "dual_view_negative_veto"
+        else:
+            if any(decision.state not in state_priority for decision in values):
+                raise ValueError("dual-view decision has an unsupported state")
+            chosen = max(
+                values,
+                key=lambda decision: (
+                    state_priority[decision.state],
+                    decision.score,
+                    decision.reasons,
+                ),
+            )
+            state = chosen.state
+            reason = "dual_view_strongest_nonnegative_state"
+        fused.append(
+            PairDecision(
+                left=pair[0],
+                right=pair[1],
+                state=state,
+                score=chosen.score,
+                reasons=(reason, *chosen.reasons),
+            )
+        )
+    return tuple(fused)
+
+
+def run_dual_classical(
+    image_paths: list[str],
+    config: PercentileClassicalConfig,
+    *,
+    dataset_fingerprint: str,
+    cache_root: Path,
+    seed: int,
+) -> ClassicalOutcome:
+    """Fuse baseline-CLAHE and percentile-CLAHE evidence before grouping."""
+
+    baseline_config = ClassicalConfig(
+        feature=config.feature,
+        match=config.match,
+        state=config.state,
+        grouping=config.grouping,
+    )
+    baseline = run_classical(
+        image_paths,
+        baseline_config,
+        dataset_fingerprint=dataset_fingerprint,
+        cache_root=cache_root,
+        seed=seed,
+    )
+    percentile = run_classical(
+        image_paths,
+        config,
+        dataset_fingerprint=dataset_fingerprint,
+        cache_root=cache_root,
+        seed=seed,
+    )
+    decisions = fuse_pair_decisions(baseline.decisions, percentile.decisions)
+    filenames = sorted(Path(path).name for path in image_paths)
+    groups = group_from_decisions(
+        filenames,
+        list(decisions),
+        {filename: 0.0 for filename in filenames},
+        config.grouping,
+    )
+    state_counts = Counter(decision.state for decision in decisions)
+    numeric_resource_keys = (
+        "feature_cache_hits",
+        "feature_cache_misses",
+        "pair_cache_hits",
+        "pair_cache_misses",
+    )
+    resources = {
+        key: int(baseline.resources[key]) + int(percentile.resources[key])
+        for key in numeric_resource_keys
+    }
+    resources["pair_state_counts"] = dict(sorted(state_counts.items()))
+    resources["view_resources"] = {
+        "baseline_clahe": baseline.resources,
+        "percentile_clahe": percentile.resources,
+    }
+    summary = {
+        "architecture": "dual-clahe-v1",
+        "baseline_clahe": baseline.summary,
+        "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+        "dataset_fingerprint": dataset_fingerprint,
+        "pair_state_counts": dict(sorted(state_counts.items())),
+        "percentile_clahe": percentile.summary,
+        "strongest_pairs": [
+            asdict(decision)
+            for decision in sorted(
+                decisions,
+                key=lambda item: (-item.score, item.left, item.right),
+            )[:50]
+        ],
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=decisions,
+    )

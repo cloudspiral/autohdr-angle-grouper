@@ -17,8 +17,10 @@ from autohdr_eval.classical import (
     _percentile_stretch,
     classify_pair,
     diagnose_pair_decisions,
+    fuse_pair_decisions,
     group_from_decisions,
     run_classical,
+    run_dual_classical,
 )
 from autohdr_eval.config import load_config
 
@@ -39,6 +41,12 @@ def selected_classical_config() -> ClassicalConfig:
     repo_root = Path(__file__).parents[1]
     config = load_config(repo_root / "configs" / "phase2" / "b2-selected.json")
     return ClassicalConfig.from_parameters(config.parameters)
+
+
+def dual_config() -> PercentileClassicalConfig:
+    repo_root = Path(__file__).parents[1]
+    config = load_config(repo_root / "configs" / "phase3" / "b2-dual-clahe.json")
+    return PercentileClassicalConfig.from_parameters(config.parameters)
 
 
 def test_percentile_architecture_has_distinct_cache_identity() -> None:
@@ -62,6 +70,56 @@ def test_percentile_stretch_is_bounded_deterministic_and_handles_flat_images() -
     stretched = _percentile_stretch(flat, config)
     assert np.array_equal(stretched, flat)
     assert stretched is not flat
+
+
+def test_dual_view_fusion_keeps_strongest_state_but_honors_either_negative() -> None:
+    strong = decision("a.jpg", "b.jpg", "strong_positive", 0.8)
+    positive = decision("a.jpg", "b.jpg", "positive", 0.9)
+    unknown = decision("a.jpg", "b.jpg", "unknown", 0.2)
+    negative = decision("a.jpg", "b.jpg", "negative", 0.1)
+
+    [selected] = fuse_pair_decisions((unknown,), (strong,), (positive,))
+    [vetoed] = fuse_pair_decisions((strong,), (negative,))
+
+    assert selected.state == "strong_positive"
+    assert selected.score == strong.score
+    assert selected.reasons[0] == "dual_view_strongest_nonnegative_state"
+    assert vetoed.state == "negative"
+    assert vetoed.reasons[0] == "dual_view_negative_veto"
+
+
+def test_dual_classical_reuses_both_view_cache_layers(tmp_path: Path) -> None:
+    rng = np.random.default_rng(23)
+    source = tmp_path / "a.png"
+    assert cv2.imwrite(
+        str(source),
+        rng.integers(0, 256, size=(180, 240, 3), dtype=np.uint8),
+    )
+    copy = tmp_path / "b.png"
+    shutil.copyfile(source, copy)
+
+    first = run_dual_classical(
+        [str(source), str(copy)],
+        dual_config(),
+        dataset_fingerprint="a" * 64,
+        cache_root=tmp_path / "cache",
+        seed=0,
+    )
+    second = run_dual_classical(
+        [str(copy), str(source)],
+        dual_config(),
+        dataset_fingerprint="a" * 64,
+        cache_root=tmp_path / "cache",
+        seed=0,
+    )
+
+    assert first.groups == [["a.png", "b.png"]]
+    assert second.groups == first.groups
+    assert first.resources["feature_cache_hits"] == 2
+    assert first.resources["feature_cache_misses"] == 2
+    assert first.resources["pair_cache_misses"] == 2
+    assert second.resources["feature_cache_hits"] == 4
+    assert second.resources["pair_cache_hits"] == 2
 
 
 def evidence(left: str = "a.jpg", right: str = "b.jpg") -> PairEvidence:

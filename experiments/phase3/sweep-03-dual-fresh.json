@@ -1,0 +1,32 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "dual-clahe",
+      "config": "configs/phase3/b2-dual-clahe.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-phase3-dev-a-v1.json",
+    "splits/medium-phase3-dev-b-v1.json",
+    "splits/medium-phase3-dev-c-v1.json"
+  ],
+  "limitations": [
+    "Compare this cold single-candidate result to the immutable cold baseline and Cycle 1 report rather than warming either dual evidence view in this run.",
+    "Both complete raw evidence graphs are computed with unchanged match and state thresholds before decision-level fusion.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "cycle-02-dual-fresh",
+  "sweep_id": "phase3-cycle-02-fresh-v1"
+}

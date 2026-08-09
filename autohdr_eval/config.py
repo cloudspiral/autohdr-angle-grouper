@@ -11,6 +11,7 @@ from typing import Any
 
 SUPPORTED_ALGORITHMS = {
     "classical",
+    "classical-dual-clahe",
     "classical-percentile-clahe",
     "singleton",
     "structural",

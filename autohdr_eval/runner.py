@@ -282,20 +282,31 @@ def _predict(
             resources={},
             artifacts={},
         )
-    if config.algorithm in {"classical", "classical-percentile-clahe"}:
+    if config.algorithm in {
+        "classical",
+        "classical-dual-clahe",
+        "classical-percentile-clahe",
+    }:
         from autohdr_eval.classical import (
             ClassicalConfig,
             PercentileClassicalConfig,
             run_classical,
+            run_dual_classical,
         )
 
         config_type = (
             PercentileClassicalConfig
-            if config.algorithm == "classical-percentile-clahe"
+            if config.algorithm
+            in {"classical-dual-clahe", "classical-percentile-clahe"}
             else ClassicalConfig
         )
         classical_config = config_type.from_parameters(config.parameters)
-        classical = run_classical(
+        classical_runner = (
+            run_dual_classical
+            if config.algorithm == "classical-dual-clahe"
+            else run_classical
+        )
+        classical = classical_runner(
             image_paths,
             classical_config,
             dataset_fingerprint=dataset_fingerprint,
@@ -413,7 +424,12 @@ def run_evaluation(
             "candidate_pair_count": (
                 len(image_paths) * (len(image_paths) - 1) // 2
                 if config.algorithm
-                in {"classical", "classical-percentile-clahe", "structural"}
+                in {
+                    "classical",
+                    "classical-dual-clahe",
+                    "classical-percentile-clahe",
+                    "structural",
+                }
                 else 0
             ),
             "image_count": len(image_paths),
