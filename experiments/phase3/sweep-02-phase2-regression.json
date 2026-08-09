@@ -1,0 +1,33 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "phase3-cycle-01-candidate",
+      "config": "configs/phase3/b2-percentile-clahe.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "This is a regression gate on previously used Phase 2 development folds, not new selection evidence.",
+    "The candidate was selected solely from fresh Phase 3 folds before this gate was defined.",
+    "The candidate must preserve the frozen Phase 2 result of 76/76 exact groups with zero merge damage.",
+    "The Phase 1 reserved slice is not rerun."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "prior-development-regression-gate",
+  "sweep_id": "phase3-regression-v1"
+}

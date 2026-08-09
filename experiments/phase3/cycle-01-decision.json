@@ -1,0 +1,63 @@
+{
+  "acceptance_gates": {
+    "exact_groups": {
+      "actual": 85,
+      "minimum": 85,
+      "passed": true
+    },
+    "merge_damaged_groups": {
+      "actual": 0,
+      "maximum": 0,
+      "passed": true
+    },
+    "perfect_baseline_folds_regressed": {
+      "actual": 0,
+      "maximum": 0,
+      "passed": true
+    },
+    "runtime_multiple": {
+      "actual": 1.0101364546009006,
+      "maximum": 1.5,
+      "passed": true
+    },
+    "worst_fold_exact_score": {
+      "actual": 0.9615384615384616,
+      "minimum": 0.9230769230769231,
+      "passed": true
+    }
+  },
+  "baseline": {
+    "config_hash": "855c7c577719163178b2c861ea1f36dbf012a32c7f46b81ecdddc0381c9f54d5",
+    "exact_groups": 84,
+    "merge_damaged_groups": 0,
+    "split_groups": 2,
+    "total_groups": 86,
+    "wall_seconds": 64.25173058314249,
+    "worst_fold_exact_score": 0.9230769230769231
+  },
+  "candidate": {
+    "config_hash": "8de78d67afeff6226d1dc4bebb1651f88ef0a12beebc1d2beaa96e32d8d2a3d0",
+    "exact_groups": 85,
+    "merge_damaged_groups": 0,
+    "split_groups": 1,
+    "total_groups": 86,
+    "wall_seconds": 64.90301533322781,
+    "worst_fold_exact_score": 0.9615384615384616
+  },
+  "cycle_id": "phase3-cycle-01",
+  "decision": "accept_pending_prior-development-regression_gate",
+  "failure_change": {
+    "recovered_group": "18127",
+    "remaining_group": "39901"
+  },
+  "remaining_failure": {
+    "category": "adjacent-view / composition-shift false split",
+    "evidence": [
+      "The remaining label spans a bright oblique kitchen view and three darker frontal views.",
+      "The existing structural descriptor places the nearest wrong-group image at distance 0.544 while same-label distances are approximately 0.653.",
+      "Direct percentile-CLAHE gradient distances provide no safe margin: same-label values start at 0.974 and a wrong-group value is 0.976."
+    ]
+  },
+  "schema_version": 1,
+  "stop_reason": "Do not execute Cycle 2: the remaining coarse adjacent-view label lacks safe geometric or structural fallback separation, so the plausible gain is not worth false-merge complexity or risk."
+}
