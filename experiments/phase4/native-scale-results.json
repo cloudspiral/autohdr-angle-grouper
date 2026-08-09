@@ -1,0 +1,100 @@
+{
+  "acceptance_gates": {
+    "deterministic_366_prediction": {
+      "actual_unique_hashes": 1,
+      "maximum_unique_hashes": 1,
+      "passed": true
+    },
+    "maximum_366_peak_rss_bytes": {
+      "actual": 637075456,
+      "maximum": 8589934592,
+      "passed": true
+    },
+    "maximum_366_wall_seconds": {
+      "actual": 119.21716270805337,
+      "maximum": 600,
+      "passed": true
+    },
+    "require_clean_commit": {
+      "actual": true,
+      "passed": true
+    }
+  },
+  "config_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+  "config_path": "configs/phase4/b2-screened-dual-clahe.json",
+  "git_commit": "3847c128059f29319c82eb58e24551c26fa89e6d",
+  "interpretation": "The exact cache-free submission path remains under two minutes and 608 MiB RSS on the complete 366-image sample probe, leaving 15.1 times wall-time headroom under the stricter 30-minute target on this native arm64 host. Structural top-k screening reduces the candidate fraction from 16.2 percent at 102 images to 4.8 percent at 366 images. These nested splits are resource probes only and their predicted groups are not accuracy-selection evidence.",
+  "limitations": [
+    "Native arm64 timing is not representative linux/amd64 machine-profile timing.",
+    "The source package exposes no photoshoot boundary, so 366 images is a conservative public batch probe rather than a measured private batch-size percentile.",
+    "The screen still computes cheap all-image structural similarities; its expensive local matching grows with the deterministic top-k candidate union.",
+    "The 2,126-image medium package was not run as one artificial photoshoot, and no reserved or protected labels were scored."
+  ],
+  "machine": {
+    "machine": "arm64",
+    "opencv_threads_reported": 14,
+    "opencv_threads_requested": 2,
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.13"
+  },
+  "runs": [
+    {
+      "all_pair_count": 1275,
+      "candidate_pair_count": 1275,
+      "cpu_seconds": 19.996092,
+      "image_count": 51,
+      "peak_rss_bytes": 435470336,
+      "predicted_group_count": 12,
+      "prediction_sha256": "b18fa55a044bf5ac9b4678d5f1d0be31c141977ea1f4aa84e4c592e806919d38",
+      "split_id": "sample-scale-051-v1",
+      "wall_seconds": 12.015352542046458
+    },
+    {
+      "all_pair_count": 5151,
+      "candidate_pair_count": 833,
+      "cpu_seconds": 52.344717,
+      "image_count": 102,
+      "peak_rss_bytes": 468647936,
+      "predicted_group_count": 21,
+      "prediction_sha256": "e4ddceec46dfed2bd0dde07b9b24204cf29d14c11190aa5483af58fa9807ad70",
+      "split_id": "sample-scale-102-v1",
+      "wall_seconds": 38.65363279217854
+    },
+    {
+      "all_pair_count": 20503,
+      "candidate_pair_count": 1676,
+      "cpu_seconds": 96.42623900000001,
+      "image_count": 203,
+      "peak_rss_bytes": 538574848,
+      "predicted_group_count": 38,
+      "prediction_sha256": "c62fa3716228766426e72ae42b1bddce82255e1e00a883e7fac4c757979f1e05",
+      "split_id": "sample-scale-203-v1",
+      "wall_seconds": 74.76143799978308
+    },
+    {
+      "all_pair_count": 66795,
+      "candidate_pair_count": 3196,
+      "cpu_seconds": 157.254205,
+      "image_count": 366,
+      "peak_rss_bytes": 613531648,
+      "predicted_group_count": 71,
+      "prediction_sha256": "481ef2c0408ac2fcd6b26996dfe5f46ac91a17c59ab74af49f6777a9b81025ba",
+      "repeat": 1,
+      "split_id": "sample-smoke-v1",
+      "wall_seconds": 119.21716270805337
+    },
+    {
+      "all_pair_count": 66795,
+      "candidate_pair_count": 3196,
+      "cpu_seconds": 156.999291,
+      "image_count": 366,
+      "peak_rss_bytes": 637075456,
+      "predicted_group_count": 71,
+      "prediction_sha256": "481ef2c0408ac2fcd6b26996dfe5f46ac91a17c59ab74af49f6777a9b81025ba",
+      "repeat": 2,
+      "split_id": "sample-smoke-v1",
+      "wall_seconds": 119.1134019580204
+    }
+  ],
+  "schema_version": 1
+}
