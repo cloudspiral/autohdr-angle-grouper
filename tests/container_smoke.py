@@ -19,16 +19,18 @@ def _png_chunk(chunk_type: bytes, payload: bytes) -> bytes:
 
 
 def make_png(path: Path) -> None:
-    width = height = 8
+    width = height = 96
     rows = []
     for y_position in range(height):
         row = bytearray([0])
         for x_position in range(width):
+            checker = 160 if (x_position // 8 + y_position // 8) % 2 else 24
+            texture = (x_position * 37 + y_position * 17 + x_position * y_position) % 256
             row.extend(
                 (
-                    x_position * 31,
-                    y_position * 31,
-                    (x_position + y_position) * 15,
+                    (checker + texture) % 256,
+                    (checker + 3 * texture) % 256,
+                    (checker + 5 * texture) % 256,
                 )
             )
         rows.append(bytes(row))
@@ -43,14 +45,19 @@ def make_png(path: Path) -> None:
 
 def prepare(directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
-    make_png(directory / "smoke.png")
+    first = directory / "same-a.png"
+    make_png(first)
+    (directory / "same-b.png").write_bytes(first.read_bytes())
 
 
 def validate(path: Path) -> None:
     with path.open(newline="", encoding="utf-8") as input_file:
         reader = csv.DictReader(input_file)
         assert reader.fieldnames == ["filename", "group_id"]
-        assert list(reader) == [{"filename": "smoke.png", "group_id": "0"}]
+        assert list(reader) == [
+            {"filename": "same-a.png", "group_id": "0"},
+            {"filename": "same-b.png", "group_id": "0"},
+        ]
 
 
 def main() -> int:
