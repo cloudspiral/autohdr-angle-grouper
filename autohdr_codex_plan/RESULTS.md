@@ -19,8 +19,9 @@ with no observed merge damage and nine split groups. Do not tune on this package
 it has no photoshoot boundary, contains only 366 of the advertised 500 images,
 and leaks every group ID in the public filename. Local Phase 0 contract,
 diagnostic, determinism, clean-commit evaluation, and container smoke checks
-pass; GitHub Actions remains pending. Audit a larger package before
-development-fold selection or any B1 tuning.
+pass. GitHub Actions also passes both the Python and required `linux/amd64`
+container jobs. Audit a larger package before development-fold selection or any
+B1 tuning.
 
 ## Source and rule audit
 
@@ -194,7 +195,7 @@ Do not fill this section until the champion is frozen.
 
 | Check | Result | Evidence |
 |---|---|---|
-| Builds for `linux/amd64` | Local pass from final staged source; CI pending | Image ID `sha256:51f24d5f0c5d224b68040aad1e2ac1991904bf809734d86310354f650cdd1333`, 130,729,877 bytes, reports `amd64 linux` |
+| Builds for `linux/amd64` | Local pass plus GitHub Actions pass | Local image ID `sha256:51f24d5f0c5d224b68040aad1e2ac1991904bf809734d86310354f650cdd1333`, 130,729,877 bytes, reports `amd64 linux`; [CI container job 93187979812](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31290986687/job/93187979812) passed in 16 seconds |
 | Runs with read-only input | Pass on one-image generated smoke fixture | Bind input mounted `readonly`; container root used `--read-only` |
 | Runs without network | Pass on smoke fixture | Container run used `--network none` |
 | Writes valid CSV | Pass | Dependency-free validator confirmed one filename exactly once with required headers |
