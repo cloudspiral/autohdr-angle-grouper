@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from autohdr_eval.config import canonical_json_bytes, load_config
-from autohdr_eval.dataset import audit_dataset
+from autohdr_eval.dataset import audit_dataset, compare_dataset_audits
+from autohdr_eval.gallery import render_error_gallery
 from autohdr_eval.registry import RunRegistry
 from autohdr_eval.runner import (
     deterministic_runtime_environment,
@@ -51,6 +52,13 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("--archive", type=Path)
     audit.add_argument("--output", type=Path, required=True)
 
+    compare_audits = subparsers.add_parser(
+        "compare-audits", help="measure exact and perceptual overlap between packages"
+    )
+    compare_audits.add_argument("--left", type=Path, required=True)
+    compare_audits.add_argument("--right", type=Path, required=True)
+    compare_audits.add_argument("--output", type=Path, required=True)
+
     score = subparsers.add_parser("score", help="score one prediction CSV exactly")
     score.add_argument("--reference", type=Path, required=True)
     score.add_argument("--predictions", type=Path, required=True)
@@ -71,6 +79,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--registry", type=Path, default=Path("artifacts/run-registry.sqlite3")
     )
     summarize.add_argument("--limit", type=int, default=20)
+
+    gallery = subparsers.add_parser(
+        "gallery", help="render deterministic contact sheets for scored group failures"
+    )
+    gallery.add_argument("--dataset-root", type=Path, required=True)
+    gallery.add_argument("--diagnostics", type=Path, required=True)
+    gallery.add_argument("--output-dir", type=Path, required=True)
 
     fingerprint = subparsers.add_parser(
         "fingerprint", help="print canonical config or split fingerprints"
@@ -117,6 +132,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "score":
         _print_json(score_csv(args.reference, args.predictions).as_dict())
         return 0
+    if args.command == "compare-audits":
+        with args.left.open(encoding="utf-8") as input_file:
+            left = json.load(input_file)
+        with args.right.open(encoding="utf-8") as input_file:
+            right = json.load(input_file)
+        result = compare_dataset_audits(left, right)
+        _write_json(args.output, result)
+        _print_json(result)
+        return 0
     if args.command == "run":
         _print_json(_run_from_args(args, allow_protected=False))
         return 0
@@ -135,6 +159,15 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "summarize":
         _print_json(RunRegistry(args.registry).recent(args.limit))
+        return 0
+    if args.command == "gallery":
+        _print_json(
+            render_error_gallery(
+                dataset_root=args.dataset_root.resolve(),
+                diagnostics_path=args.diagnostics.resolve(),
+                output_dir=args.output_dir.resolve(),
+            )
+        )
         return 0
     if args.command == "fingerprint":
         if bool(args.config) == bool(args.split):

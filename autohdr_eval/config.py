@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-SUPPORTED_ALGORITHMS = {"singleton", "structural"}
+SUPPORTED_ALGORITHMS = {"classical", "singleton", "structural"}
 
 
 def canonical_json_bytes(value: Any) -> bytes:

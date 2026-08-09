@@ -34,7 +34,22 @@ scorer:
   --manifest data/sample/public_manifest.csv \
   --audit artifacts/datasets/autohdr-sample-500-audit.json \
   --split splits/sample-smoke-v1.json
+
+.venv/bin/python -m autohdr_eval run \
+  --config configs/b2-classical.json \
+  --dataset-root data/sample \
+  --manifest data/sample/public_manifest.csv \
+  --audit artifacts/datasets/autohdr-sample-500-audit.json \
+  --split splits/sample-scale-051-v1.json
 ```
+
+The B2 configuration extracts RootSIFT descriptors, measures every unordered
+pair with mutual ratio matches and partial-affine RANSAC, and groups only with
+positive geometric support. Raw pair measurements are cached separately from
+the classification thresholds under ignored `artifacts/cache/`, so changing
+state or grouping thresholds does not repeat feature matching. The 51-image
+split above is a bounded smoke and cache check; do not infer that all-pairs is
+viable for the complete 5K package.
 
 Score an existing CSV or inspect recent registered runs:
 
@@ -46,15 +61,38 @@ Score an existing CSV or inspect recent registered runs:
 .venv/bin/python -m autohdr_eval summarize
 ```
 
+Compare two enriched dataset audits before treating their scores as independent,
+then render the filename-level group failures from any completed run:
+
+```bash
+.venv/bin/python -m autohdr_eval compare-audits \
+  --left artifacts/datasets/autohdr-sample-500-audit.json \
+  --right artifacts/datasets/autohdr-medium-5000-audit.json \
+  --output artifacts/datasets/sample-vs-medium-overlap.json
+
+.venv/bin/python -m autohdr_eval gallery \
+  --dataset-root data/sample \
+  --diagnostics /path/to/run/diagnostics.json \
+  --output-dir /path/to/run/gallery
+```
+
 Run outputs are stored under content-addressed paths in `artifacts/runs/` and
 indexed by `artifacts/run-registry.sqlite3`. Both locations are ignored by Git.
 Each run records the git commit and dirty-tree state, canonical config and split
 hashes, dataset fingerprint, environment, exact-group metrics, wall time, peak
 RSS, and artifact paths.
 
-The audit artifact records a SHA-256 for every manifest image. Supplying
-`--audit` makes the runner re-hash the requested package and fail before scoring
-if the manifest, inventory, or any image bytes differ from the audited package.
+B2 runs additionally write `classical_summary.json` and
+`pair_diagnostics.json`. Pair diagnostics report positive precision,
+same-group-pair recall, negative precision, state coverage, and bounded examples;
+they support failure analysis but do not replace exact-group scoring.
+
+The audit artifact records SHA-256, difference hash, and manifest group for every
+image. Supplying `--audit` makes the runner re-hash the requested package and
+fail before scoring if the manifest, inventory, or any image bytes differ from
+the audited package. `compare-audits` measures shared names, exact content,
+perceptual collisions, and pairwise label-relation disagreements without
+assuming that numeric group IDs are stable between packages.
 
 ## Early scale curve
 

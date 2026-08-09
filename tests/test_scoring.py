@@ -61,6 +61,8 @@ def test_official_merge_example_scores_six_of_eight() -> None:
         ["kitchen_close"],
         ["kitchen_wide_bright", "kitchen_wide_dark"],
     ]
+    assert len(diagnostics["failures"]) == 2
+    assert all(failure["failure_types"] == ["merge"] for failure in diagnostics["failures"])
 
 
 def test_official_split_example_damages_one_reference_group() -> None:
@@ -78,6 +80,20 @@ def test_official_split_example_damages_one_reference_group() -> None:
     diagnostics = diagnose_groups(REFERENCE_GROUPS, predictions)
     assert diagnostics["split_reference_groups"] == [
         ["living_room_bright", "living_room_dark", "living_room_mid"]
+    ]
+    assert diagnostics["failures"] == [
+        {
+            "failure_types": ["split"],
+            "predicted_groups": [
+                ["living_room_bright"],
+                ["living_room_dark", "living_room_mid"],
+            ],
+            "reference_group": [
+                "living_room_bright",
+                "living_room_dark",
+                "living_room_mid",
+            ],
+        }
     ]
 
 
