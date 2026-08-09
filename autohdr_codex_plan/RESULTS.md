@@ -330,7 +330,7 @@ Do not fill this section until the champion is frozen.
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | CI-local `sha256:99e2ff5f…` / 365,280,872 bytes; public registry digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
+| A | 365,280,872-byte CI image; stable timestamp-normalized ID pending; public registry digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes twice | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
 | B | Not built as a finalist | `855c7c577719…` | 160/162 on the same six folds | Not run; protected comparison intentionally forbidden | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional development split; lower runtime | Preserve as historical runtime control, not a finalist |
 
 ## Submission handoff
@@ -339,7 +339,7 @@ Complete this section before asking for human approval. Do not place credentials
 
 - **Recommended candidate:** A — screened dual-view CLAHE
 - **Local image tag:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
-- **CI-local image ID:** `sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf` (not a public registry digest)
+- **CI-local image ID:** Pending two matching builds after fixing `SOURCE_DATE_EPOCH`; not a public registry digest
 - **Public tag to use after approval:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
 - **`submission.yaml` path:** `submission.yaml`
 - **`submission.zip` path:** `submission.zip` (local, gitignored; deterministic SHA-256 `100d1058699d…` while placeholders remain)

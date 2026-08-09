@@ -54,12 +54,17 @@ The local Docker daemon was unavailable to Codex, so GitHub Actions is the
 authoritative `linux/amd64`, read-only, no-network build/smoke proof. Record the
 final Phase 5 CI job and image ID here after it completes:
 
-- Phase 5 CI run: [`31297253738`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297253738)
-- CI-local image ID: `sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf`
+- Phase 5 CI runs: [`31297253738`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297253738), [`31297313919`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297313919)
+- Stable timestamp-normalized CI-local image ID: `PENDING_REPRODUCIBLE_CI`
 - CI-local image size: `365,280,872` bytes
 
-The CI-local ID is a content-addressed image configuration ID, not a Docker Hub
-registry digest. The registry digest remains unavailable until the human push.
+The two pre-normalization builds passed the same contract and had the same size,
+but Docker embedded different build timestamps and therefore produced different
+local IDs. Phase 5 now supplies fixed `SOURCE_DATE_EPOCH=1786253596`, tied to the
+frozen evaluation commit, and requires two independent CI confirmations before
+recording a stable ID. That ID will still be a local image configuration ID, not
+a Docker Hub registry digest. The registry digest remains unavailable until the
+human push.
 
 ## Prepare the Codabench ZIP
 
