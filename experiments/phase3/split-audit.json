@@ -1,0 +1,43 @@
+{
+  "dataset_fingerprint": "b06b3319f8782d4b87e3e7c152bc694e9b22b417cc4c9b0cea328ce69bc5a0af",
+  "eligible_after_exclusion": {
+    "groups": 369,
+    "images": 1360
+  },
+  "excluded_prior_groups": {
+    "phase1_reserved": 24,
+    "phase2_development": 76,
+    "sample": 69,
+    "unique_total": 169
+  },
+  "generation": {
+    "algorithm": "Order eligible complete reference groups by SHA-256 of medium-phase3-dev-v1:<group_id>, then assign each to the currently smallest fold that will not exceed 100 images, breaking fold ties by a,b,c; stop when all folds reach 100 images.",
+    "seed": 0
+  },
+  "manifest_sha256": "0729a9205646845eeab70e944e115ca9be7d74e2b261e9a586a6c97b724359b6",
+  "non_overlap": {
+    "between_new_folds": true,
+    "with_all_prior_groups": true
+  },
+  "schema_version": 1,
+  "splits": [
+    {
+      "group_count": 31,
+      "image_count": 100,
+      "path": "splits/medium-phase3-dev-a-v1.json",
+      "split_hash": "ff309ac0285b16a86749ccc7c06054e7636484547748f6a8436540b6be8d087d"
+    },
+    {
+      "group_count": 26,
+      "image_count": 100,
+      "path": "splits/medium-phase3-dev-b-v1.json",
+      "split_hash": "87386062b168f0b74b1e7841f5b43fb022f6d4280b320b1a118509f92903f885"
+    },
+    {
+      "group_count": 29,
+      "image_count": 100,
+      "path": "splits/medium-phase3-dev-c-v1.json",
+      "split_hash": "b8ebb028ac6c7d335e0c67c95d4d22faa2aafb80d19a9cd086b0712ab2462722"
+    }
+  ]
+}

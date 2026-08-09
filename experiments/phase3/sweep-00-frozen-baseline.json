@@ -1,0 +1,32 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "frozen-phase2",
+      "config": "configs/phase2/b2-selected.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-phase3-dev-a-v1.json",
+    "splits/medium-phase3-dev-b-v1.json",
+    "splits/medium-phase3-dev-c-v1.json"
+  ],
+  "limitations": [
+    "All fresh folds exclude the advertised sample, Phase 1 reserved slice, and every Phase 2 development group.",
+    "The frozen Phase 2 config is measured before any Phase 3 failure analysis or architecture change.",
+    "Reference-group-disjoint fallback folds cannot prove photoshoot/property leakage safety."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "fresh-frozen-baseline",
+  "sweep_id": "phase3-baseline-v1"
+}

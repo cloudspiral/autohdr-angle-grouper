@@ -42,3 +42,12 @@ They exclude every sample group and all 24 groups reserved in
 the fixed result contains 27, 24, and 25 complete reference groups. These folds
 support provisional configuration comparisons only because group-disjointness
 does not establish property/photoshoot independence.
+
+`medium-phase3-dev-a-v1.json`, `medium-phase3-dev-b-v1.json`, and
+`medium-phase3-dev-c-v1.json` are three additional disjoint 100-image folds for
+the architecture researcher loop. They exclude all 169 groups already present
+in the sample, reserved Phase 1 slice, or Phase 2 folds. The remaining IDs are
+ordered by SHA-256 of `medium-phase3-dev-v1:<group_id>` and greedily assigned to
+the currently smallest fold that will not exceed 100 images. The result contains
+31, 26, and 29 complete groups. These are still reference-group-only fallbacks,
+not evidence of photoshoot/property isolation.
