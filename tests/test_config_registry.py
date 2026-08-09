@@ -5,9 +5,10 @@ from pathlib import Path
 
 import pytest
 
+from autohdr_eval.classical import ScreenedPercentileClassicalConfig
 from autohdr_eval.config import load_config
 from autohdr_eval.registry import RunRegistry
-from solution import StructuralConfig
+from solution import SUBMISSION_CONFIG_PATH, StructuralConfig
 
 
 def test_committed_structural_config_matches_solution_defaults() -> None:
@@ -16,6 +17,27 @@ def test_committed_structural_config_matches_solution_defaults() -> None:
 
     assert StructuralConfig.from_parameters(config.parameters) == StructuralConfig()
     assert len(config.fingerprint) == 64
+
+
+def test_submission_config_strictly_extends_frozen_dual_view_parameters() -> None:
+    repo_root = Path(__file__).parents[1]
+    phase3 = load_config(repo_root / "configs" / "phase3" / "b2-dual-clahe.json")
+    phase4 = load_config(SUBMISSION_CONFIG_PATH)
+    parsed = ScreenedPercentileClassicalConfig.from_parameters(phase4.parameters)
+
+    assert phase4.algorithm == "classical-screened-dual-clahe"
+    assert {
+        key: value
+        for key, value in phase4.parameters.items()
+        if key != "candidate_screen"
+    } == phase3.parameters
+    assert parsed.candidate_screen.all_pairs_max_images == 64
+    assert parsed.candidate_screen.top_k == 12
+    assert parsed.candidate_screen.structural == phase3_structural_parameters(repo_root)
+
+
+def phase3_structural_parameters(repo_root: Path) -> dict[str, object]:
+    return load_config(repo_root / "configs" / "b1-structural.json").parameters
 
 
 def test_config_fingerprint_is_independent_of_json_key_order(tmp_path: Path) -> None:

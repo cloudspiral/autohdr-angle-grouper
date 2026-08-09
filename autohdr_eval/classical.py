@@ -16,6 +16,7 @@ from typing import Any
 import cv2
 import numpy as np
 
+from autohdr_eval.candidates import CandidateScreenConfig, generate_structural_candidates
 from autohdr_eval.config import canonical_json_bytes
 from autohdr_eval.contracts import canonicalize_groups
 from autohdr_eval.dataset import sha256_file
@@ -225,6 +226,41 @@ class PercentileClassicalConfig(ClassicalConfig):
                 "feature": asdict(self.feature),
                 "percentile_stretch": asdict(self.percentile_stretch),
             }
+        )
+
+
+@dataclass(frozen=True)
+class ScreenedPercentileClassicalConfig(PercentileClassicalConfig):
+    candidate_screen: CandidateScreenConfig
+
+    @classmethod
+    def from_parameters(cls, raw: dict[str, Any]) -> ScreenedPercentileClassicalConfig:
+        expected = {
+            "candidate_screen",
+            "feature",
+            "grouping",
+            "match",
+            "percentile_stretch",
+            "state",
+        }
+        if set(raw) != expected:
+            raise ValueError(
+                "screened percentile classical parameters must be exactly "
+                f"{sorted(expected)}; got {sorted(raw)}"
+            )
+        base = PercentileClassicalConfig.from_parameters(
+            {
+                key: raw[key]
+                for key in ("feature", "grouping", "match", "percentile_stretch", "state")
+            }
+        )
+        return cls(
+            feature=base.feature,
+            match=base.match,
+            state=base.state,
+            grouping=base.grouping,
+            percentile_stretch=base.percentile_stretch,
+            candidate_screen=CandidateScreenConfig.from_parameters(raw["candidate_screen"]),
         )
 
 
@@ -910,7 +946,10 @@ def group_from_decisions(
 
 
 def diagnose_pair_decisions(
-    reference_groups: list[list[str]], decisions: list[PairDecision]
+    reference_groups: list[list[str]],
+    decisions: list[PairDecision],
+    *,
+    require_complete: bool = True,
 ) -> dict[str, Any]:
     """Measure tri-state pair evidence against labels without using labels as input."""
 
@@ -923,10 +962,12 @@ def diagnose_pair_decisions(
     decision_names = {
         filename for decision in decisions for filename in (decision.left, decision.right)
     }
-    if decision_names != expected_names:
-        raise ValueError("pair decisions and reference groups cover different filenames")
+    if not decision_names <= expected_names:
+        raise ValueError("pair decisions contain filenames outside the reference groups")
     expected_pair_count = len(expected_names) * (len(expected_names) - 1) // 2
-    if len(decisions) != expected_pair_count:
+    if require_complete and (
+        decision_names != expected_names or len(decisions) != expected_pair_count
+    ):
         raise ValueError("pair decisions do not cover every unordered image pair")
 
     state_by_label: dict[str, Counter[str]] = {
@@ -969,6 +1010,26 @@ def diagnose_pair_decisions(
     same_negative = state_by_label["same_group"]["negative"]
     negative_total = different_negative + same_negative
     known_total = positive_total + negative_total
+    expected_same_pairs = sum(len(group) * (len(group) - 1) // 2 for group in reference_groups)
+
+    candidate_pairs = {
+        tuple(sorted((decision.left, decision.right))) for decision in decisions
+    }
+    connected_reference_groups = 0
+    for group in reference_groups:
+        if len(group) < 2:
+            connected_reference_groups += 1
+            continue
+        reached = {group[0]}
+        while True:
+            expanded = set(reached)
+            for left, right in candidate_pairs:
+                if left in group and right in group and (left in reached or right in reached):
+                    expanded.update((left, right))
+            if expanded == reached:
+                break
+            reached = expanded
+        connected_reference_groups += int(len(reached) == len(group))
 
     def examples(values: list[PairDecision]) -> list[dict[str, Any]]:
         return [
@@ -987,6 +1048,17 @@ def diagnose_pair_decisions(
     return {
         "pair_diagnostics_schema_version": 1,
         "pair_count": len(decisions),
+        "all_pair_count": expected_pair_count,
+        "candidate_pair_fraction": (
+            len(decisions) / expected_pair_count if expected_pair_count else 0.0
+        ),
+        "candidate_same_group_pair_recall": (
+            same_total / expected_same_pairs if expected_same_pairs else 1.0
+        ),
+        "candidate_true_group_connectivity": {
+            "connected_groups": connected_reference_groups,
+            "total_groups": len(reference_groups),
+        },
         "same_group_pair_count": same_total,
         "different_group_pair_count": different_total,
         "state_by_reference_label": {
@@ -1011,6 +1083,44 @@ def diagnose_pair_decisions(
     }
 
 
+def _selected_feature_pairs(
+    features: list[FeatureRecord],
+    candidate_pairs: set[tuple[str, str]] | None,
+) -> list[tuple[FeatureRecord, FeatureRecord]]:
+    by_name = {feature.filename: feature for feature in features}
+    if len(by_name) != len(features):
+        raise ValueError("classical matching requires unique input basenames")
+    if candidate_pairs is None:
+        pair_names = [
+            (left.filename, right.filename)
+            for left_index, left in enumerate(features)
+            for right in features[left_index + 1 :]
+        ]
+    else:
+        pair_names = []
+        for raw_pair in candidate_pairs:
+            if len(raw_pair) != 2:
+                raise ValueError("candidate pair entries must contain two filenames")
+            left_name, right_name = sorted(raw_pair)
+            if left_name == right_name:
+                raise ValueError("candidate pairs must not contain self-pairs")
+            if left_name not in by_name or right_name not in by_name:
+                raise ValueError("candidate pairs must reference decoded input filenames")
+            pair_names.append((left_name, right_name))
+        if len(pair_names) != len(set(pair_names)):
+            raise ValueError("candidate pairs must be unique unordered pairs")
+        pair_names.sort()
+
+    selected: list[tuple[FeatureRecord, FeatureRecord]] = []
+    for left_name, right_name in pair_names:
+        left = by_name[left_name]
+        right = by_name[right_name]
+        if (right.content_hash, right.filename) < (left.content_hash, left.filename):
+            left, right = right, left
+        selected.append((left, right))
+    return selected
+
+
 def run_classical(
     image_paths: list[str],
     config: ClassicalConfig,
@@ -1018,6 +1128,7 @@ def run_classical(
     dataset_fingerprint: str,
     cache_root: Path,
     seed: int,
+    candidate_pairs: set[tuple[str, str]] | None = None,
 ) -> ClassicalOutcome:
     """Extract or reuse features, cache all raw pair evidence, and form B2 groups."""
 
@@ -1046,43 +1157,38 @@ def run_classical(
     pair_cache = PairEvidenceCache(cache_root / "pair-evidence.sqlite3")
     evidence_values: list[PairEvidence] = []
     pair_hits = 0
-    total_pairs = len(features) * (len(features) - 1) // 2
-    processed = 0
-    for left_index, left in enumerate(features):
-        for right in features[left_index + 1 :]:
-            processed += 1
-            left_record, right_record = (left, right)
-            left_hash, right_hash = left.content_hash, right.content_hash
-            if (right_hash, right.filename) < (left_hash, left.filename):
-                left_record, right_record = right, left
-                left_hash, right_hash = right_hash, left_hash
-            evidence = pair_cache.get(
+    selected_pairs = _selected_feature_pairs(features, candidate_pairs)
+    total_pairs = len(selected_pairs)
+    all_pair_count = len(features) * (len(features) - 1) // 2
+    for processed, (left_record, right_record) in enumerate(selected_pairs, start=1):
+        left_hash, right_hash = left_record.content_hash, right_record.content_hash
+        evidence = pair_cache.get(
+            dataset_fingerprint,
+            config.evidence_fingerprint,
+            left_hash,
+            right_hash,
+        )
+        if evidence is None:
+            evidence = compute_pair_evidence(
+                left_record, right_record, config.match, seed
+            )
+            pair_cache.put(
                 dataset_fingerprint,
                 config.evidence_fingerprint,
                 left_hash,
                 right_hash,
+                evidence,
             )
-            if evidence is None:
-                evidence = compute_pair_evidence(
-                    left_record, right_record, config.match, seed
-                )
-                pair_cache.put(
-                    dataset_fingerprint,
-                    config.evidence_fingerprint,
-                    left_hash,
-                    right_hash,
-                    evidence,
-                )
-            else:
-                pair_hits += 1
-                evidence = replace(
-                    evidence,
-                    left=left_record.filename,
-                    right=right_record.filename,
-                )
-            evidence_values.append(evidence)
-            if processed == 1 or processed % 1000 == 0 or processed == total_pairs:
-                print(f"B2 pairs {processed}/{total_pairs}", flush=True)
+        else:
+            pair_hits += 1
+            evidence = replace(
+                evidence,
+                left=left_record.filename,
+                right=right_record.filename,
+            )
+        evidence_values.append(evidence)
+        if processed == 1 or processed % 1000 == 0 or processed == total_pairs:
+            print(f"B2 pairs {processed}/{total_pairs}", flush=True)
 
     decisions = [classify_pair(evidence, config.state) for evidence in evidence_values]
     qualities = {feature.filename: feature.quality for feature in features}
@@ -1105,6 +1211,9 @@ def run_classical(
         ],
     }
     resources = {
+        "all_pair_count": all_pair_count,
+        "candidate_fraction": total_pairs / all_pair_count if all_pair_count else 0.0,
+        "candidate_pair_count": total_pairs,
         "feature_cache_hits": feature_hits,
         "feature_cache_misses": len(features) - feature_hits,
         "pair_cache_hits": pair_hits,
@@ -1178,6 +1287,7 @@ def run_dual_classical(
     dataset_fingerprint: str,
     cache_root: Path,
     seed: int,
+    candidate_pairs: set[tuple[str, str]] | None = None,
 ) -> ClassicalOutcome:
     """Fuse baseline-CLAHE and percentile-CLAHE evidence before grouping."""
 
@@ -1193,6 +1303,7 @@ def run_dual_classical(
         dataset_fingerprint=dataset_fingerprint,
         cache_root=cache_root,
         seed=seed,
+        candidate_pairs=candidate_pairs,
     )
     percentile = run_classical(
         image_paths,
@@ -1200,6 +1311,7 @@ def run_dual_classical(
         dataset_fingerprint=dataset_fingerprint,
         cache_root=cache_root,
         seed=seed,
+        candidate_pairs=candidate_pairs,
     )
     decisions = fuse_pair_decisions(baseline.decisions, percentile.decisions)
     filenames = sorted(Path(path).name for path in image_paths)
@@ -1220,6 +1332,13 @@ def run_dual_classical(
         key: int(baseline.resources[key]) + int(percentile.resources[key])
         for key in numeric_resource_keys
     }
+    resources.update(
+        {
+            "all_pair_count": baseline.resources["all_pair_count"],
+            "candidate_fraction": baseline.resources["candidate_fraction"],
+            "candidate_pair_count": baseline.resources["candidate_pair_count"],
+        }
+    )
     resources["pair_state_counts"] = dict(sorted(state_counts.items()))
     resources["view_resources"] = {
         "baseline_clahe": baseline.resources,
@@ -1245,4 +1364,248 @@ def run_dual_classical(
         resources=resources,
         summary=summary,
         decisions=decisions,
+    )
+
+
+def run_screened_dual_classical(
+    image_paths: list[str],
+    config: ScreenedPercentileClassicalConfig,
+    *,
+    dataset_fingerprint: str,
+    cache_root: Path,
+    seed: int,
+) -> ClassicalOutcome:
+    """Run cached dual-view evaluation on structurally nominated pairs."""
+
+    candidates = generate_structural_candidates(image_paths, config.candidate_screen)
+    outcome = run_dual_classical(
+        list(candidates.image_paths),
+        config,
+        dataset_fingerprint=dataset_fingerprint,
+        cache_root=cache_root,
+        seed=seed,
+        candidate_pairs=set(candidates.candidate_pairs),
+    )
+    groups = canonicalize_groups(
+        [*outcome.groups, *([filename] for filename in candidates.fallback_filenames)]
+    )
+    resources = dict(outcome.resources)
+    resources.update(candidates.resources)
+    summary = dict(outcome.summary)
+    summary["candidate_screen"] = {
+        "config": asdict(config.candidate_screen),
+        "resources": candidates.resources,
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=outcome.decisions,
+    )
+
+
+def _run_classical_uncached_records(
+    features: list[FeatureRecord],
+    config: ClassicalConfig,
+    *,
+    seed: int,
+    candidate_pairs: set[tuple[str, str]] | None,
+) -> ClassicalOutcome:
+    selected_pairs = _selected_feature_pairs(features, candidate_pairs)
+    evidence_values: list[PairEvidence] = []
+    total_pairs = len(selected_pairs)
+    for index, (left, right) in enumerate(selected_pairs, start=1):
+        evidence_values.append(compute_pair_evidence(left, right, config.match, seed))
+        if index == 1 or index % 1000 == 0 or index == total_pairs:
+            print(f"B2 pairs {index}/{total_pairs}", flush=True)
+
+    decisions = [classify_pair(evidence, config.state) for evidence in evidence_values]
+    qualities = {feature.filename: feature.quality for feature in features}
+    groups = group_from_decisions(
+        [feature.filename for feature in features], decisions, qualities, config.grouping
+    )
+    state_counts = Counter(decision.state for decision in decisions)
+    all_pair_count = len(features) * (len(features) - 1) // 2
+    resources = {
+        "all_pair_count": all_pair_count,
+        "candidate_fraction": total_pairs / all_pair_count if all_pair_count else 0.0,
+        "candidate_pair_count": total_pairs,
+        "feature_cache_hits": 0,
+        "feature_cache_misses": len(features),
+        "pair_cache_hits": 0,
+        "pair_cache_misses": total_pairs,
+        "pair_state_counts": dict(sorted(state_counts.items())),
+    }
+    summary = {
+        "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+        "evidence_fingerprint": config.evidence_fingerprint,
+        "feature_fingerprint": config.feature_fingerprint,
+        "pair_state_counts": dict(sorted(state_counts.items())),
+        "runtime_cache": "disabled",
+        "strongest_pairs": [
+            asdict(decision)
+            for decision in sorted(
+                decisions, key=lambda item: (-item.score, item.left, item.right)
+            )[:50]
+        ],
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=tuple(decisions),
+    )
+
+
+def run_dual_classical_uncached(
+    image_paths: list[str],
+    config: PercentileClassicalConfig,
+    *,
+    seed: int,
+    candidate_pairs: set[tuple[str, str]] | None = None,
+) -> ClassicalOutcome:
+    """Run both views in memory for a read-only submission container."""
+
+    baseline_config = ClassicalConfig(
+        feature=config.feature,
+        match=config.match,
+        state=config.state,
+        grouping=config.grouping,
+    )
+    baseline_features: list[FeatureRecord] = []
+    percentile_features: list[FeatureRecord] = []
+    fallbacks: list[str] = []
+    ordered_paths = sorted((Path(path) for path in image_paths), key=lambda path: path.name)
+    for index, path in enumerate(ordered_paths, start=1):
+        try:
+            content_hash = sha256_file(path)
+            baseline_feature = _extract_features(path, content_hash, config.feature)
+            percentile_feature = _extract_features(
+                path,
+                content_hash,
+                config.feature,
+                config.percentile_stretch,
+            )
+        except (OSError, ValueError, cv2.error) as error:
+            print(
+                f"Warning: {path.name} could not be matched; using singleton: {error}",
+                flush=True,
+            )
+            fallbacks.append(path.name)
+            continue
+        baseline_features.append(baseline_feature)
+        percentile_features.append(percentile_feature)
+        if index == 1 or index % 50 == 0 or index == len(ordered_paths):
+            print(f"B2 dual features {index}/{len(ordered_paths)}", flush=True)
+
+    valid_names = {feature.filename for feature in baseline_features}
+    filtered_candidates = (
+        None
+        if candidate_pairs is None
+        else {
+            pair
+            for pair in candidate_pairs
+            if pair[0] in valid_names and pair[1] in valid_names
+        }
+    )
+    baseline = _run_classical_uncached_records(
+        baseline_features,
+        baseline_config,
+        seed=seed,
+        candidate_pairs=filtered_candidates,
+    )
+    percentile = _run_classical_uncached_records(
+        percentile_features,
+        config,
+        seed=seed,
+        candidate_pairs=filtered_candidates,
+    )
+    decisions = fuse_pair_decisions(baseline.decisions, percentile.decisions)
+    groups = group_from_decisions(
+        sorted(valid_names),
+        list(decisions),
+        {filename: 0.0 for filename in valid_names},
+        config.grouping,
+    )
+    groups = canonicalize_groups([*groups, *([filename] for filename in fallbacks)])
+    state_counts = Counter(decision.state for decision in decisions)
+    numeric_resource_keys = (
+        "feature_cache_hits",
+        "feature_cache_misses",
+        "pair_cache_hits",
+        "pair_cache_misses",
+    )
+    resources = {
+        key: int(baseline.resources[key]) + int(percentile.resources[key])
+        for key in numeric_resource_keys
+    }
+    resources.update(
+        {
+            "all_pair_count": baseline.resources["all_pair_count"],
+            "candidate_fraction": baseline.resources["candidate_fraction"],
+            "candidate_pair_count": baseline.resources["candidate_pair_count"],
+            "decode_fallbacks": len(fallbacks),
+            "pair_state_counts": dict(sorted(state_counts.items())),
+            "view_resources": {
+                "baseline_clahe": baseline.resources,
+                "percentile_clahe": percentile.resources,
+            },
+        }
+    )
+    summary = {
+        "architecture": "dual-clahe-v1",
+        "baseline_clahe": baseline.summary,
+        "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+        "pair_state_counts": dict(sorted(state_counts.items())),
+        "percentile_clahe": percentile.summary,
+        "runtime_cache": "disabled",
+        "strongest_pairs": [
+            asdict(decision)
+            for decision in sorted(
+                decisions,
+                key=lambda item: (-item.score, item.left, item.right),
+            )[:50]
+        ],
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=decisions,
+    )
+
+
+def run_screened_dual_classical_uncached(
+    image_paths: list[str],
+    config: ScreenedPercentileClassicalConfig,
+    *,
+    seed: int,
+) -> ClassicalOutcome:
+    """Run the exact submission architecture without persistent runtime caches."""
+
+    candidates = generate_structural_candidates(image_paths, config.candidate_screen)
+    outcome = run_dual_classical_uncached(
+        list(candidates.image_paths),
+        config,
+        seed=seed,
+        candidate_pairs=set(candidates.candidate_pairs),
+    )
+    groups = canonicalize_groups(
+        [*outcome.groups, *([filename] for filename in candidates.fallback_filenames)]
+    )
+    resources = dict(outcome.resources)
+    resources.update(candidates.resources)
+    resources["decode_fallbacks"] = int(outcome.resources["decode_fallbacks"]) + len(
+        candidates.fallback_filenames
+    )
+    summary = dict(outcome.summary)
+    summary["candidate_screen"] = {
+        "config": asdict(config.candidate_screen),
+        "resources": candidates.resources,
+    }
+    return ClassicalOutcome(
+        groups=groups,
+        resources=resources,
+        summary=summary,
+        decisions=outcome.decisions,
     )

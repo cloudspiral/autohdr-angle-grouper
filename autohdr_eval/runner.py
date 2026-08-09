@@ -286,26 +286,32 @@ def _predict(
         "classical",
         "classical-dual-clahe",
         "classical-percentile-clahe",
+        "classical-screened-dual-clahe",
     }:
         from autohdr_eval.classical import (
             ClassicalConfig,
             PercentileClassicalConfig,
+            ScreenedPercentileClassicalConfig,
             run_classical,
             run_dual_classical,
+            run_screened_dual_classical,
         )
 
-        config_type = (
-            PercentileClassicalConfig
-            if config.algorithm
-            in {"classical-dual-clahe", "classical-percentile-clahe"}
-            else ClassicalConfig
-        )
+        config_types = {
+            "classical": ClassicalConfig,
+            "classical-dual-clahe": PercentileClassicalConfig,
+            "classical-percentile-clahe": PercentileClassicalConfig,
+            "classical-screened-dual-clahe": ScreenedPercentileClassicalConfig,
+        }
+        config_type = config_types[config.algorithm]
         classical_config = config_type.from_parameters(config.parameters)
-        classical_runner = (
-            run_dual_classical
-            if config.algorithm == "classical-dual-clahe"
-            else run_classical
-        )
+        classical_runners = {
+            "classical": run_classical,
+            "classical-dual-clahe": run_dual_classical,
+            "classical-percentile-clahe": run_classical,
+            "classical-screened-dual-clahe": run_screened_dual_classical,
+        }
+        classical_runner = classical_runners[config.algorithm]
         classical = classical_runner(
             image_paths,
             classical_config,
@@ -418,7 +424,9 @@ def run_evaluation(
             from autohdr_eval.classical import diagnose_pair_decisions
 
             prediction.artifacts["pair_diagnostics"] = diagnose_pair_decisions(
-                reference_groups, list(prediction.pair_decisions)
+                reference_groups,
+                list(prediction.pair_decisions),
+                require_complete=config.algorithm != "classical-screened-dual-clahe",
             )
         resources = {
             "candidate_pair_count": (
@@ -428,6 +436,7 @@ def run_evaluation(
                     "classical",
                     "classical-dual-clahe",
                     "classical-percentile-clahe",
+                    "classical-screened-dual-clahe",
                     "structural",
                 }
                 else 0
