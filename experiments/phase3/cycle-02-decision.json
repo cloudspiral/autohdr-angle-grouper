@@ -1,0 +1,76 @@
+{
+  "acceptance_gates": {
+    "fresh_development": {
+      "exact_groups": {
+        "actual": 85,
+        "minimum": 85,
+        "passed": true
+      },
+      "merge_damaged_groups": {
+        "actual": 0,
+        "maximum": 0,
+        "passed": true
+      },
+      "perfect_baseline_folds_regressed": {
+        "actual": 0,
+        "maximum": 0,
+        "passed": true
+      },
+      "runtime_multiple": {
+        "actual": 2.002832470410339,
+        "maximum": 2.25,
+        "passed": true
+      },
+      "worst_fold_exact_score": {
+        "actual": 0.9615384615384616,
+        "minimum": 0.9615384615384616,
+        "passed": true
+      }
+    },
+    "phase2_regression": {
+      "exact_groups": {
+        "actual": 76,
+        "minimum": 76,
+        "passed": true
+      },
+      "merge_damaged_groups": {
+        "actual": 0,
+        "maximum": 0,
+        "passed": true
+      }
+    }
+  },
+  "candidate": {
+    "config_hash": "7a3494e8805d6e56c4f98220fedd1423511951978d79f8fc91b0a0ebdcd406ef",
+    "config_path": "configs/phase3/b2-dual-clahe.json",
+    "fresh": {
+      "exact_groups": 85,
+      "merge_damaged_groups": 0,
+      "split_groups": 1,
+      "total_groups": 86,
+      "wall_seconds": 128.6854522919748,
+      "worst_fold_exact_score": 0.9615384615384616
+    },
+    "phase2_regression": {
+      "exact_groups": 76,
+      "merge_damaged_groups": 0,
+      "split_groups": 0,
+      "total_groups": 76,
+      "wall_seconds": 121.92465545982122
+    }
+  },
+  "cycle_id": "phase3-cycle-02",
+  "decision": "accept_as_phase3_evaluation_champion",
+  "interpretation": "Negative-veto fusion preserves the complementary safe evidence of baseline CLAHE and percentile-stretched CLAHE. It recovers the fresh extreme-shadow group without regressing the Phase 2 six-inlier attachment, while retaining zero merge damage on both dataset families.",
+  "limitations": [
+    "The one remaining fresh failure is an adjacent-view/composition-shift label for which no safe structural or geometric fallback margin was found.",
+    "Dual-view evaluation approximately doubles single-view cold runtime and all-pairs scaling remains unresolved.",
+    "The reference-group-disjoint folds cannot establish photoshoot/property-level independence because the source manifest exposes no such unit.",
+    "The Phase 1 reserved slice and protected holdout were not rerun or touched during Phase 3 selection."
+  ],
+  "reports": {
+    "fresh": "experiments/phase3/results-03-dual-fresh.json",
+    "phase2_regression": "experiments/phase3/results-04-dual-phase2-regression.json"
+  },
+  "schema_version": 1
+}
