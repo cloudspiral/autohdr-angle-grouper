@@ -180,6 +180,55 @@ class ClassicalConfig:
 
 
 @dataclass(frozen=True)
+class PercentileStretchConfig:
+    low_percentile: float
+    high_percentile: float
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.low_percentile < self.high_percentile <= 100:
+            raise ValueError("percentile stretch bounds must be ordered within [0, 100]")
+
+
+@dataclass(frozen=True)
+class PercentileClassicalConfig(ClassicalConfig):
+    percentile_stretch: PercentileStretchConfig
+
+    @classmethod
+    def from_parameters(cls, raw: dict[str, Any]) -> PercentileClassicalConfig:
+        expected = {"feature", "grouping", "match", "percentile_stretch", "state"}
+        if set(raw) != expected:
+            raise ValueError(
+                "percentile classical parameters must be exactly "
+                f"{sorted(expected)}; got {sorted(raw)}"
+            )
+        base = ClassicalConfig.from_parameters(
+            {key: raw[key] for key in ("feature", "grouping", "match", "state")}
+        )
+        return cls(
+            feature=base.feature,
+            match=base.match,
+            state=base.state,
+            grouping=base.grouping,
+            percentile_stretch=_strict_dataclass(
+                PercentileStretchConfig,
+                raw["percentile_stretch"],
+                "percentile_stretch",
+            ),
+        )
+
+    @property
+    def feature_fingerprint(self) -> str:
+        return _fingerprint(
+            {
+                "architecture": "percentile-clahe-v1",
+                "cache_schema_version": CLASSICAL_CACHE_SCHEMA_VERSION,
+                "feature": asdict(self.feature),
+                "percentile_stretch": asdict(self.percentile_stretch),
+            }
+        )
+
+
+@dataclass(frozen=True)
 class FeatureRecord:
     filename: str
     content_hash: str
@@ -252,13 +301,36 @@ def _resize_for_features(grayscale: np.ndarray, maximum: int) -> np.ndarray:
     )
 
 
+def _percentile_stretch(
+    grayscale: np.ndarray, config: PercentileStretchConfig
+) -> np.ndarray:
+    low, high = np.percentile(
+        grayscale,
+        [config.low_percentile, config.high_percentile],
+    )
+    dynamic_range = float(high - low)
+    if dynamic_range <= 1e-12:
+        return grayscale.copy()
+    normalized = np.clip(
+        (grayscale.astype(np.float32) - float(low)) / dynamic_range,
+        0.0,
+        1.0,
+    )
+    return np.rint(normalized * 255.0).astype(np.uint8)
+
+
 def _extract_features(
-    path: Path, content_hash: str, config: FeatureConfig
+    path: Path,
+    content_hash: str,
+    config: FeatureConfig,
+    percentile_stretch: PercentileStretchConfig | None = None,
 ) -> FeatureRecord:
     grayscale = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
     if grayscale is None:
         raise ValueError(f"unable to decode image: {path}")
     working = _resize_for_features(grayscale, config.max_dimension)
+    if percentile_stretch is not None:
+        working = _percentile_stretch(working, percentile_stretch)
     clahe = cv2.createCLAHE(
         clipLimit=config.clahe_clip_limit,
         tileGridSize=(config.clahe_grid_size, config.clahe_grid_size),
@@ -302,7 +374,11 @@ class FeatureCache:
         self.root.mkdir(parents=True, exist_ok=True)
 
     def get(
-        self, path: Path, content_hash: str, config: FeatureConfig
+        self,
+        path: Path,
+        content_hash: str,
+        config: FeatureConfig,
+        percentile_stretch: PercentileStretchConfig | None = None,
     ) -> tuple[FeatureRecord, bool]:
         cache_path = self.root / f"{content_hash}.npz"
         if cache_path.is_file():
@@ -322,7 +398,7 @@ class FeatureCache:
             except (OSError, ValueError, KeyError):
                 pass
 
-        record = _extract_features(path, content_hash, config)
+        record = _extract_features(path, content_hash, config, percentile_stretch)
         temporary: Path | None = None
         try:
             with tempfile.NamedTemporaryFile(
@@ -947,11 +1023,21 @@ def run_classical(
 
     ordered_paths = sorted((Path(path) for path in image_paths), key=lambda path: path.name)
     feature_cache = FeatureCache(cache_root, config.feature_fingerprint)
+    percentile_stretch = (
+        config.percentile_stretch
+        if isinstance(config, PercentileClassicalConfig)
+        else None
+    )
     features: list[FeatureRecord] = []
     feature_hits = 0
     for index, path in enumerate(ordered_paths, start=1):
         content_hash = sha256_file(path)
-        record, hit = feature_cache.get(path, content_hash, config.feature)
+        record, hit = feature_cache.get(
+            path,
+            content_hash,
+            config.feature,
+            percentile_stretch,
+        )
         feature_hits += int(hit)
         features.append(record)
         if index == 1 or index % 50 == 0 or index == len(ordered_paths):

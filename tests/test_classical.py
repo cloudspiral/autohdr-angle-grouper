@@ -12,6 +12,9 @@ from autohdr_eval.classical import (
     PairDecision,
     PairEvidence,
     PairEvidenceCache,
+    PercentileClassicalConfig,
+    PercentileStretchConfig,
+    _percentile_stretch,
     classify_pair,
     diagnose_pair_decisions,
     group_from_decisions,
@@ -24,6 +27,41 @@ def classical_config() -> ClassicalConfig:
     repo_root = Path(__file__).parents[1]
     config = load_config(repo_root / "configs" / "b2-classical.json")
     return ClassicalConfig.from_parameters(config.parameters)
+
+
+def percentile_config() -> PercentileClassicalConfig:
+    repo_root = Path(__file__).parents[1]
+    config = load_config(repo_root / "configs" / "phase3" / "b2-percentile-clahe.json")
+    return PercentileClassicalConfig.from_parameters(config.parameters)
+
+
+def selected_classical_config() -> ClassicalConfig:
+    repo_root = Path(__file__).parents[1]
+    config = load_config(repo_root / "configs" / "phase2" / "b2-selected.json")
+    return ClassicalConfig.from_parameters(config.parameters)
+
+
+def test_percentile_architecture_has_distinct_cache_identity() -> None:
+    baseline = selected_classical_config()
+    candidate = percentile_config()
+
+    assert candidate.feature == baseline.feature
+    assert candidate.match == baseline.match
+    assert candidate.state == baseline.state
+    assert candidate.grouping == baseline.grouping
+    assert candidate.feature_fingerprint != baseline.feature_fingerprint
+    assert candidate.evidence_fingerprint != baseline.evidence_fingerprint
+
+
+def test_percentile_stretch_is_bounded_deterministic_and_handles_flat_images() -> None:
+    config = PercentileStretchConfig(low_percentile=25.0, high_percentile=75.0)
+    values = np.asarray([[0, 10, 20, 30, 40]], dtype=np.uint8)
+
+    assert _percentile_stretch(values, config).tolist() == [[0, 0, 128, 255, 255]]
+    flat = np.full((3, 4), 17, dtype=np.uint8)
+    stretched = _percentile_stretch(flat, config)
+    assert np.array_equal(stretched, flat)
+    assert stretched is not flat
 
 
 def evidence(left: str = "a.jpg", right: str = "b.jpg") -> PairEvidence:

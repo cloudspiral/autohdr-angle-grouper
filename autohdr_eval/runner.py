@@ -282,10 +282,19 @@ def _predict(
             resources={},
             artifacts={},
         )
-    if config.algorithm == "classical":
-        from autohdr_eval.classical import ClassicalConfig, run_classical
+    if config.algorithm in {"classical", "classical-percentile-clahe"}:
+        from autohdr_eval.classical import (
+            ClassicalConfig,
+            PercentileClassicalConfig,
+            run_classical,
+        )
 
-        classical_config = ClassicalConfig.from_parameters(config.parameters)
+        config_type = (
+            PercentileClassicalConfig
+            if config.algorithm == "classical-percentile-clahe"
+            else ClassicalConfig
+        )
+        classical_config = config_type.from_parameters(config.parameters)
         classical = run_classical(
             image_paths,
             classical_config,
