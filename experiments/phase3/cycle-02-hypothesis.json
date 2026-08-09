@@ -1,0 +1,28 @@
+{
+  "acceptance": {
+    "fresh_development": {
+      "maximum_runtime_multiple_vs_single_view": 2.25,
+      "minimum_exact_groups": 85,
+      "minimum_worst_fold_exact_score": 0.9615384615384616,
+      "require_zero_merge_damage": true,
+      "require_zero_regressions_on_perfect_folds": true
+    },
+    "phase2_regression": {
+      "minimum_exact_groups": 76,
+      "require_zero_merge_damage": true,
+      "total_groups": 76
+    }
+  },
+  "baseline_config": "configs/phase2/b2-selected.json",
+  "candidate_config": "configs/phase3/b2-dual-clahe.json",
+  "change": {
+    "algorithm": "classical-dual-clahe",
+    "fusion": "Compute complete baseline-CLAHE and percentile-CLAHE evidence graphs with unchanged geometry/state thresholds. A negative decision in either view vetoes the pair; otherwise retain the stronger of strong-positive, positive, or unknown. Group once from the fused decisions.",
+    "scope": "Add complementary preprocessing evidence without lowering any match, state, transform, or grouping threshold."
+  },
+  "cycle_id": "phase3-cycle-02",
+  "failure_category": "complementary exposure-normalization evidence",
+  "hypothesis": "Decision-level fusion of the two independently safe preprocessing views will retain the Phase 2 six-inlier attachment and the fresh percentile-recovered shadow attachment, reaching at least 85/86 fresh and 76/76 prior-development exact groups with zero merges at no more than 2.25 times single-view runtime.",
+  "rejection": "Reject dual-view promotion if either dataset family fails its exact or zero-merge gate; do not tune fusion or thresholds after observing the result.",
+  "schema_version": 1
+}
