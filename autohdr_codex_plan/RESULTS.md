@@ -25,8 +25,8 @@ The exact cache-free entrypoint completes the 366-image native probe twice in
 about 119 seconds with at most 637 MB RSS and identical output. Its one protected
 400-image run scores 109/110 exact groups with zero merges in 161.57 seconds and
 574 MB RSS; candidate recall/connectivity are complete and the lone error is a
-conservative split. Required Python and `linux/amd64` container CI pass for the
-Phase 4 source; Phase 5 pinned-image CI is pending. Representative x86
+conservative split. Required Python and pinned `linux/amd64` container CI pass
+for the Phase 5 source under read-only/no-network execution. Representative x86
 machine-profile timing, photoshoot-level split independence, public image
 publication, and leaderboard evidence remain unavailable.
 
@@ -138,6 +138,7 @@ Add one row per meaningful sweep batch or architectural comparison. Do not add h
 | 2026-08-09 | Exact cache-free submission scale and determinism | 51-image all-pairs probe | 102/203/366 screened probes | Accuracy intentionally not compared on nested resource subsets; repeated 366 partition hashes match | 12.02/38.65/74.76/119.22 s; 366 max 637.1 MB and 3,196/66,795 candidates | Accept native scale gate with 15.1x headroom under 30 minutes; retain x86 timing limitation | `experiments/phase4/native-scale-results.json` |
 | 2026-08-09 | Exact native and read-only/no-network `linux/amd64` contract | Trivial Phase 0 smoke | Textured identical-pixel pair through promoted entrypoint | Native and container both place the two randomized names in one group | Python 18 s; container build/smoke 22 s | Accept Phase 4 packaging gate; no local daemon bypass or image publication | CI run `31296540040`, jobs `93202426775`, `93202426802` |
 | 2026-08-09 | One-time protected validation after complete Phase 5 freeze | Frozen screened dual entrypoint | No comparison candidate permitted | 109/110 exact; 99/100 non-singleton; 10/10 singleton; zero merge damage; one split; candidate recall/connectivity 1.0 | 161.57 s / 574.0 MB / 3,515 of 79,800 candidates on locked native arm64 Python 3.11 | Accept the frozen finalist without tuning; proceed only with packaging, CI, and human handoff | `experiments/phase5/final-holdout-result.json` |
+| 2026-08-09 | Pinned Phase 5 `linux/amd64` contract | Phase 4 mutable-base CI proof | Digest-pinned Python 3.11 base and exact runtime lock | Native and container smoke place the randomized identical-pixel pair in one group | Python job 16 s; container job 19 s; CI-local image 365,280,872 bytes | Accept packaging-only base pin; image ID is not a public registry digest | CI run `31297253738`, jobs `93204279645`, `93204279673` |
 
 ## Decision log
 
@@ -329,7 +330,7 @@ Do not fill this section until the champion is frozen.
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | Phase 5 CI-local identity pending; public digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 `linux/amd64` smoke pending | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
+| A | CI-local `sha256:99e2ff5f…` / 365,280,872 bytes; public registry digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
 | B | Not built as a finalist | `855c7c577719…` | 160/162 on the same six folds | Not run; protected comparison intentionally forbidden | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional development split; lower runtime | Preserve as historical runtime control, not a finalist |
 
 ## Submission handoff
@@ -338,7 +339,7 @@ Complete this section before asking for human approval. Do not place credentials
 
 - **Recommended candidate:** A — screened dual-view CLAHE
 - **Local image tag:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
-- **Local image digest:** Pending Phase 5 CI; local daemon unavailable and not bypassed
+- **CI-local image ID:** `sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf` (not a public registry digest)
 - **Public tag to use after approval:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
 - **`submission.yaml` path:** `submission.yaml`
 - **`submission.zip` path:** `submission.zip` (local, gitignored; deterministic SHA-256 `100d1058699d…` while placeholders remain)
@@ -370,7 +371,8 @@ Complete this section before asking for human approval. Do not place credentials
 > reproduces 161/162 development groups with zero merge damage and scores
 > 109/110 on the one-time 400-image protected fallback holdout with zero merges.
 > The exact native path remains deterministic and comfortably inside the strict
-> runtime/memory targets. Do not retune or rerun the holdout. Await green Phase 5
-> `linux/amd64` CI and human Docker Hub/Codabench action; public image digest,
+> runtime/memory targets, and the pinned Phase 5 `linux/amd64` contract CI is
+> green. Do not retune or rerun the holdout. Await human Docker Hub/Codabench
+> action; public image digest,
 > representative x86 full-batch timing, photoshoot-level split independence,
 > and leaderboard evidence remain unavailable.

@@ -54,9 +54,12 @@ The local Docker daemon was unavailable to Codex, so GitHub Actions is the
 authoritative `linux/amd64`, read-only, no-network build/smoke proof. Record the
 final Phase 5 CI job and image ID here after it completes:
 
-- Phase 5 CI run: `PENDING_PHASE5_CI`
-- CI-local image ID: `PENDING_PHASE5_CI`
-- CI-local image size: `PENDING_PHASE5_CI`
+- Phase 5 CI run: [`31297253738`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297253738)
+- CI-local image ID: `sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf`
+- CI-local image size: `365,280,872` bytes
+
+The CI-local ID is a content-addressed image configuration ID, not a Docker Hub
+registry digest. The registry digest remains unavailable until the human push.
 
 ## Prepare the Codabench ZIP
 

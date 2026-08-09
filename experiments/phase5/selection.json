@@ -7,9 +7,15 @@
       "development_exact_groups": "161/162",
       "holdout_exact_groups": "109/110",
       "id": "A",
+      "linux_amd64_container": {
+        "ci_local_image_id": "sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf",
+        "image_size_bytes": 365280872,
+        "job_id": 93204279673,
+        "status": "passed"
+      },
       "merge_damaged_groups_across_development_and_holdout": 0,
       "recommended": true,
-      "runtime_evidence": "161.57 seconds and 573,997,056-byte peak RSS for the 400-image cache-free protected run on native arm64 Python 3.11; exact linux/amd64 contract proof pending Phase 5 CI."
+      "runtime_evidence": "161.57 seconds and 573,997,056-byte peak RSS for the 400-image cache-free protected run on native arm64 Python 3.11; exact linux/amd64 read-only/no-network contract proof passed in Phase 5 CI."
     }
   ],
   "not_advanced": [

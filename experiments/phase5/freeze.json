@@ -14,6 +14,12 @@
   "post_holdout_packaging_exception": {
     "algorithm_impact": "none",
     "change": "Pin the official Python 3.11 slim linux/amd64 manifest digest in Dockerfile.",
+    "container_validation": {
+      "ci_local_image_id": "sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf",
+      "container_job_id": 93204279673,
+      "run_id": 31297253738,
+      "status": "passed"
+    },
     "dockerfile_sha256_after_base_pin": "c60c6a88bba7c5b94daba77f0699aa269b1239b5aa83b65672fa3a4ec7536673",
     "reason": "The pre-holdout Dockerfile used a mutable base tag; pinning the resolved manifest closes a packaging reproducibility gap without changing solution.py, config, split, or Python dependencies."
   },

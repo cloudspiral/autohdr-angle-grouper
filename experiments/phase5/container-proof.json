@@ -1,0 +1,21 @@
+{
+  "base_image_linux_amd64": "python:3.11-slim@sha256:78b39ef14d8e2b4d71f8dc304f1328c37df95fe0ef99477c2ae6bd3d03784553",
+  "ci_local_image_id": "sha256:99e2ff5febe1beb801ffc31588c0992902432d93d4f81586b2bff53d954dddaf",
+  "ci_local_image_size_bytes": 365280872,
+  "commit": "0b4febb840244db83281b9cad0b57b679e7ab16a",
+  "container_job_id": 93204279673,
+  "contract": {
+    "linux_amd64_build": true,
+    "network_disabled": true,
+    "nontrivial_expected_partition": true,
+    "read_only_input": true,
+    "read_only_root": true,
+    "valid_csv": true
+  },
+  "job_seconds": 19,
+  "public_registry_digest": null,
+  "repo_digests": [],
+  "run_id": 31297253738,
+  "schema_version": 1,
+  "status": "passed"
+}
