@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+artifacts
+data
+__pycache__
+*.pyc
+*.pyo
+.DS_Store
+.pytest_cache
+.ruff_cache
+autohdr-image-grouping.pdf
+autohdr_codex_plan
+docs
+tests

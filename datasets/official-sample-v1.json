@@ -1,0 +1,89 @@
+{
+  "archive": {
+    "advertised_image_count": 500,
+    "actual_image_count": 366,
+    "filename": "autohdr_sample_500.zip",
+    "sha256": "359db7651c1a6899f935876fb52c666296e9ae14d9d7c35ea2a109864ffcf37f",
+    "size_bytes": 1497174241,
+    "url": "https://grouping-dataset-solution.s3.amazonaws.com/downloads/autohdr_sample_500.zip"
+  },
+  "audit_date": "2026-08-08",
+  "audit_schema_version": 1,
+  "dataset_fingerprint": "144796b2fbc2f2cbbe1dfcf8b640aa16f835d23e5266d85b0aaa3e6012315451",
+  "directory_image_counts": {
+    "images": 366
+  },
+  "exposure": {
+    "bright_clipped_fraction": {
+      "max": 0.9365177266081871,
+      "median": 0.0029696637426900587,
+      "min": 0.0
+    },
+    "dark_clipped_fraction": {
+      "max": 0.9508863304093568,
+      "median": 0.0,
+      "min": 0.0
+    },
+    "luminance_median": {
+      "max": 255.0,
+      "median": 104.5,
+      "min": 1.0
+    },
+    "sharpness_laplacian_variance": {
+      "max": 3947.4256051620823,
+      "median": 562.8278688371481,
+      "min": 10.768934223329902
+    }
+  },
+  "filename_group_prefix_fraction": 1.0,
+  "format_counts": {
+    ".jpg": 366
+  },
+  "group_count": 69,
+  "group_size_distribution": {
+    "1": 5,
+    "2": 3,
+    "3": 26,
+    "4": 2,
+    "5": 18,
+    "6": 2,
+    "7": 2,
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 1,
+    "14": 1,
+    "15": 1,
+    "16": 1,
+    "20": 1,
+    "25": 1
+  },
+  "integrity": {
+    "corrupt_images": 0,
+    "duplicate_basenames": 0,
+    "exact_duplicate_sets": 0,
+    "extra_images": 0,
+    "missing_images": 0,
+    "perceptual_cross_group_collision_sets": 0,
+    "perceptual_hash_collision_sets": 38
+  },
+  "limitations": [
+    "The archive advertised as 500 images contains 366 images.",
+    "The manifest contains only group_id and filename; it has no photoshoot or property identifier.",
+    "Every public filename begins with its reference group ID, so filenames and paths are forbidden model inputs.",
+    "This sample is smoke evidence only and must not be used as the protected final holdout."
+  ],
+  "manifest": {
+    "columns": [
+      "group_id",
+      "filename"
+    ],
+    "image_count": 366,
+    "non_label_metadata_columns": [],
+    "sha256": "ccf19ba8e6c3cf1256f1c0dfa1cc23865fe38888a0ab4515d42454b10e70b85f"
+  },
+  "total_image_bytes": 1497114763,
+  "unique_dimension_count": 38
+}

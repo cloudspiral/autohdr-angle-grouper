@@ -172,3 +172,29 @@ def test_run_writes_required_csv_contract(tmp_path: Path) -> None:
             {"filename": "first.jpg", "group_id": "0"},
             {"filename": "second.jpeg", "group_id": "1"},
         ]
+
+
+def test_group_images_falls_back_to_singleton_for_corrupt_image(tmp_path: Path) -> None:
+    image_dir = tmp_path / "images"
+    valid = write_valid_image(image_dir / "valid.jpg", make_scene("house"))
+    corrupt_path = image_dir / "corrupt.jpg"
+    corrupt_path.write_bytes(b"not an image")
+
+    groups = group_images([valid, str(corrupt_path)])
+
+    assert group_sets(groups) == {
+        frozenset({"valid.jpg"}),
+        frozenset({"corrupt.jpg"}),
+    }
+    validate_groups(groups, [valid, str(corrupt_path)])
+
+
+def test_run_with_empty_input_writes_header_only_csv(tmp_path: Path) -> None:
+    image_dir = tmp_path / "images"
+    image_dir.mkdir()
+
+    first = run(image_dir, tmp_path / "first")
+    second = run(image_dir, tmp_path / "second")
+
+    assert first.read_bytes() == b"filename,group_id\n"
+    assert first.read_bytes() == second.read_bytes()

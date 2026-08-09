@@ -1,0 +1,30 @@
+{
+  "dataset_fingerprint": "144796b2fbc2f2cbbe1dfcf8b640aa16f835d23e5266d85b0aaa3e6012315451",
+  "limitations": [
+    "The source manifest has no photoshoot or property boundary.",
+    "Whole reference groups were selected in lexicographic group-ID order until the sample reached at least 50 images.",
+    "This split is an early B1 runtime-scale point only and is not suitable for model selection."
+  ],
+  "protected": false,
+  "schema_version": 1,
+  "seed": 0,
+  "selection": {
+    "type": "group_ids",
+    "values": [
+      "10192",
+      "10387",
+      "1055",
+      "10868",
+      "16054",
+      "16149",
+      "19349",
+      "19755",
+      "22657",
+      "22994",
+      "26166"
+    ]
+  },
+  "source_package": "official-sample-v1",
+  "split_id": "sample-scale-051-v1",
+  "unit": "reference-group-only-fallback"
+}

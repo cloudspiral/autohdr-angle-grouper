@@ -1,7 +1,7 @@
 # AutoHDR image-grouping requirements
 
 This is an implementation-oriented summary of the two-page brief
-`project_1778728143185.pdf` (SHA-256
+[`autohdr_codex_plan/sources/PROJECT_REQUIREMENTS.pdf`](../autohdr_codex_plan/sources/PROJECT_REQUIREMENTS.pdf) (SHA-256
 `28b4f79a8e4673257480944fd614545d08824b864ff712f4b57fcf174e3efd0e`).
 The original PDF remains authoritative; it was inspected at full-page resolution
 and its companion document passed the PDF-to-Markdown structural validator.
@@ -59,3 +59,8 @@ competition actions and are outside Symphony's unattended permissions. [PDF p. 2
 The brief does not define a geometric or perceptual tolerance for “same camera
 angle.” Thresholds therefore require validation against labeled training data;
 synthetic tests establish mechanics but cannot prove leaderboard quality.
+
+The brief and live starter README advertise a 60-minute timeout, while the live
+starter `SUBMISSION_GUIDE.md` advertises 30 minutes for `cpu-large` and 45 minutes
+for `cpu-xlarge`. Treat the stricter limits as the engineering target until the
+organizer confirms the actual platform configuration.

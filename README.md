@@ -13,15 +13,21 @@ handed back as a tested pull request for human review.
 
 The checked-in implementation is a deterministic, CPU-only structural baseline.
 It normalizes exposure and groups sufficiently similar image geometry while
-preserving the challenge's I/O contract. Generated-image tests validate the
-mechanics; this baseline has not been scored on labeled AutoHDR data and makes no
-leaderboard or production-accuracy claim.
+preserving the challenge's I/O contract. On the complete official sample package,
+it scores 60/69 exact reference groups as a smoke result. That package is not a
+valid development fold, so this is not a leaderboard or generalization claim.
+
+Phase 0 evaluation infrastructure now keeps that implementation as B1 and adds a
+singleton B0 control, official exact-group scoring, strict CSV validation,
+content-hashed configs and splits, a SQLite run registry, dataset auditing, and a
+protected-holdout gate. See [`docs/EVALUATION.md`](docs/EVALUATION.md).
 
 ## Grouping algorithm
 
-For each image, `solution.py` decodes grayscale pixels while explicitly ignoring
-EXIF orientation, resizes them to a fixed working canvas, and applies a percentile
-contrast stretch followed by histogram equalization. The descriptor concatenates:
+For each image, `solution.py` decodes grayscale pixels with EXIF orientation
+applied solely for correct pixel decoding, resizes them to a fixed working canvas,
+and applies a percentile contrast stretch followed by histogram equalization. No
+other metadata is a grouping signal. The descriptor concatenates:
 
 - a blurred, mean-centered luminance layout; and
 - six unsigned Sobel-gradient orientation channels, with soft orientation-bin
@@ -70,15 +76,18 @@ over-merging and over-splitting.
 - Resizing every image to a square can weaken discrimination between images with
   materially different aspect ratios.
 - Synthetic fixtures prove deterministic mechanics only. Threshold quality and
-  the 60-minute runtime margin still require measurement on representative,
-  labeled AutoHDR shoots without leaking filenames or metadata into the model.
+  runtime headroom still require measurement on representative, labeled AutoHDR
+  shoots without leaking filenames or metadata into the model.
 
 ## Challenge contract
 
 - Read JPEG/PNG images from the read-only `/input/images/` mount.
 - Write `/output/predictions.csv` with `filename,group_id` columns.
 - Include every input filename exactly once and never include paths.
-- Run offline, print progress to stdout, and complete within 60 minutes.
+- Run offline and print progress to stdout.
+- Until the organizer resolves conflicting official documentation, target the
+  stricter advertised limits: 30 minutes on `cpu-large` and 45 minutes on
+  `cpu-xlarge`; the starter README and supplied PDF instead say 60 minutes.
 - Build for `linux/amd64` when developing on Apple Silicon.
 
 The local source brief was verified page by page and is summarized in
@@ -115,9 +124,12 @@ docker run --rm \
 
 ## Data and evaluation
 
-Training data is intentionally not committed. AutoHDR currently publishes
-sample, medium, and large downloads through the official starter repository.
-Downloaded images, local outputs, and packaged submissions are ignored by Git.
+Training data is intentionally not committed. AutoHDR currently publishes sample,
+medium, and large downloads through the official starter repository. The archive
+advertised as the 500-image sample currently contains 366 images plus its
+manifest; this is recorded as documentation drift rather than silently treated as
+500 observations. Downloaded images, local outputs, experiment artifacts, and
+packaged submissions are ignored by Git.
 
 Scoring gives credit only when a predicted group exactly matches a labeled
 group; partial overlaps receive no credit. See [`SCORING.md`](SCORING.md).
