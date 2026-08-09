@@ -37,10 +37,27 @@
       "run_id": 31297387851
     }
   ],
+  "observed_buildx_action_without_timestamp_rewrite": [
+    {
+      "build_digest": "sha256:ea9ea5cc120cfe27390e11db9d747643674c6b980c4d4d299c75f7c90d51e8c8",
+      "container_job_id": 93204865846,
+      "image_id": "sha256:0e377f9e84f0e0320751cc4eeb928fb2ced15b9a57078e9e0d73f708353a29b3",
+      "run_attempt": 1,
+      "run_id": 31297489029
+    },
+    {
+      "build_digest": "sha256:109124202ad0afe3ecec420a852c51330a9cb1b8173dacd7ab940557b915ba3f",
+      "container_job_id": 93204943817,
+      "image_id": "sha256:05b9e72a273f82e4fd01ddbf2ba7195d6cbc706ab9c41be2a5d4539807f9f2c9",
+      "run_attempt": 2,
+      "run_id": 31297489029
+    }
+  ],
   "public_registry_digest": null,
   "repo_digests": [],
   "reproducible_build": {
     "builder": "docker/setup-buildx-action@v4 and docker/build-push-action@v7",
+    "exporter": "type=docker,rewrite-timestamp=true",
     "source_date_epoch": 1786253596,
     "stable_ci_local_image_id": null,
     "status": "pending independent CI confirmation"

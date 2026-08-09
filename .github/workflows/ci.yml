@@ -36,7 +36,7 @@ jobs:
           SOURCE_DATE_EPOCH: 1786253596
         with:
           context: .
-          load: true
+          outputs: type=docker,rewrite-timestamp=true
           platforms: linux/amd64
           provenance: false
           tags: autohdr-angle-grouper:ci
