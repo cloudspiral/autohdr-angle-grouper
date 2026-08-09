@@ -69,6 +69,24 @@
       "run_id": 31297589692
     }
   ],
+  "observed_buildx_action_with_all_reproducibility_controls": [
+    {
+      "build_digest": "sha256:06af850a28431f6222ec785893d6727fc5b9158f64316e94116d8bee9f249abe",
+      "commit": "489becf006448310c52d783a18f17472872fb740",
+      "container_job_id": 93205364788,
+      "image_id": "sha256:eaf9f5f41fe39a7a6f683de3413ce928b5bebc250897d10aed5c7c1ec1215262",
+      "run_attempt": 1,
+      "run_id": 31297696268
+    },
+    {
+      "build_digest": "sha256:769cb3a03be83a4d01068459261866f09c4cb7909897d3eba50e12fed55e8168",
+      "commit": "489becf006448310c52d783a18f17472872fb740",
+      "container_job_id": 93205509762,
+      "image_id": "sha256:12b21e7a144987fccbc948cda3a103a84671f5b10b9b1f498611bb8acb683d8b",
+      "run_attempt": 2,
+      "run_id": 31297696268
+    }
+  ],
   "public_registry_digest": null,
   "repo_digests": [],
   "reproducible_build": {
@@ -78,8 +96,8 @@
     "pip_version_check_disabled": true,
     "source_date_epoch": 1786253596,
     "stable_ci_local_image_id": null,
-    "status": "pending independent CI confirmation"
+    "status": "not established: an exact CI rerun produced distinct local image IDs and build digests"
   },
   "schema_version": 1,
-  "status": "contract passed; stable image identity pending"
+  "status": "contract passed on every observed build; CI-local image identity was not reproducible; public registry digest pending human publication"
 }

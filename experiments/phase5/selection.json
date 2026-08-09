@@ -10,7 +10,7 @@
       "linux_amd64_container": {
         "ci_local_image_id": null,
         "image_size_bytes": 365280872,
-        "status": "contract passed twice; stable timestamp-normalized identity pending"
+        "status": "contract passed on both attempts of exact CI run 31297696268; distinct local IDs prevent a reproducibility claim; public registry digest pending"
       },
       "merge_damaged_groups_across_development_and_holdout": 0,
       "recommended": true,

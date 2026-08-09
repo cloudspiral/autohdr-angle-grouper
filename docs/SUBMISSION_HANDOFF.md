@@ -51,11 +51,12 @@ head /private/tmp/autohdr-final-output/predictions.csv
 ```
 
 The local Docker daemon was unavailable to Codex, so GitHub Actions is the
-authoritative `linux/amd64`, read-only, no-network build/smoke proof. Record the
-final Phase 5 CI job and image ID here after it completes:
+authoritative `linux/amd64`, read-only, no-network build/smoke proof:
 
-- Phase 5 CI runs: [`31297253738`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297253738), [`31297313919`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297313919)
-- Stable timestamp-normalized CI-local image ID: `PENDING_REPRODUCIBLE_CI`
+- Final exact-rerun proof: [run `31297696268`, attempt 1 job `93205364788`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297696268/job/93205364788) and [attempt 2 job `93205509762`](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297696268/job/93205509762)
+- Attempt 1 local image ID: `sha256:eaf9f5f41fe39a7a6f683de3413ce928b5bebc250897d10aed5c7c1ec1215262`
+- Attempt 2 local image ID: `sha256:12b21e7a144987fccbc948cda3a103a84671f5b10b9b1f498611bb8acb683d8b`
+- Stable timestamp-normalized CI-local image ID: **not established**
 - CI-local image size: `365,280,872` bytes
 
 The plain `docker build` runs passed the same contract and had the same size but
@@ -65,10 +66,11 @@ Buildx plus `docker/build-push-action`, with fixed
 `SOURCE_DATE_EPOCH=1786253596` tied to the frozen evaluation commit and the
 explicit `type=docker,rewrite-timestamp=true` exporter required to normalize
 timestamps inside generated layers. The Dockerfile also disables pip's cache
-and wall-clock version-check state. Two independent CI confirmations are
-required before recording a stable ID. That ID will still be a local image
-configuration ID, not a Docker Hub registry digest. The registry digest remains
-unavailable until the human push.
+and wall-clock version-check state. The exact rerun passed the complete contract
+both times and produced the same image size, but the local image IDs and Buildx
+result digests differed. Do not describe the CI artifacts as byte-reproducible.
+The authoritative immutable identity will be the Docker Hub registry digest
+recorded after the human builds, smoke-tests, and pushes the reviewed image.
 
 ## Prepare the Codabench ZIP
 

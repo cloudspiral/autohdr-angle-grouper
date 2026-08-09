@@ -298,25 +298,23 @@ Suggested categories:
 
 ## Protected holdout record
 
-Do not fill this section until the champion is frozen.
-
-- **Freeze commit:**
-- **Freeze config hash:**
-- **Holdout split fingerprint:**
-- **First and only planned holdout run ID:**
-- **Exact score:**
-- **Non-singleton exact score:**
-- **Merge damage:**
-- **Split groups:**
-- **Runtime / peak RSS:**
-- **Interpretation:**
-- **Any post-holdout change:** None / describe and justify as contract-only
+- **Freeze commit:** `532cc1b81211871198b0ec9c00ed8b986ed4b102`
+- **Freeze config hash:** `8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e`
+- **Holdout split fingerprint:** `d54349e110535e4fd6520d3b142ac050c95f17b5c7add1e10930e02ccb55889a`
+- **First and only planned holdout run ID:** `20260809T053342Z-b2-screened-dual-clahe-b4da2aeebf`
+- **Exact score:** 109/110 = 0.9909
+- **Non-singleton exact score:** 99/100 = 0.9900
+- **Merge damage:** 0 groups
+- **Split groups:** 1 group, partitioned 4+1
+- **Runtime / peak RSS:** 161.57 seconds / 573,997,056 bytes for 400 images
+- **Interpretation:** The development-selected finalist retained zero-merge behavior and missed one conservative attachment. Candidate screening retained all same-group pairs and connected all 110 reference groups, so the remaining split is downstream of retrieval.
+- **Any post-holdout change:** Contract-only packaging: pinned the official Python 3.11 Linux/AMD64 base digest, pinned Python lockfiles, added deterministic submission packaging, and added Buildx timestamp and pip-state controls. No solution, config, split, dependency-version, or threshold change was made, and the holdout was not rerun.
 
 ## Container validation
 
 | Check | Result | Evidence |
 |---|---|---|
-| Builds for `linux/amd64` | Pass on exact Phase 4 source | [CI container job 93202426802](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31296540040/job/93202426802) builds the Dockerfile and passes in 22 seconds; local Docker access was policy-blocked and not bypassed |
+| Builds for `linux/amd64` | Pass on frozen Phase 5 candidate | [Exact-rerun attempt 1 job 93205364788](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297696268/job/93205364788) and [attempt 2 job 93205509762](https://github.com/cloudspiral/autohdr-angle-grouper/actions/runs/31297696268/job/93205509762) both build and pass; local Docker access was policy-blocked and not bypassed |
 | Runs with read-only input | Pass on two-image generated fixture | Bind input is `readonly`; container root uses `--read-only`; runtime uses in-memory features and no cache |
 | Runs without network | Pass | Container uses `--network none`; no model assets, services, or runtime downloads exist |
 | Writes valid CSV | Pass | Dependency-free validator requires the two case-preserved filenames exactly once with required headers |
@@ -330,7 +328,7 @@ Do not fill this section until the champion is frozen.
 
 | Candidate | Image digest | Config hash | Local dev | Holdout | Runtime | Risk profile | Recommendation |
 |---|---|---|---:|---:|---:|---|---|
-| A | 365,280,872-byte CI image; stable timestamp-normalized ID pending; public registry digest unavailable until human push | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes twice | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
+| A | 365,280,872-byte CI images; exact rerun produced distinct local IDs, so only the post-push public registry digest will be authoritative | `8edd0d656ac4…` | 161/162 across six fallback development/regression folds; byte-identical to full dual | 109/110, zero merges, one split | 161.57 s / 574.0 MB native arm64 at 400 images; Phase 5 pinned `linux/amd64` smoke passes twice | Screened dual-view classical; conservative split risk; unknown representative x86 timing | Single recommended finalist |
 | B | Not built as a finalist | `855c7c577719…` | 160/162 on the same six folds | Not run; protected comparison intentionally forbidden | 64.25 s / 554.7 MB on fresh three-fold cold comparison | Simpler single view; one additional development split; lower runtime | Preserve as historical runtime control, not a finalist |
 
 ## Submission handoff
@@ -339,7 +337,7 @@ Complete this section before asking for human approval. Do not place credentials
 
 - **Recommended candidate:** A — screened dual-view CLAHE
 - **Local image tag:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
-- **CI-local image ID:** Pending two matching builds after fixing `SOURCE_DATE_EPOCH`; not a public registry digest
+- **CI-local image ID:** No stable ID established: exact CI rerun jobs `93205364788` and `93205509762` passed but produced distinct IDs; use the immutable public registry digest after human publication
 - **Public tag to use after approval:** `YOUR_DOCKERHUB_NAMESPACE/autohdr-angle-grouper:phase5-532cc1b`
 - **`submission.yaml` path:** `submission.yaml`
 - **`submission.zip` path:** `submission.zip` (local, gitignored; deterministic SHA-256 `100d1058699d…` while placeholders remain)
