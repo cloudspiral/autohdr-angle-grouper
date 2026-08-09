@@ -8,8 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN python -m pip install --no-cache-dir --requirement requirements.txt
+COPY requirements.lock .
+RUN python -m pip install --no-cache-dir --requirement requirements.lock
 
 COPY autohdr_eval ./autohdr_eval
 COPY configs ./configs
