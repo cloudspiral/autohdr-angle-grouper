@@ -1,0 +1,17 @@
+{
+  "acceptance": {
+    "maximum_selected_opencv_threads": 8,
+    "require_clean_commit": true,
+    "require_prediction_hash_identity": true
+  },
+  "candidates": [1, 2, 4, 8],
+  "command": ".venv/bin/python -m scripts.benchmark_submission --opencv-threads <candidate>",
+  "decision_rule": "Choose the lowest wall-time setting on the 51-image all-pairs probe when every candidate produces the same prediction hash. Break a practical timing tie toward fewer threads. The eight-thread maximum matches the smaller advertised cpu-large profile and avoids host-dependent automatic oversubscription.",
+  "limitations": [
+    "One native arm64 timing per candidate is a bounded execution-setting probe, not accuracy evidence or an x86 container benchmark.",
+    "OpenCV is the only threaded numerical layer; Docker keeps OMP, OpenBLAS, and MKL at one thread.",
+    "The selected setting must be enforced by solution.py and rechecked through the final deterministic 366-image and container runs."
+  ],
+  "schema_version": 1,
+  "split": "splits/sample-scale-051-v1.json"
+}

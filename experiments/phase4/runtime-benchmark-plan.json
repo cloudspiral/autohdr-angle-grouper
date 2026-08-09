@@ -1,0 +1,26 @@
+{
+  "acceptance": {
+    "determinism": {
+      "repeat_split": "sample-smoke-v1",
+      "require_prediction_hash_identity": true
+    },
+    "maximum_366_image_peak_rss_bytes": 8589934592,
+    "maximum_366_image_wall_seconds": 600,
+    "require_clean_commit": true
+  },
+  "command": ".venv/bin/python -m scripts.benchmark_submission",
+  "interpretation": [
+    "The nested sample subsets are runtime probes only; their accuracy is not compared or used for selection.",
+    "Each split runs in a fresh Python process through the cache-free submission implementation.",
+    "The 366-image split is repeated from the same clean commit to prove deterministic output.",
+    "Native Apple Silicon timing does not replace the required linux/amd64 container build and smoke proof."
+  ],
+  "schema_version": 1,
+  "splits": [
+    "splits/sample-scale-051-v1.json",
+    "splits/sample-scale-102-v1.json",
+    "splits/sample-scale-203-v1.json",
+    "splits/sample-smoke-v1.json",
+    "splits/sample-smoke-v1.json"
+  ]
+}

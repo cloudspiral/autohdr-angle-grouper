@@ -252,6 +252,26 @@ def test_pair_diagnostics_separate_evidence_precision_and_recall() -> None:
     assert result["same_group_miss_examples"] == []
 
 
+def test_pair_diagnostics_measure_partial_candidate_recall_and_connectivity() -> None:
+    result = diagnose_pair_decisions(
+        [["a.jpg", "b.jpg", "c.jpg"], ["d.jpg"]],
+        [
+            decision("a.jpg", "b.jpg", "strong_positive", 0.95),
+            decision("b.jpg", "c.jpg", "positive", 0.75),
+        ],
+        require_complete=False,
+    )
+
+    assert result["pair_count"] == 2
+    assert result["all_pair_count"] == 6
+    assert result["candidate_pair_fraction"] == 1 / 3
+    assert result["candidate_same_group_pair_recall"] == 2 / 3
+    assert result["candidate_true_group_connectivity"] == {
+        "connected_groups": 2,
+        "total_groups": 2,
+    }
+
+
 def test_identical_content_reuses_pair_measurement_but_rebinds_filenames(
     tmp_path: Path,
 ) -> None:
@@ -325,3 +345,33 @@ def test_classical_pipeline_groups_exposures_and_reuses_both_cache_layers(
     assert first.resources["pair_cache_misses"] == 3
     assert second.resources["feature_cache_hits"] == 3
     assert second.resources["pair_cache_hits"] == 3
+
+
+def test_classical_pipeline_evaluates_only_preselected_candidate_pairs(
+    tmp_path: Path,
+) -> None:
+    rng = np.random.default_rng(31)
+    source = tmp_path / "a.png"
+    assert cv2.imwrite(
+        str(source), rng.integers(0, 256, size=(180, 240, 3), dtype=np.uint8)
+    )
+    copy = tmp_path / "b.png"
+    different = tmp_path / "c.png"
+    shutil.copyfile(source, copy)
+    assert cv2.imwrite(
+        str(different), rng.integers(0, 256, size=(180, 240, 3), dtype=np.uint8)
+    )
+
+    result = run_classical(
+        [str(source), str(copy), str(different)],
+        classical_config(),
+        dataset_fingerprint="e" * 64,
+        cache_root=tmp_path / "cache",
+        seed=0,
+        candidate_pairs={("a.png", "b.png")},
+    )
+
+    assert result.groups == [["a.png", "b.png"], ["c.png"]]
+    assert len(result.decisions) == 1
+    assert result.resources["candidate_pair_count"] == 1
+    assert result.resources["all_pair_count"] == 3

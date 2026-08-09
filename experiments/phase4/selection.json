@@ -1,0 +1,70 @@
+{
+  "candidate_generation": {
+    "candidate_pairs_by_100_image_fold": [
+      839,
+      835,
+      814,
+      821,
+      861,
+      818
+    ],
+    "maximum_candidate_fraction": 0.17393939393939395,
+    "same_group_pair_recall": {
+      "candidate_pairs": 995,
+      "recall": 0.996993987975952,
+      "total_pairs": 998
+    },
+    "true_group_connectivity": {
+      "connected_groups": 161,
+      "total_groups": 162
+    }
+  },
+  "container_evidence": {
+    "container_job_id": 93202426802,
+    "container_job_seconds": 22,
+    "native_and_container_fixture_partition": [
+      [
+        "same-a.png",
+        "same-b.png"
+      ]
+    ],
+    "python_job_id": 93202426775,
+    "python_job_seconds": 18,
+    "run_id": 31296540040,
+    "status": "passed"
+  },
+  "development_regression": {
+    "exact_groups": 161,
+    "identical_to_full_dual_folds": 6,
+    "merge_damaged_groups": 0,
+    "total_groups": 162
+  },
+  "entrypoint": {
+    "all_pairs_max_images": 64,
+    "cache_policy": "in_memory_no_persistent_cache",
+    "candidate_top_k": 12,
+    "opencv_threads_requested": 2,
+    "public_function": "group_images(image_paths: list[str]) -> list[list[str]]"
+  },
+  "limitations": [
+    "The linux/amd64 CI job proves build and contract behavior on a generated fixture, not representative x86 machine-profile runtime.",
+    "Native scale measurements are arm64 and the source data has no photoshoot boundary from which to estimate private batch-size percentiles.",
+    "The structural screen preserves 161/162 true-group connectivity; the sole miss is the adjacent-view group already split by the full champion.",
+    "The Phase 1 reserved slice and protected holdout were not evaluated during Phase 4.",
+    "No image was published and no Codabench submission was made."
+  ],
+  "native_scale": {
+    "maximum_366_peak_rss_bytes": 637075456,
+    "maximum_366_wall_seconds": 119.21716270805337,
+    "prediction_hash_identity": true,
+    "prediction_sha256": "481ef2c0408ac2fcd6b26996dfe5f46ac91a17c59ab74af49f6777a9b81025ba"
+  },
+  "schema_version": 1,
+  "selected": {
+    "config_hash": "8edd0d656ac43ca210dbecb8fd1c88d8ea12ad92bd91c0600e7b663e12fe709e",
+    "config_path": "configs/phase4/b2-screened-dual-clahe.json",
+    "reason": "Promote the structurally screened dual-view runtime because it preserves the full Phase 3 partition byte-for-byte on all six development folds, eliminates more than 82 percent of expensive pairs at 100 images, passes the repeated 366-image native resource gate with deterministic output, and passes the exact offline linux/amd64 container contract without adding model assets or services.",
+    "source_commit": "f14624d"
+  },
+  "status": "phase4_scale_and_packaging_complete"
+}

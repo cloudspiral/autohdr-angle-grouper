@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 from dataclasses import dataclass, fields
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,10 @@ from autohdr_eval.contracts import write_predictions as write_predictions
 INPUT_DIR = Path("/input/images")
 OUTPUT_DIR = Path("/output")
 SUPPORTED_SUFFIXES = {".jpg", ".jpeg", ".png"}
+OPENCV_THREADS = 2
+SUBMISSION_CONFIG_PATH = (
+    Path(__file__).resolve().parent / "configs" / "phase4" / "b2-screened-dual-clahe.json"
+)
 
 # Calibration points for the exposure-invariant structural descriptor. These are
 # intentionally module-level names so labeled AutoHDR evaluation can tune them.
@@ -254,13 +259,49 @@ def group_images_with_config(
 
 
 def group_images(image_paths: list[str]) -> list[list[str]]:
-    """Group images by exposure-normalized pixel structure.
+    """Group images with screened dual-view local geometry.
 
     Paths and filenames are used only to load pixels and serialize stable output;
-    component membership is decided exclusively from decoded pixel descriptors.
+    component membership is decided exclusively from decoded pixel evidence.
     """
 
-    return group_images_with_config(image_paths, DEFAULT_STRUCTURAL_CONFIG)
+    outcome = group_images_with_resources(image_paths)
+    print(
+        "Evaluated "
+        f"{outcome.resources['candidate_pair_count']}/"
+        f"{outcome.resources['all_pair_count']} candidate pairs in each view",
+        flush=True,
+    )
+    return outcome.groups
+
+
+def group_images_with_resources(
+    image_paths: list[str], *, opencv_threads: int = OPENCV_THREADS
+) -> Any:
+    """Run the submission implementation and expose counters for benchmarks."""
+
+    from autohdr_eval.classical import run_screened_dual_classical_uncached
+
+    if opencv_threads < 1:
+        raise ValueError("opencv_threads must be positive")
+    cv2.setNumThreads(opencv_threads)
+    config, seed = _submission_config()
+    outcome = run_screened_dual_classical_uncached(image_paths, config, seed=seed)
+    outcome.resources["opencv_threads_requested"] = opencv_threads
+    return outcome
+
+
+@lru_cache(maxsize=1)
+def _submission_config() -> tuple[Any, int]:
+    """Load and strictly validate the packaged Phase 4 runtime configuration."""
+
+    from autohdr_eval.classical import ScreenedPercentileClassicalConfig
+    from autohdr_eval.config import load_config
+
+    loaded = load_config(SUBMISSION_CONFIG_PATH)
+    if loaded.algorithm != "classical-screened-dual-clahe":
+        raise ValueError("submission config must select screened dual-view classical")
+    return ScreenedPercentileClassicalConfig.from_parameters(loaded.parameters), loaded.seed
 
 
 def discover_images(input_dir: Path) -> list[str]:

@@ -7,7 +7,13 @@ import cv2
 import numpy as np
 import pytest
 
-from solution import discover_images, group_images, run, validate_groups
+from solution import (
+    discover_images,
+    group_images,
+    group_images_with_resources,
+    run,
+    validate_groups,
+)
 
 
 def make_image_files(directory: Path, names: list[str]) -> list[str]:
@@ -138,6 +144,21 @@ def test_group_images_is_deterministic_and_emits_every_input_once(tmp_path: Path
     assert first == second
     validate_groups(first, image_paths)
     assert sorted(filename for group in first for filename in group) == ["m.png", "q.png", "z.png"]
+
+
+def test_group_images_resource_path_matches_public_entrypoint(tmp_path: Path) -> None:
+    scene = make_scene("house")
+    image_paths = [
+        write_valid_image(tmp_path / "images" / "dark.jpg", exposed(scene, 0.6)),
+        write_valid_image(tmp_path / "images" / "bright.jpg", exposed(scene, 1.4)),
+    ]
+
+    outcome = group_images_with_resources(image_paths)
+
+    assert outcome.groups == group_images(list(reversed(image_paths)))
+    assert outcome.resources["candidate_screen_mode"] == "all_pairs"
+    assert outcome.resources["candidate_pair_count"] == 1
+    assert outcome.resources["opencv_threads_requested"] == 2
 
 
 @pytest.mark.parametrize(

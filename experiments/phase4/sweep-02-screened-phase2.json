@@ -1,0 +1,32 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "screened-dual-clahe",
+      "config": "configs/phase4/b2-screened-dual-clahe.json"
+    }
+  ],
+  "folds": [
+    "splits/medium-dev-a-v1.json",
+    "splits/medium-dev-b-v1.json",
+    "splits/medium-dev-c-v1.json"
+  ],
+  "limitations": [
+    "This is the predeclared Phase 4 candidate-screen regression on already-used Phase 2 development folds, not new selection evidence.",
+    "The candidate must preserve all 76 exact groups with zero merge damage while evaluating no more than 20 percent of all pairs per fold.",
+    "The Phase 1 reserved slice and protected holdout are not evaluated."
+  ],
+  "schema_version": 1,
+  "selection": {
+    "primary": "micro_exact_group_score",
+    "require_zero_merge_damage": true,
+    "tie_breaks": [
+      "worst_fold_exact_group_score",
+      "micro_non_singleton_exact_group_score",
+      "split_reference_groups",
+      "total_wall_seconds",
+      "candidate_id"
+    ]
+  },
+  "stage": "phase4-screened-phase2-regression",
+  "sweep_id": "phase4-screened-phase2-v1"
+}

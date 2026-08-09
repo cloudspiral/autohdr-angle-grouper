@@ -1,0 +1,38 @@
+{
+  "acceptance": {
+    "candidate_generation": {
+      "maximum_candidate_fraction_per_100_image_fold": 0.2,
+      "minimum_same_group_pair_recall": 0.995,
+      "minimum_true_group_connectivity": {
+        "connected_groups": 161,
+        "total_groups": 162
+      }
+    },
+    "exact_group_regression": {
+      "fresh_phase3_exact_groups": 85,
+      "maximum_merge_damaged_groups": 0,
+      "phase2_exact_groups": 76
+    },
+    "runtime": {
+      "maximum_native_wall_seconds_for_366_images": 600,
+      "require_deterministic_prediction_identity": true
+    }
+  },
+  "baseline_config": "configs/phase3/b2-dual-clahe.json",
+  "candidate_config": "configs/phase4/b2-screened-dual-clahe.json",
+  "change": {
+    "all_pairs_crossover": "Evaluate all pairs at 64 images or fewer.",
+    "descriptor": "Reuse the frozen B1 exposure-normalized structural descriptor only to nominate expensive local-feature pairs.",
+    "selection": "For larger batches, take the union of each image's 12 nearest structural neighbors. Include every exact distance tie at the boundary and deduplicate unordered pairs.",
+    "verification": "RootSIFT, RANSAC, tri-state classification, dual-view negative-veto fusion, and support-aware grouping remain unchanged; structural proximity never creates a group edge."
+  },
+  "evidence_boundary": [
+    "Evaluate candidate recall, graph connectivity, and exact predictions only on the six already-used Phase 2 and Phase 3 development folds.",
+    "Use nested sample subsets for runtime scaling only; do not use their scores for selection.",
+    "Do not rerun the Phase 1 reserved slice or touch a protected holdout.",
+    "Do not run dual-view all-pairs over all 2,126 medium images."
+  ],
+  "hypothesis": "A generous top-12 B1 structural screen will preserve every support edge needed by the frozen dual-view partition across all six development folds while reducing expensive candidate pairs below 20 percent of all pairs on 100-image batches.",
+  "rejection": "Reject or increase the predeclared screen only if candidate recall/connectivity or exact-group gates fail; do not relax local matching, state, fusion, or grouping thresholds to compensate for a retrieval miss.",
+  "schema_version": 1
+}

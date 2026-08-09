@@ -13,6 +13,7 @@ SUPPORTED_ALGORITHMS = {
     "classical",
     "classical-dual-clahe",
     "classical-percentile-clahe",
+    "classical-screened-dual-clahe",
     "singleton",
     "structural",
 }
