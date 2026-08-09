@@ -18,6 +18,16 @@ Official starter repository as of 2026-08-08:
 - <https://github.com/AutoHDRHackathon/autohdr-challenge-starter>
 - Relevant files: `README.md`, `solution.py`, `SCORING.md`, and `SUBMISSION_GUIDE.md`.
 
+Operational delivery update as of 2026-08-09:
+
+- The referenced Codabench competition and `bounty.autohdr.com` endpoints return
+  HTTP 404.
+- Gauntlet's updated partner instructions request an under-five-minute Loom
+  walkthrough delivered by email.
+- Preserve the original Codabench mechanics as historical requirements and a
+  fallback only; do not claim a leaderboard submission or score without a new,
+  working organizer-provided endpoint.
+
 ## Official task
 
 Given an unordered folder of real-estate photos from a photoshoot, partition the images into groups that share the same camera angle. A camera angle may have multiple exposure-bracketed images. Different viewpoints must remain separate.
@@ -68,9 +78,14 @@ Before algorithm work proceeds, inspect the live official `SCORING.md`, explicit
 - Build and test for `linux/amd64`.
 - Maximum three competition submissions per day.
 - The final Docker repository must be public according to the supplied brief/submission guide.
-- Docker publication and Codabench submission require explicit human approval.
+- External Docker publication and any organizer submission require explicit
+  human approval.
 
 ### Submission mechanics
+
+The following ZIP workflow is the original Codabench contract. Retain it for a
+replacement endpoint, but use `docs/SUBMISSION_HANDOFF.md` for the current
+Gauntlet delivery route.
 
 For each approved finalist, Codex should prepare locally:
 

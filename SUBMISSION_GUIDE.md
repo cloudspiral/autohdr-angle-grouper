@@ -1,5 +1,14 @@
 # How to Submit — AutoHDR Image Grouping Challenge
 
+> **Historical upstream guide.** This file preserves the original AutoHDR
+> hackathon instructions. As of 2026-08-09, the referenced Codabench competition
+> and `bounty.autohdr.com` endpoints return HTTP 404. The current Gauntlet
+> partner route is an under-five-minute Loom walkthrough delivered by email,
+> accompanied by the public Docker image reference, immutable digest, and GitHub
+> repository. See [`docs/SUBMISSION_HANDOFF.md`](docs/SUBMISSION_HANDOFF.md) for
+> current artifact details. Do not treat step 6 or the registration checklist
+> below as currently actionable unless the organizer provides a replacement URL.
+
 ## Overview
 
 You build a Docker container that groups images. We run it in the cloud, score the output, and update the leaderboard.

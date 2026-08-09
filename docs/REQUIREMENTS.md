@@ -6,6 +6,16 @@ This is an implementation-oriented summary of the two-page brief
 The original PDF remains authoritative; it was inspected at full-page resolution
 and its companion document passed the PDF-to-Markdown structural validator.
 
+## Current delivery status
+
+The PDF records the original hackathon submission route. As of 2026-08-09, its
+referenced Codabench competition and AutoHDR bounty-registration URLs both
+return HTTP 404. Gauntlet's updated partner instructions instead request an
+under-five-minute Loom walkthrough delivered by email. This operational change
+does not alter the Docker runtime, image platform, output schema, or scoring
+requirements below. The original Codabench requirements are preserved as
+source evidence rather than presented as a currently available submission path.
+
 The current public [AutoHDR starter
 repository](https://github.com/AutoHDRHackathon/autohdr-challenge-starter) is the
 online operational reference. If it conflicts with the brief, verify the live
@@ -40,8 +50,10 @@ Filename UUIDs carry no grouping signal. [PDF p. 2]
 
 The brief says the final Docker image must be public on Docker Hub and submitted
 through Codabench using a zipped `submission.yaml`. It also states that entrants
-must be US-based and may submit at most three times per day. These are human-owned
-competition actions and are outside Symphony's unattended permissions. [PDF p. 2]
+must be US-based and may submit at most three times per day. These describe the
+original competition route; the current delivery-status note above records the
+newer Gauntlet handoff. External publication and submission remain human-owned
+actions outside Symphony's unattended permissions. [PDF p. 2]
 
 ## Acceptance checklist for repository changes
 
