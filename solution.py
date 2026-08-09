@@ -18,6 +18,7 @@ from autohdr_eval.contracts import write_predictions as write_predictions
 INPUT_DIR = Path("/input/images")
 OUTPUT_DIR = Path("/output")
 SUPPORTED_SUFFIXES = {".jpg", ".jpeg", ".png"}
+OPENCV_THREADS = 2
 SUBMISSION_CONFIG_PATH = (
     Path(__file__).resolve().parent / "configs" / "phase4" / "b2-screened-dual-clahe.json"
 )
@@ -274,13 +275,20 @@ def group_images(image_paths: list[str]) -> list[list[str]]:
     return outcome.groups
 
 
-def group_images_with_resources(image_paths: list[str]) -> Any:
+def group_images_with_resources(
+    image_paths: list[str], *, opencv_threads: int = OPENCV_THREADS
+) -> Any:
     """Run the submission implementation and expose counters for benchmarks."""
 
     from autohdr_eval.classical import run_screened_dual_classical_uncached
 
+    if opencv_threads < 1:
+        raise ValueError("opencv_threads must be positive")
+    cv2.setNumThreads(opencv_threads)
     config, seed = _submission_config()
-    return run_screened_dual_classical_uncached(image_paths, config, seed=seed)
+    outcome = run_screened_dual_classical_uncached(image_paths, config, seed=seed)
+    outcome.resources["opencv_threads_requested"] = opencv_threads
+    return outcome
 
 
 @lru_cache(maxsize=1)

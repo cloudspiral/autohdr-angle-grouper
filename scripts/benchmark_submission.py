@@ -17,7 +17,7 @@ import cv2
 
 from autohdr_eval.config import canonical_json_bytes, load_config
 from autohdr_eval.contracts import validate_groups
-from solution import SUBMISSION_CONFIG_PATH, group_images_with_resources
+from solution import OPENCV_THREADS, SUBMISSION_CONFIG_PATH, group_images_with_resources
 
 
 def _git_state(repo_root: Path) -> tuple[str, bool]:
@@ -82,13 +82,12 @@ def benchmark(
     image_paths = _split_paths(dataset_root, manifest_path, split_path)
     git_commit, dirty_tree = _git_state(repo_root)
     config = load_config(SUBMISSION_CONFIG_PATH)
-    if opencv_threads is not None:
-        if opencv_threads < 1:
-            raise ValueError("opencv_threads must be positive")
-        cv2.setNumThreads(opencv_threads)
     started_wall = time.perf_counter()
     started_cpu = time.process_time()
-    outcome = group_images_with_resources(image_paths)
+    outcome = group_images_with_resources(
+        image_paths,
+        **({"opencv_threads": opencv_threads} if opencv_threads is not None else {}),
+    )
     cpu_seconds = time.process_time() - started_cpu
     wall_seconds = time.perf_counter() - started_wall
     validate_groups(outcome.groups, image_paths)
@@ -106,6 +105,9 @@ def benchmark(
             "processor": platform.processor(),
             "python": platform.python_version(),
             "opencv_threads": cv2.getNumThreads(),
+            "opencv_threads_requested": (
+                opencv_threads if opencv_threads is not None else OPENCV_THREADS
+            ),
         },
         "peak_rss_bytes": _peak_rss_bytes(),
         "prediction_sha256": prediction_hash,

@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "cpu_seconds": 18.324237,
+      "prediction_sha256": "b18fa55a044bf5ac9b4678d5f1d0be31c141977ea1f4aa84e4c592e806919d38",
+      "requested_threads": 1,
+      "wall_seconds": 18.44022766686976
+    },
+    {
+      "cpu_seconds": 19.835547000000002,
+      "prediction_sha256": "b18fa55a044bf5ac9b4678d5f1d0be31c141977ea1f4aa84e4c592e806919d38",
+      "requested_threads": 2,
+      "wall_seconds": 12.004107957938686
+    },
+    {
+      "cpu_seconds": 19.857976999999998,
+      "prediction_sha256": "b18fa55a044bf5ac9b4678d5f1d0be31c141977ea1f4aa84e4c592e806919d38",
+      "requested_threads": 4,
+      "wall_seconds": 11.99309524986893
+    },
+    {
+      "cpu_seconds": 19.932114000000002,
+      "prediction_sha256": "b18fa55a044bf5ac9b4678d5f1d0be31c141977ea1f4aa84e4c592e806919d38",
+      "requested_threads": 8,
+      "wall_seconds": 12.058923500124365
+    }
+  ],
+  "decision": "select_two_opencv_threads",
+  "implementation": {
+    "constant": "solution.OPENCV_THREADS",
+    "selected_threads": 2
+  },
+  "interpretation": "Two, four, and eight requested threads form a practical 0.55 percent wall-time plateau, while one thread is 53.6 percent slower. Select two by the predeclared lower-thread tie preference. The macOS OpenCV build reports the 14-host-CPU default through getNumThreads after every request, so requested values and observed timing are authoritative for this native probe; final linux/amd64 behavior requires separate container evidence.",
+  "prediction_hash_identity": {
+    "passed": true,
+    "unique_hashes": 1
+  },
+  "provenance": {
+    "dirty_tree": false,
+    "git_commit": "c9fdc94d6aa5be70f82181c7334be8998cb1c3ba",
+    "machine": "arm64",
+    "split_id": "sample-scale-051-v1"
+  },
+  "schema_version": 1
+}

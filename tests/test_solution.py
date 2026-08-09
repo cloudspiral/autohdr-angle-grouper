@@ -158,6 +158,7 @@ def test_group_images_resource_path_matches_public_entrypoint(tmp_path: Path) ->
     assert outcome.groups == group_images(list(reversed(image_paths)))
     assert outcome.resources["candidate_screen_mode"] == "all_pairs"
     assert outcome.resources["candidate_pair_count"] == 1
+    assert outcome.resources["opencv_threads_requested"] == 2
 
 
 @pytest.mark.parametrize(
